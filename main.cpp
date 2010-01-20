@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     //fbc.setApiKey("61cecf6f7ee5528d294e1d6bf675f424");
     //fbc.show();
 
-    FBConnectWizard fbc("61cecf6f7ee5528d294e1d6bf675f424", "qtFacebook", true);
+    FBConnectWizard fbc("61cecf6f7ee5528d294e1d6bf675f424", "qtFacebook");
     fbc.show();
     return app.exec();
 

@@ -4,7 +4,9 @@
 
 WebView::WebView(QWidget *parent) :
     QWebView(parent),
-    m_permissionsGranted(false)
+    m_readPermission(false),
+    m_publishPermission(false),
+    m_offlineAccessPermission(false)
 {
     connect(this, SIGNAL(loadFinished(bool)),
             this, SLOT(loadFinished()));
@@ -29,13 +31,6 @@ void WebView::loadFinished() {
             m_uid = rx.cap(2);
             m_secret = rx.cap(4);
 
-            rx.setPattern("\\[\"read_stream\",\"offline_access\",\"publish_stream\"\\]");
-
-            if (rx.indexIn(str))
-                m_permissionsGranted = true;
-
-            emit authReceived();
-
         } else {
 
             rx.setPattern("session_key\":\"([^\"]+)\",\"uid\":\"(\\d+)\",\"expires\":(\\d+),\"secret\":\"([^\"]+)\",");
@@ -46,16 +41,31 @@ void WebView::loadFinished() {
                 m_sessionKey = rx.cap(1);
                 m_uid = rx.cap(2);
                 m_secret = rx.cap(4);
-
-                rx.setPattern("\\[\"read_stream\",\"offline_access\",\"publish_stream\"\\]");
-
-                if (rx.indexIn(str))
-                    m_permissionsGranted = true;
-
-
-                emit authReceived();
             }
         }
+
+        //rx.setPattern("\\[\"read_stream\",\"offline_access\",\"publish_stream\"\\]");
+        rx.setPattern("permissions=\\[([^\\]]+)\\]");
+        if (rx.indexIn(str) != -1) {
+
+            QString perms = rx.cap(1);
+
+            rx.setPattern("read_stream");
+            if (rx.indexIn(perms) != -1)
+                m_readPermission = true;
+
+            rx.setPattern("offline_access");
+            if (rx.indexIn(perms) != -1)
+                m_offlineAccessPermission = true;
+
+            rx.setPattern("publish_stream");
+            if (rx.indexIn(perms) != -1)
+                m_publishPermission = true;
+       }
+
+        emit authReceived();
+
+
     } else if (page()->findText("Failure")) {
         // Whoops. Something went wrong
         emit authFailed();
@@ -76,6 +86,23 @@ QString WebView::getUID() {
     return m_uid;
 }
 
+bool WebView::hasReadPermission()
+{
+    return m_readPermission;
+}
+
+bool WebView::hasPublishPermission()
+{
+    return m_publishPermission;
+}
+
+bool WebView::hasOfflineAccessPermission()
+{
+    return m_offlineAccessPermission;
+}
+
 bool WebView::permissionsGranted() {
-    return m_permissionsGranted;
+    return(m_readPermission &&
+           m_offlineAccessPermission &&
+           m_publishPermission);
 }

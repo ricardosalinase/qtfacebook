@@ -9,8 +9,10 @@ class FBConnectWizard : public QWizard
 {
     Q_OBJECT
 
+
 public:
-    explicit FBConnectWizard(QString apiKey, QString appName, bool firstTime);
+    FBConnectWizard(QString apiKey, QString appName, bool firstTime = true);
+    enum { Page_Intro, Page_Connect, Page_Conclusion };
 
 public slots:
     void gotAuth();
@@ -26,6 +28,34 @@ private:
     QString m_appName;
     bool m_firstTime;
     WebView *m_view;
+
+
+};
+
+class ConnectPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    ConnectPage(QString apKey, QWidget *parent = 0);
+    void initializePage();
+    bool isComplete() const;
+    bool hasCompletedAuth();
+    //overridden from QWizardage
+    int nextId() const;
+signals:
+
+
+public slots:
+    void gotAuth();
+    void gotFailed();
+
+private:
+    WebView *m_view;
+    QString m_apiKey;
+    bool m_isComplete;
+    bool m_gotAuth;
+    QString m_facebookUrl;
 };
 
 #endif // FBCONNECTWIZARD_H
