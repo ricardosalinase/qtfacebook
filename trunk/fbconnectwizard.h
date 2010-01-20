@@ -41,8 +41,7 @@ public:
     void initializePage();
     bool isComplete() const;
     bool hasCompletedAuth();
-    //overridden from QWizardage
-    int nextId() const;
+
 signals:
 
 
