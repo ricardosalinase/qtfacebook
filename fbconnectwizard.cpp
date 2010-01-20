@@ -122,12 +122,6 @@ void ConnectPage::initializePage() {
 
 }
 
-int ConnectPage::nextId() const {
-    if (m_gotAuth)
-        return FBConnectWizard::Page_Conclusion;
-    else
-        return FBConnectWizard::Page_Connect;
-}
 
 void ConnectPage::gotAuth() {
 
@@ -149,8 +143,7 @@ void ConnectPage::gotAuth() {
         html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
 
         m_view->setHtml(html);
-        m_isComplete = true;
-        emit completeChanged();
+
 
     }
     else
