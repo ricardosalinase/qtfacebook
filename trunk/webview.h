@@ -12,6 +12,9 @@ public:
     QString getUID();
     QString getSecret();
     bool permissionsGranted();
+    bool hasReadPermission();
+    bool hasPublishPermission();
+    bool hasOfflineAccessPermission();
 
 signals:
     void authReceived();
@@ -24,7 +27,9 @@ private:
     QString m_sessionKey;
     QString m_uid;
     QString m_secret;
-    bool m_permissionsGranted;
+    bool m_readPermission;
+    bool m_publishPermission;
+    bool m_offlineAccessPermission;
 };
 
 #endif // WEBVIEW_H

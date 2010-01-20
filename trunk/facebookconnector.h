@@ -7,8 +7,8 @@ class FaceBookConnector : public QWidget
 {
 Q_OBJECT
 public:
-    explicit FaceBookConnector(QString apiKey);
-    FaceBookConnector(QWidget *parent, QString apiKey);
+    FaceBookConnector(QString apiKey, QWidget *parent = 0);
+
 
 
 signals:
@@ -17,7 +17,7 @@ public slots:
 
 private:
     QString m_apiKey;
-    void init();
+
 
 };
 
