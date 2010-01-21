@@ -12,4 +12,6 @@ HEADERS += fbconnectwizard.h \
     userinfo.h
 OTHER_FILES += uiImages/qtFacebookWizardSide.jpg \
     uiImages/thumbsUp.jpg \
-    uiImages/thumbsDown.jpg
+    uiImages/thumbsDown.jpg \
+    uiImages/thumbsUp2.jpg \
+    uiImages/thumbsDown2.jpg

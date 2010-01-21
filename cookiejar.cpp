@@ -21,6 +21,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
 
     QList<QNetworkCookie> cookies = allCookies();
     foreach(QNetworkCookie cookie, cookieList) {
+        //qDebug() << cookie;
         cookies += cookie;
     }
     setAllCookies(cookies);
