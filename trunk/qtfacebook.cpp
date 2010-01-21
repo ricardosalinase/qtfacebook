@@ -44,11 +44,13 @@ void QtFacebook::saveUserInfo(UserInfo *info) {
             "UID" << info->getUID();
 
 
-    // Start main application
+
 }
 
 void QtFacebook::fbWizardComplete() {
     setVisible(false);
+
+    // Start main application
 
 
 
