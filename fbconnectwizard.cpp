@@ -3,6 +3,7 @@
 #include "cookiejar.h"
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QPixmap>
 #include <QDebug>
 
 FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime) :
@@ -16,7 +17,9 @@ FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime
     ConnectPage *cp = new ConnectPage(m_apiKey);
 
     connect(cp, SIGNAL(userAuthenticated(UserInfo*)),
-            this, SIGNAL(userAuthenticated(UserInfo*)));
+            this, SIGNAL(userHasAuthenticated(UserInfo*)));
+
+
 
     setPage(Page_Connect, cp);
     setPage(Page_Conclusion, createConclusionPage());
@@ -53,7 +56,11 @@ QWizardPage* FBConnectWizard::createIntroPage() {
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(l);
     qwp->setLayout(layout);
+    QPixmap pm;
+    pm.load("./uiImages/qtFacebookWizardSide.jpg");
 
+
+    qwp->setPixmap(QWizard::WatermarkPixmap, pm);
     return qwp;
 
 
@@ -61,6 +68,20 @@ QWizardPage* FBConnectWizard::createIntroPage() {
 
 QWizardPage* FBConnectWizard::createConclusionPage() {
     QWizardPage *qwp = new QWizardPage();
+    QPixmap pm;
+    pm.load("./uiImages/qtFacebookWizardSide.jpg");
+    qwp->setPixmap(QWizard::WatermarkPixmap, pm);
+
+    qwp->setTitle("Authorized!");
+
+
+    QLabel *l = new QLabel("All set! " + m_appName + " can now access your facebook page.<br><br>"
+                           "Click 'Finish' below to start the application.");
+    l->setWordWrap(true);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(l);
+    qwp->setLayout(layout);
+
     return qwp;
 }
 

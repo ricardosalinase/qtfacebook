@@ -18,7 +18,7 @@ public:
 public slots:
 
 signals:
-    void userAuthenticated(UserInfo *info);
+    void userHasAuthenticated(UserInfo *info);
 
 private:
 
