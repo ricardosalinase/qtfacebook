@@ -14,7 +14,8 @@ class FBConnectWizard : public QWizard
 
 public:
     FBConnectWizard(QString apiKey, QString appName, bool firstTime = true);
-    enum { Page_Intro, Page_Connect, Page_Conclusion };
+    enum { Page_Intro, Page_Connect, Page_Conclusion, Page_Error };
+
 
 public slots:
 
@@ -26,6 +27,7 @@ private:
     QWizardPage* createIntroPage();
     QWizardPage* createConnectPage();
     QWizardPage* createConclusionPage();
+    QWizardPage* createErrorPage();
 
 
 
@@ -46,6 +48,8 @@ public:
     void initializePage();
     bool isComplete() const;
     bool hasCompletedAuth();
+    // Overrides parent method
+    int nextId() const;
 
 signals:
     void userAuthenticated(UserInfo *info);
@@ -62,6 +66,26 @@ private:
     QString m_facebookUrl;
     QLabel *m_thumbsUp;
     QLabel *m_thumbsDown;
+};
+
+class ErrorPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    explicit ErrorPage(QWidget *parent = 0);
+    bool isComplete() const;
+
+
+};
+
+class ConclusionPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    explicit ConclusionPage(QWidget *parent = 0);
+    int nextId() const;
 };
 
 #endif // FBCONNECTWIZARD_H

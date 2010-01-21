@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QPixmap>
 #include <QDebug>
+#include <QPushButton>
 
 FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime) :
         QWizard(),
@@ -19,18 +20,16 @@ FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime
     connect(cp, SIGNAL(userAuthenticated(UserInfo*)),
             this, SIGNAL(userHasAuthenticated(UserInfo*)));
 
-
-
-
     setPage(Page_Connect, cp);
-    setPage(Page_Conclusion, createConclusionPage());
 
+    ErrorPage *ep = new ErrorPage();
+    setPage(Page_Error, ep);
+
+
+    setPage(Page_Conclusion, new ConclusionPage());
 
 
 }
-
-
-
 
 
 QWizardPage* FBConnectWizard::createIntroPage() {
@@ -67,10 +66,32 @@ QWizardPage* FBConnectWizard::createIntroPage() {
 
 }
 
+QWizardPage* FBConnectWizard::createErrorPage() {
+    QWizardPage *qwp = new QWizardPage();
+    QPixmap pm;
+    pm.load("./uiImages/thumbsDown2.jpg");
+    qwp->setPixmap(QWizard::WatermarkPixmap, pm);
+    qwp->setTitle("Ruh Roh!");
+
+    QLabel *l = new QLabel("Unfortunately your Facebook Connect session didn't go as planned.<br><br>"
+                "Please go back and try again. Please note that this application requires read,"
+                " publish, and offline access to function.");
+
+    l->setWordWrap(true);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(l);
+    qwp->setLayout(layout);
+
+    return qwp;
+
+
+
+}
+
 QWizardPage* FBConnectWizard::createConclusionPage() {
     QWizardPage *qwp = new QWizardPage();
     QPixmap pm;
-    pm.load("./uiImages/qtFacebookWizardSide.jpg");
+    pm.load("./uiImages/thumbsUp2.jpg");
     qwp->setPixmap(QWizard::WatermarkPixmap, pm);
 
     qwp->setTitle("Authorized!");
@@ -82,6 +103,8 @@ QWizardPage* FBConnectWizard::createConclusionPage() {
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(l);
     qwp->setLayout(layout);
+
+    qwp->setFinalPage(true);
 
     return qwp;
 }
@@ -122,25 +145,20 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
     QWebPage *wp = m_view->page();
     wp->networkAccessManager()->setCookieJar(cj);
 
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(m_view);
-    layout->addWidget(m_thumbsUp);
-    layout->addWidget(m_thumbsDown);
     setLayout(layout);
 
     // This is not necessary, but it's a nice trick to get
     // the facebook connect page to automatically show the
     // email/pass fields when the page is reloaded by the
     // QWizard calling initializePage()
-    initializePage();
+    //initializePage();
 
 }
 
 void ConnectPage::initializePage() {
-
-    m_thumbsUp->setVisible(false);
-    m_thumbsDown->setVisible(false);
-    m_view->setVisible(true);
     QUrl url(m_facebookUrl);
 
     m_view->load(url);
@@ -152,41 +170,14 @@ void ConnectPage::gotAuth() {
     // Make sure that all the needed permissions were granted
     if (!m_view->permissionsGranted())
     {
-        // Display the thumbs down and explain why
-        m_view->setVisible(false);
-        m_thumbsDown->setVisible(true);
-
-        QString html ="<body><html>Thumbs Down!<br><br>" ;
-
-        if (!m_view->hasReadPermission())
-            html += "- You need to grant read permission<br>";
-        if (!m_view->hasPublishPermission())
-            html += "- You need to grant publish permission<br>";
-        if (!m_view->hasOfflineAccessPermission())
-            html += "- You need to grant offline access permission<br>";
-
-        html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
-
-        m_view->setHtml(html);
-
-
+        // nextId() will send us to the fail page
+        initializePage();
+        m_isComplete = true;
+        emit completeChanged();
     }
     else
     {
-        // Display the thumbs up
-        m_view->setVisible(false);
-        m_thumbsUp->setVisible(true);
-
-
-        //m_view->setHtml("Thumbs up!");
-
-        // Grab the info we need from the view and pass it to the
-        // QWizard via a signal
-
-        //qDebug() << "Session Key: " << m_view->getSessionKey() << "\nuid: "
-        //        << m_view->getUID() << "\nSecret: " << m_view->getSecret();
-        //if (m_view->permissionsGranted())
-        //    qDebug("And our permissions were granted!");
+        initializePage();
 
         UserInfo *i = new UserInfo(m_view->getSessionKey(),m_view->getSecret(),m_view->getUID());
         emit userAuthenticated(i);
@@ -194,23 +185,23 @@ void ConnectPage::gotAuth() {
         m_gotAuth = true;
         m_isComplete = true;
         emit completeChanged();
-
     }
 
+    // If anyone else knows of a better way to do this ... let me know
+    // It does seem to work fine though.
+    ((QPushButton*)this->wizard()->button(QWizard::NextButton))->click();
 }
 
 void ConnectPage::gotFailed() {
     qDebug("Ruht Row ... something went wrong");
 
-    // Display the thumbs down and ask to restart FBC
-    m_view->setVisible(false);
-    m_thumbsDown->setVisible(true);
+    initializePage();
+    m_isComplete = true;
+    emit completeChanged();
 
-    //html += "It would appear something went horribly Awry";
-
-    //html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
-    //m_view->setHtml(html);
-
+    // If anyone else knows of a better way to do this ... let me know
+    // It does seem to work fine though.
+    ((QPushButton*)this->wizard()->button(QWizard::NextButton))->click();
 }
 
 bool ConnectPage::isComplete() const {
@@ -219,4 +210,57 @@ bool ConnectPage::isComplete() const {
 
 bool ConnectPage::hasCompletedAuth() {
     return m_gotAuth;
+}
+
+int ConnectPage::nextId() const {
+    if (m_view->permissionsGranted())
+        return FBConnectWizard::Page_Conclusion;
+    else
+        return FBConnectWizard::Page_Error;
+}
+
+ErrorPage::ErrorPage(QWidget *parent) :
+        QWizardPage(parent)
+{
+    QPixmap pm;
+    pm.load("./uiImages/thumbsDown2.jpg");
+    setPixmap(QWizard::WatermarkPixmap, pm);
+    setTitle("Ruh Roh!");
+
+    QLabel *l = new QLabel("Unfortunately your Facebook Connect session didn't go as planned.<br><br>"
+                "Please go back and try again. Please note that this application requires read,"
+                " publish, and offline access to function.");
+
+    l->setWordWrap(true);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(l);
+    setLayout(layout);
+}
+
+bool ErrorPage::isComplete() const {
+    return false;
+}
+
+ConclusionPage::ConclusionPage(QWidget *parent) :
+        QWizardPage(parent)
+{
+    QPixmap pm;
+    pm.load("./uiImages/thumbsUp2.jpg");
+    setPixmap(QWizard::WatermarkPixmap, pm);
+
+    setTitle("Authorized!");
+
+
+    QLabel *l = new QLabel("All set! This application can now access your facebook page.<br><br>"
+                           "Click 'Finish' below to start the application.");
+    l->setWordWrap(true);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(l);
+    setLayout(layout);
+
+    setFinalPage(true);
+}
+
+int ConclusionPage::nextId() const {
+    return -1;
 }
