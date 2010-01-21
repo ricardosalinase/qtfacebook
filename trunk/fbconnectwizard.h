@@ -2,6 +2,7 @@
 #define FBCONNECTWIZARD_H
 
 #include <QWizard>
+#include <QLabel>
 #include "userinfo.h"
 
 class WebView;
@@ -25,6 +26,8 @@ private:
     QWizardPage* createIntroPage();
     QWizardPage* createConnectPage();
     QWizardPage* createConclusionPage();
+
+
 
     QString m_apiKey;
     QString m_appName;
@@ -57,6 +60,8 @@ private:
     bool m_isComplete;
     bool m_gotAuth;
     QString m_facebookUrl;
+    QLabel *m_thumbsUp;
+    QLabel *m_thumbsDown;
 };
 
 #endif // FBCONNECTWIZARD_H

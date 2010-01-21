@@ -1,7 +1,7 @@
 
 #include <QtGui/QApplication>
 
-#include "facebookconnector.h"
+
 #include "fbconnectwizard.h"
 #include "qtfacebook.h"
 

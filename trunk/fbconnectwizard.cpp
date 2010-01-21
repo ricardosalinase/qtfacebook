@@ -21,6 +21,7 @@ FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime
 
 
 
+
     setPage(Page_Connect, cp);
     setPage(Page_Conclusion, createConclusionPage());
 
@@ -101,6 +102,15 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
              "&fbconnect=true&return_session=true&session_key_only=true"
              "&req_perms=read_stream,publish_stream,offline_access";
 
+    m_thumbsUp = new QLabel();
+    QPixmap tu("./uiImages/thumbsUp.jpg");
+    m_thumbsUp->setPixmap(tu);
+    m_thumbsUp->setVisible(false);
+
+    m_thumbsDown = new QLabel();
+    QPixmap td("./uiImages/thumbsDown.jpg");
+    m_thumbsDown->setPixmap(td);
+    m_thumbsDown->setVisible(false);
 
     connect(m_view, SIGNAL(authReceived()),
             this, SLOT(gotAuth()));
@@ -114,6 +124,8 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(m_view);
+    layout->addWidget(m_thumbsUp);
+    layout->addWidget(m_thumbsDown);
     setLayout(layout);
 
     // This is not necessary, but it's a nice trick to get
@@ -126,6 +138,9 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
 
 void ConnectPage::initializePage() {
 
+    m_thumbsUp->setVisible(false);
+    m_thumbsDown->setVisible(false);
+    m_view->setVisible(true);
     QUrl url(m_facebookUrl);
 
     m_view->load(url);
@@ -138,6 +153,9 @@ void ConnectPage::gotAuth() {
     if (!m_view->permissionsGranted())
     {
         // Display the thumbs down and explain why
+        m_view->setVisible(false);
+        m_thumbsDown->setVisible(true);
+
         QString html ="<body><html>Thumbs Down!<br><br>" ;
 
         if (!m_view->hasReadPermission())
@@ -156,8 +174,11 @@ void ConnectPage::gotAuth() {
     else
     {
         // Display the thumbs up
+        m_view->setVisible(false);
+        m_thumbsUp->setVisible(true);
 
-        m_view->setHtml("Thumbs up!");
+
+        //m_view->setHtml("Thumbs up!");
 
         // Grab the info we need from the view and pass it to the
         // QWizard via a signal
@@ -182,12 +203,13 @@ void ConnectPage::gotFailed() {
     qDebug("Ruht Row ... something went wrong");
 
     // Display the thumbs down and ask to restart FBC
-    QString html ="<body><html>Thumbs Down!<br><br>" ;
+    m_view->setVisible(false);
+    m_thumbsDown->setVisible(true);
 
-    html += "It would appear something went horribly Awry";
+    //html += "It would appear something went horribly Awry";
 
-    html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
-    m_view->setHtml(html);
+    //html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
+    //m_view->setHtml(html);
 
 }
 
