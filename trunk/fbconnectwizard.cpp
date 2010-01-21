@@ -11,10 +11,16 @@ FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime
         m_appName(appName),
         m_firstTime(firstTime)
 {
-    setMinimumSize(600,450);
+    setMinimumSize(600,490);
     setPage(Page_Intro, createIntroPage());
-    setPage(Page_Connect, (QWizardPage *)new ConnectPage(m_apiKey));
+    ConnectPage *cp = new ConnectPage(m_apiKey);
+
+    connect(cp, SIGNAL(userAuthenticated(UserInfo*)),
+            this, SIGNAL(userAuthenticated(UserInfo*)));
+
+    setPage(Page_Connect, cp);
     setPage(Page_Conclusion, createConclusionPage());
+
 
 
 }
@@ -58,21 +64,6 @@ QWizardPage* FBConnectWizard::createConclusionPage() {
     return qwp;
 }
 
-void FBConnectWizard::gotAuth() {
-    qDebug() << "Session Key: " << m_view->getSessionKey() << "\nuid: "
-            << m_view->getUID() << "\nSecret: " << m_view->getSecret();
-    if (m_view->permissionsGranted())
-        qDebug("And our permissions were granted!");
-
-    //close();
-}
-
-void FBConnectWizard::gotFailed() {
-    qDebug("Ruht Row ... something went wrong");
-
-
-    //close();
-}
 
 ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
         QWizardPage(parent),
@@ -99,10 +90,9 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
 
     QWebPage *wp = m_view->page();
     wp->networkAccessManager()->setCookieJar(cj);
-    //QLabel *l = new QLabel("(Click '<font color=blue>Log in with Facebook</font>' if you already have an account)");
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(m_view);
-    //layout->addWidget(l);
     setLayout(layout);
 
     // This is not necessary, but it's a nice trick to get
@@ -118,8 +108,6 @@ void ConnectPage::initializePage() {
     QUrl url(m_facebookUrl);
 
     m_view->load(url);
-
-
 }
 
 
@@ -138,8 +126,6 @@ void ConnectPage::gotAuth() {
         if (!m_view->hasOfflineAccessPermission())
             html += "- You need to grant offline access permission<br>";
 
-
-
         html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
 
         m_view->setHtml(html);
@@ -155,10 +141,13 @@ void ConnectPage::gotAuth() {
         // Grab the info we need from the view and pass it to the
         // QWizard via a signal
 
-        qDebug() << "Session Key: " << m_view->getSessionKey() << "\nuid: "
-                << m_view->getUID() << "\nSecret: " << m_view->getSecret();
-        if (m_view->permissionsGranted())
-            qDebug("And our permissions were granted!");
+        //qDebug() << "Session Key: " << m_view->getSessionKey() << "\nuid: "
+        //        << m_view->getUID() << "\nSecret: " << m_view->getSecret();
+        //if (m_view->permissionsGranted())
+        //    qDebug("And our permissions were granted!");
+
+        UserInfo *i = new UserInfo(m_view->getSessionKey(),m_view->getSecret(),m_view->getUID());
+        emit userAuthenticated(i);
 
         m_gotAuth = true;
         m_isComplete = true;
@@ -171,8 +160,14 @@ void ConnectPage::gotAuth() {
 void ConnectPage::gotFailed() {
     qDebug("Ruht Row ... something went wrong");
 
+    // Display the thumbs down and ask to restart FBC
+    QString html ="<body><html>Thumbs Down!<br><br>" ;
 
-    //close();
+    html += "It would appear something went horribly Awry";
+
+    html += "<br><a href=\"" + m_facebookUrl + "\">Restart Facebook Connect</a></html></body>";
+    m_view->setHtml(html);
+
 }
 
 bool ConnectPage::isComplete() const {

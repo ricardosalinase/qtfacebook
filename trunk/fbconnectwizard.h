@@ -2,6 +2,7 @@
 #define FBCONNECTWIZARD_H
 
 #include <QWizard>
+#include "userinfo.h"
 
 class WebView;
 
@@ -15,8 +16,9 @@ public:
     enum { Page_Intro, Page_Connect, Page_Conclusion };
 
 public slots:
-    void gotAuth();
-    void gotFailed();
+
+signals:
+    void userAuthenticated(UserInfo *info);
 
 private:
 
@@ -43,7 +45,7 @@ public:
     bool hasCompletedAuth();
 
 signals:
-
+    void userAuthenticated(UserInfo *info);
 
 public slots:
     void gotAuth();
