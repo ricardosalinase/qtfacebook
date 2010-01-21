@@ -14,7 +14,9 @@ public:
 signals:
 
 public slots:
-    void FbWizardComplete(UserInfo *info);
+    void fbWizardComplete();
+    void saveUserInfo(UserInfo *info);
+    void fbWizardCanceled();
 
 private:
     UserInfo *m_userInfo;
