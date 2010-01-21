@@ -10,4 +10,6 @@ HEADERS += fbconnectwizard.h \
     cookiejar.h \
     qtfacebook.h \
     userinfo.h
-OTHER_FILES += uiImages/qtFacebookWizardSide.jpg
+OTHER_FILES += uiImages/qtFacebookWizardSide.jpg \
+    uiImages/thumbsUp.jpg \
+    uiImages/thumbsDown.jpg
