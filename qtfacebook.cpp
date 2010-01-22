@@ -3,6 +3,7 @@
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
+#include "testqueryconsole.h"
 
 QtFacebook::QtFacebook(QWidget *parent) :
     QWidget(parent),
@@ -29,7 +30,7 @@ QtFacebook::QtFacebook(QWidget *parent) :
     setLayout(layout);
 
     // Else just launch the main app
-    // fbWizardComplete();
+    //fbWizardComplete();
 
 
 }
@@ -49,7 +50,8 @@ void QtFacebook::fbWizardComplete() {
     setVisible(false);
 
     // Start main application
-
+    TestQueryConsole *tqc = new TestQueryConsole();
+    tqc->show();
 
 
 }
