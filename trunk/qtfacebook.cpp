@@ -18,6 +18,7 @@ QtFacebook::QtFacebook(QWidget *parent) :
 
     // load session_key, uid, and secret
     bool hasInfo = loadUserInfo();
+
     m_layout = new QVBoxLayout();
     setLayout(m_layout);
 
@@ -60,6 +61,13 @@ void QtFacebook::saveUserInfo(UserInfo *info) {
 
 }
 
+/*************************************************************
+* There is a chance that the "permanent" session from facebook
+* has expired (They don't seem to understand the word
+* "permanent") ... there's an API call to validate the session
+* which we'll probably want to do here once we have the API
+* interface object
+**************************************************************/
 bool QtFacebook::loadUserInfo() {
 
     QSettings settings("qtFacebook","qtFacebook");
