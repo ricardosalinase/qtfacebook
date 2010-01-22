@@ -15,19 +15,9 @@ FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime
 {
     setMinimumSize(600,490);
     setPage(Page_Intro, createIntroPage());
-    ConnectPage *cp = new ConnectPage(m_apiKey);
-
-    connect(cp, SIGNAL(userAuthenticated(UserInfo*)),
-            this, SIGNAL(userHasAuthenticated(UserInfo*)));
-
-    setPage(Page_Connect, cp);
-
-    ErrorPage *ep = new ErrorPage();
-    setPage(Page_Error, ep);
-
-
-    setPage(Page_Conclusion, new ConclusionPage());
-
+    setPage(Page_Connect, createConnectPage());
+    setPage(Page_Error, createErrorPage());
+    setPage(Page_Conclusion, createConclusionPage());
 
 }
 
@@ -57,7 +47,7 @@ QWizardPage* FBConnectWizard::createIntroPage() {
     layout->addWidget(l);
     qwp->setLayout(layout);
     QPixmap pm;
-    pm.load("./uiImages/qtFacebookWizardSide.jpg");
+    pm.load("./uiImages/signGuy.jpg");
 
 
     qwp->setPixmap(QWizard::WatermarkPixmap, pm);
@@ -66,47 +56,25 @@ QWizardPage* FBConnectWizard::createIntroPage() {
 
 }
 
+QWizardPage* FBConnectWizard::createConnectPage() {
+    ConnectPage *cp = new ConnectPage(m_apiKey);
+
+    connect(cp, SIGNAL(userAuthenticated(UserInfo*)),
+            this, SIGNAL(userHasAuthenticated(UserInfo*)));
+
+    return cp;
+
+}
+
+
 QWizardPage* FBConnectWizard::createErrorPage() {
-    QWizardPage *qwp = new QWizardPage();
-    QPixmap pm;
-    pm.load("./uiImages/thumbsDown2.jpg");
-    qwp->setPixmap(QWizard::WatermarkPixmap, pm);
-    qwp->setTitle("Ruh Roh!");
-
-    QLabel *l = new QLabel("Unfortunately your Facebook Connect session didn't go as planned.<br><br>"
-                "Please go back and try again. Please note that this application requires read,"
-                " publish, and offline access to function.");
-
-    l->setWordWrap(true);
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(l);
-    qwp->setLayout(layout);
-
-    return qwp;
-
-
-
+    ErrorPage *ep = new ErrorPage();
+    return ep;
 }
 
 QWizardPage* FBConnectWizard::createConclusionPage() {
-    QWizardPage *qwp = new QWizardPage();
-    QPixmap pm;
-    pm.load("./uiImages/thumbsUp2.jpg");
-    qwp->setPixmap(QWizard::WatermarkPixmap, pm);
-
-    qwp->setTitle("Authorized!");
-
-
-    QLabel *l = new QLabel("All set! " + m_appName + " can now access your facebook page.<br><br>"
-                           "Click 'Finish' below to start the application.");
-    l->setWordWrap(true);
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(l);
-    qwp->setLayout(layout);
-
-    qwp->setFinalPage(true);
-
-    return qwp;
+    ConclusionPage *cp = new ConclusionPage();
+    return cp;
 }
 
 
@@ -124,16 +92,6 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
              "&cancel_url=http://www.facebook.com/connect/login_failure.html"
              "&fbconnect=true&return_session=true&session_key_only=true"
              "&req_perms=read_stream,publish_stream,offline_access";
-
-    m_thumbsUp = new QLabel();
-    QPixmap tu("./uiImages/thumbsUp.jpg");
-    m_thumbsUp->setPixmap(tu);
-    m_thumbsUp->setVisible(false);
-
-    m_thumbsDown = new QLabel();
-    QPixmap td("./uiImages/thumbsDown.jpg");
-    m_thumbsDown->setPixmap(td);
-    m_thumbsDown->setVisible(false);
 
     connect(m_view, SIGNAL(authReceived()),
             this, SLOT(gotAuth()));
@@ -154,7 +112,7 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
     // the facebook connect page to automatically show the
     // email/pass fields when the page is reloaded by the
     // QWizard calling initializePage()
-    //initializePage();
+    initializePage();
 
 }
 
@@ -223,7 +181,7 @@ ErrorPage::ErrorPage(QWidget *parent) :
         QWizardPage(parent)
 {
     QPixmap pm;
-    pm.load("./uiImages/thumbsDown2.jpg");
+    pm.load("./uiImages/thumbsDown3.jpg");
     setPixmap(QWizard::WatermarkPixmap, pm);
     setTitle("Ruh Roh!");
 
@@ -245,7 +203,7 @@ ConclusionPage::ConclusionPage(QWidget *parent) :
         QWizardPage(parent)
 {
     QPixmap pm;
-    pm.load("./uiImages/thumbsUp2.jpg");
+    pm.load("./uiImages/thumbsUp3.jpg");
     setPixmap(QWizard::WatermarkPixmap, pm);
 
     setTitle("Authorized!");

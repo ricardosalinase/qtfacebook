@@ -3,7 +3,7 @@
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
-
+#include "testconsole.h"
 
 QtFacebook::QtFacebook(QWidget *parent) :
     QWidget(parent),
@@ -31,7 +31,8 @@ QtFacebook::QtFacebook(QWidget *parent) :
 
     // Else just launch the main app
     // fbWizardComplete();
-
+    TestConsole *tc = new TestConsole();
+    tc->show();
 
 
 }
