@@ -3,7 +3,6 @@
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
-#include "testconsole.h"
 
 QtFacebook::QtFacebook(QWidget *parent) :
     QWidget(parent),
