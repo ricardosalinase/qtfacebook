@@ -1,5 +1,9 @@
 #include <QDebug>
 #include <QVBoxLayout>
+#include <QDesktopServices>
+#include <QDir>
+#include <QCoreApplication>
+#include <QSettings>
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
@@ -7,31 +11,34 @@
 
 QtFacebook::QtFacebook(QWidget *parent) :
     QWidget(parent),
-    m_userInfo(0)
+    m_userInfo(0),
+    m_layout(0),
+    m_wizard(0)
 {
 
     // load session_key, uid, and secret
+    bool hasInfo = loadUserInfo();
+    m_layout = new QVBoxLayout();
+    setLayout(m_layout);
+
+    if (!hasInfo) {
+        // If we don't have those, launch the connector
+        m_wizard = new FBConnectWizard("61cecf6f7ee5528d294e1d6bf675f424", "qtFacebook");
+
+        connect(m_wizard, SIGNAL(userHasAuthenticated(UserInfo*)),
+                this, SLOT(saveUserInfo(UserInfo*)));
+
+        connect(m_wizard, SIGNAL(accepted()),
+                this, SLOT(fbWizardComplete()));
+        connect(m_wizard, SIGNAL(rejected()),
+                this, SLOT(fbWizardCanceled()));
+
+        m_layout->addWidget(m_wizard);
 
 
-    // If we don't have those, launch the connector
-    FBConnectWizard *fbc = new FBConnectWizard("61cecf6f7ee5528d294e1d6bf675f424", "qtFacebook");
-
-    connect(fbc, SIGNAL(userHasAuthenticated(UserInfo*)),
-            this, SLOT(saveUserInfo(UserInfo*)));
-
-    connect(fbc, SIGNAL(accepted()),
-            this, SLOT(fbWizardComplete()));
-    connect(fbc, SIGNAL(rejected()),
-            this, SLOT(fbWizardCanceled()));
-
-
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(fbc);
-    setLayout(layout);
-
-    // Else just launch the main app
-    //fbWizardComplete();
-
+    } else {
+        fbWizardComplete();
+    }
 
 }
 
@@ -42,16 +49,55 @@ void QtFacebook::saveUserInfo(UserInfo *info) {
             "Secret: " << info->getSecret() <<
             "UID" << info->getUID();
 
+    QSettings settings("qtFacebook","qtFacebook");
+    settings.beginGroup("userInfo");
+    settings.setValue("SessionKey",info->getSessionKey());
+    settings.setValue("UID", info->getUID());
+    settings.setValue("Secret", info->getSecret());
+    settings.endGroup();
+
 
 
 }
 
+bool QtFacebook::loadUserInfo() {
+
+    QSettings settings("qtFacebook","qtFacebook");
+    settings.beginGroup("userInfo");
+    QString sKey(settings.value("SessionKey","").toString());
+    QString uid(settings.value("UID","").toString());
+    QString secret(settings.value("Secret","").toString());
+    settings.endGroup();
+
+    if (sKey.compare("") == 0 ||
+            uid.compare("") == 0 ||
+            secret.compare("") == 0)
+        return false;
+
+    if (m_userInfo != 0)
+        delete m_userInfo;
+
+    m_userInfo = new UserInfo(sKey, secret, uid);
+
+    qDebug() << "Session Key: " << m_userInfo->getSessionKey() <<
+            "Secret: " << m_userInfo->getSecret() <<
+            "UID" << m_userInfo->getUID();
+
+
+    return true;
+
+
+
+}
+
+
 void QtFacebook::fbWizardComplete() {
-    setVisible(false);
+
+    m_layout->removeWidget(m_wizard);
 
     // Start main application
     TestQueryConsole *tqc = new TestQueryConsole();
-    tqc->show();
+    m_layout->addWidget(tqc);
 
 
 }

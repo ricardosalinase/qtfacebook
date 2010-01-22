@@ -2,8 +2,10 @@
 #define QTFACEBOOK_H
 
 #include <QWidget>
+#include <QVBoxLayout>
 
 #include "userinfo.h"
+#include "fbconnectwizard.h"
 
 class QtFacebook : public QWidget
 {
@@ -20,7 +22,9 @@ public slots:
 
 private:
     UserInfo *m_userInfo;
-
+    bool loadUserInfo();
+    QVBoxLayout *m_layout;
+    FBConnectWizard *m_wizard;
 };
 
 #endif // QTFACEBOOK_H
