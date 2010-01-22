@@ -31,8 +31,6 @@ QtFacebook::QtFacebook(QWidget *parent) :
 
     // Else just launch the main app
     // fbWizardComplete();
-    TestConsole *tc = new TestConsole();
-    tc->show();
 
 
 }
