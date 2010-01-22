@@ -105,8 +105,9 @@ void QtFacebook::fbWizardComplete() {
 
     // Start main application
     TestQueryConsole *tqc = new TestQueryConsole();
-    m_layout->addWidget(tqc);
-
+    tqc->show();
+    //m_layout->addWidget(tqc);
+    this->hide();
 
 }
 
