@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'testqueryconsole.ui'
 **
-** Created: Thu Jan 21 23:47:25 2010
-**      by: Qt User Interface Compiler version 4.6.0
+** Created: Fri Jan 22 14:14:06 2010
+**      by: Qt User Interface Compiler version 4.6.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/

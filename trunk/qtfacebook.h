@@ -1,17 +1,18 @@
 #ifndef QTFACEBOOK_H
 #define QTFACEBOOK_H
 
-#include <QWidget>
+#include <QObject>
 #include <QVBoxLayout>
 
 #include "userinfo.h"
 #include "fbconnectwizard.h"
+#include "testqueryconsole.h"
 
-class QtFacebook : public QWidget
+class QtFacebook : public QObject
 {
 Q_OBJECT
 public:
-    explicit QtFacebook(QWidget *parent = 0);
+    explicit QtFacebook(QObject *parent = 0);
 
 signals:
 
@@ -23,8 +24,8 @@ public slots:
 private:
     UserInfo *m_userInfo;
     bool loadUserInfo();
-    QVBoxLayout *m_layout;
     FBConnectWizard *m_wizard;
+    TestQueryConsole *m_testConsole;
 };
 
 #endif // QTFACEBOOK_H

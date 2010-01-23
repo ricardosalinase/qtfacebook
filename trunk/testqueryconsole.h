@@ -21,6 +21,7 @@ protected:
 private:
     Ui::TestQueryConsole *ui;
 
+
 private slots:
     void addPostArgs();
     void sendQuery();
