@@ -1,4 +1,5 @@
-QT += webkit network
+QT += webkit \
+    network
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
@@ -17,3 +18,4 @@ OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg
 FORMS += testqueryconsole.ui
+RESOURCES += resources.qrc

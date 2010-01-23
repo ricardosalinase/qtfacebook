@@ -13,12 +13,13 @@ FBConnectWizard::FBConnectWizard(QString apiKey, QString appName, bool firstTime
         m_appName(appName),
         m_firstTime(firstTime)
 {
+    setWizardStyle ( QWizard::ModernStyle );
+    setOption ( QWizard::NoBackButtonOnStartPage, true);
     setMinimumSize(600,490);
     setPage(Page_Intro, createIntroPage());
     setPage(Page_Connect, createConnectPage());
     setPage(Page_Error, createErrorPage());
     setPage(Page_Conclusion, createConclusionPage());
-
 }
 
 
@@ -47,8 +48,7 @@ QWizardPage* FBConnectWizard::createIntroPage() {
     layout->addWidget(l);
     qwp->setLayout(layout);
     QPixmap pm;
-    pm.load("./uiImages/signGuy.jpg");
-
+    pm.load(":/uiImages/signGuy.jpg");
 
     qwp->setPixmap(QWizard::WatermarkPixmap, pm);
     return qwp;
@@ -181,7 +181,7 @@ ErrorPage::ErrorPage(QWidget *parent) :
         QWizardPage(parent)
 {
     QPixmap pm;
-    pm.load("./uiImages/thumbsDown3.jpg");
+    pm.load(":/uiImages/thumbsDown3.jpg");
     setPixmap(QWizard::WatermarkPixmap, pm);
     setTitle("Ruh Roh!");
 
@@ -203,7 +203,7 @@ ConclusionPage::ConclusionPage(QWidget *parent) :
         QWizardPage(parent)
 {
     QPixmap pm;
-    pm.load("./uiImages/thumbsUp3.jpg");
+    pm.load(":/uiImages/thumbsUp3.jpg");
     setPixmap(QWizard::WatermarkPixmap, pm);
 
     setTitle("Authorized!");
