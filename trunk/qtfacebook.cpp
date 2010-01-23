@@ -9,6 +9,8 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 
+#define API_KEY "61cecf6f7ee5528d294e1d6bf675f424"
+
 QtFacebook::QtFacebook(QObject *parent) :
     QObject(parent),
     m_userInfo(0),
@@ -21,7 +23,7 @@ QtFacebook::QtFacebook(QObject *parent) :
 
     if (!hasInfo) {
         // If we don't have those, launch the connector
-        m_wizard = new FBConnectWizard("61cecf6f7ee5528d294e1d6bf675f424", "qtFacebook");
+        m_wizard = new FBConnectWizard(API_KEY, "qtFacebook");
 
         connect(m_wizard, SIGNAL(userHasAuthenticated(UserInfo*)),
                 this, SLOT(saveUserInfo(UserInfo*)));
@@ -93,7 +95,7 @@ bool QtFacebook::loadUserInfo() {
 
 void QtFacebook::fbWizardComplete() {
 
-    m_testConsole = new TestQueryConsole();
+    m_testConsole = new TestQueryConsole(API_KEY, m_userInfo);
     m_testConsole->show();
 
 }
