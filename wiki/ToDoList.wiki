@@ -16,6 +16,11 @@ Here we can list things that need to be done and who is working on them
 
   * *Main Application*
   
+    * There's a chance that the "permanent" session_key can be expired by facebook (apparently they don't have a dictionary). There's an API method to verify the session (Users.getLoggedInUser) - it should return the user's UID to crosscheck against the one we have stored in the UserInfo object. 
+      * Add check at application start
+      * Send user to wizard if fails
+        * There is an alternate text for the initial wizard page. If you set the third argument to the FBConnectionWizard constructor (bool firstTime) to 'false' it will display the alternate text explaining that facebook killed the session and they need to log in again
+
     * What to do next?
       * My thoughts on the design are to revolve everything around a notification icon that sits in the system tray (windows) / top-bar on linux/OSX
         * There's a chapter in the Qt programming book on safari. I'm about to read it
