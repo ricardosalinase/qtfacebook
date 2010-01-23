@@ -9,18 +9,15 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 
-QtFacebook::QtFacebook(QWidget *parent) :
-    QWidget(parent),
+QtFacebook::QtFacebook(QObject *parent) :
+    QObject(parent),
     m_userInfo(0),
-    m_layout(0),
-    m_wizard(0)
+    m_wizard(0),
+    m_testConsole(0)
 {
 
     // load session_key, uid, and secret
     bool hasInfo = loadUserInfo();
-
-    m_layout = new QVBoxLayout();
-    setLayout(m_layout);
 
     if (!hasInfo) {
         // If we don't have those, launch the connector
@@ -34,8 +31,7 @@ QtFacebook::QtFacebook(QWidget *parent) :
         connect(m_wizard, SIGNAL(rejected()),
                 this, SLOT(fbWizardCanceled()));
 
-        m_layout->addWidget(m_wizard);
-
+        m_wizard->show();
 
     } else {
         fbWizardComplete();
@@ -56,8 +52,6 @@ void QtFacebook::saveUserInfo(UserInfo *info) {
     settings.setValue("UID", info->getUID());
     settings.setValue("Secret", info->getSecret());
     settings.endGroup();
-
-
 
 }
 
@@ -94,23 +88,16 @@ bool QtFacebook::loadUserInfo() {
 
     return true;
 
-
-
 }
 
 
 void QtFacebook::fbWizardComplete() {
 
-    m_layout->removeWidget(m_wizard);
-
-    // Start main application
-    TestQueryConsole *tqc = new TestQueryConsole();
-    tqc->show();
-    //m_layout->addWidget(tqc);
-    this->hide();
+    m_testConsole = new TestQueryConsole();
+    m_testConsole->show();
 
 }
 
 void QtFacebook::fbWizardCanceled() {
-    close();
+    exit(0);
 }
