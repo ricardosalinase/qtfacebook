@@ -2,6 +2,9 @@
 #define TESTQUERYCONSOLE_H
 
 #include <QWidget>
+#include <QString>
+
+#include "userinfo.h"
 
 namespace Ui {
     class TestQueryConsole;
@@ -10,7 +13,7 @@ namespace Ui {
 class TestQueryConsole : public QWidget {
     Q_OBJECT
 public:
-    TestQueryConsole(QWidget *parent = 0);
+    TestQueryConsole(QString apiKey, UserInfo *userInfo, QWidget *parent = 0);
     ~TestQueryConsole();
 
 
@@ -20,6 +23,8 @@ protected:
 
 private:
     Ui::TestQueryConsole *ui;
+    UserInfo *m_userInfo;
+    QString m_apiKey;
 
 
 private slots:
