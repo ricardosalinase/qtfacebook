@@ -10,4 +10,6 @@ Here we can list things that need to be done and who is working on them
 * Wizard section
 
   * Determine which style to use. (Currently ModernStyle seems to work fine in Win7 and Linux)
+    ** option B here would be to code for specific styles, or fix it so it works in both.
   * Add a loading animation/progress bar when waiting for facebook pages to load 
+    ** This should be easy. There's a couple different signals emitted by QWebkit we can hook into. Basically show our "loading" widget until we get the signal that the inital page load is done, then swap it out for the WebView (m_view) object
