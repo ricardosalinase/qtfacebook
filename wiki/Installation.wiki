@@ -8,4 +8,4 @@
 = Details =
 
 *WindowsXP (SP3)*
-  * Had to install openSSH on WindowsXP for webkit to be able to handle https:://login.facebook.com during wizard
+  * Had to install openSSL on WindowsXP for webkit to be able to handle https:://login.facebook.com during wizard
