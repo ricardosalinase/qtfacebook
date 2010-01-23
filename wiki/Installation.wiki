@@ -1,0 +1,11 @@
+#summary Installation issues for specific platforms
+
+= Introduction =
+
+*Platform Specific notes*
+
+
+= Details =
+
+*WindowsXP (SP3)*
+  * Had to install openSSH on WindowsXP for webkit to be able to handle https:://login.facebook.com during wizard
