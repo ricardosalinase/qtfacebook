@@ -15,7 +15,9 @@ Here we can list things that need to be done and who is working on them
       * This should be easy. There's a couple different signals emitted by QWebkit we can hook into. Basically show our "loading" widget until we get the signal that the inital page load is done, then swap it out for the WebView (m_view) object
 
   * *Main Application*
-  
+
+    * Single threaded? Seems like the obvious choice and rely on the Qt event framework as use [http://qt.nokia.com/doc/4.6/qtimer.html QTimer] for running API calls to check for new comments, etc. It also simplifies things in that we can use a single instance of [http://qt.nokia.com/doc/4.6/qnetworkaccessmanager.html QNetworkAccessManager] (it's not threadsafe)
+
     * There's a chance that the "permanent" session_key can be expired by facebook (apparently they don't have a dictionary). There's an API method to verify the session (Users.getLoggedInUser) - it should return the user's UID to crosscheck against the one we have stored in the UserInfo object. 
       * Add check at application start
       * Send user to wizard if fails
