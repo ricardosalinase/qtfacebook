@@ -59,13 +59,19 @@ void TestQueryConsole::sendQuery() {
 
     // Build the post args from the input box
     QString origArgs = ui->encodedPostArgs->toPlainText();
+    ui->encodedPostArgs->clear();
     if (origArgs.endsWith("&"))
         origArgs.chop(1);
 
     if (origArgs.startsWith("&"))
         origArgs.remove(0,1);
 
-    origArgs.append("&method=" + ui->apiCallInput->text() + "&api_key=" +
+    // Some API commands need no additional options, and adding this & with
+    // nothing in the editor makes split sad.
+    if (origArgs.compare("") != 0)
+        origArgs.append("&");
+
+    origArgs.append("method=" + ui->apiCallInput->text() + "&api_key=" +
                     m_apiKey + "&v=1.0&session_key=" + m_userInfo->getSessionKey() +
                     "&call_id=");
 
@@ -109,17 +115,13 @@ void TestQueryConsole::sendQuery() {
     qDebug() << sigByteArray;
 
     QByteArray args;
-
-    QByteArray exclude("&=");
-    QByteArray include;
-
     QByteArray sig = QCryptographicHash::hash(sigByteArray,QCryptographicHash::Md5 );
 
     args.append(origArgs.toAscii());
-
-
-
+    QByteArray exclude("&=");
+    QByteArray include;
     QByteArray encodedArgs = args.toPercentEncoding(exclude,include,'%');
+
     encodedArgs.append("&sig=");
     encodedArgs.append(sig.toHex());
 
@@ -135,12 +137,24 @@ void TestQueryConsole::sendQuery() {
     nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QNetworkReply *reply = 0;
 
+    connect(manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(gotReply(QNetworkReply *)));
+
+    reply = manager->post(nr,encodedArgs);
 
 
 
+}
 
+void TestQueryConsole::gotReply(QNetworkReply *reply) {
 
-
+    if (reply->error() > 0) {
+            qDebug() << "Error number = " << reply->errorString();
+        }
+        else {
+            QByteArray data = reply->readAll();
+            ui->outputFrame->setText(QString(data));
+        }
 }
 
 

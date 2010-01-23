@@ -30,6 +30,7 @@ private:
     bool m_readPermission;
     bool m_publishPermission;
     bool m_offlineAccessPermission;
+    bool m_readMailbox;
 };
 
 #endif // WEBVIEW_H

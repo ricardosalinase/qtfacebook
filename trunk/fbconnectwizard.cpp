@@ -91,7 +91,7 @@ ConnectPage::ConnectPage(QString apiKey, QWidget *parent) :
              "next=http://www.facebook.com/connect/login_success.html"
              "&cancel_url=http://www.facebook.com/connect/login_failure.html"
              "&fbconnect=true&return_session=true&session_key_only=true"
-             "&req_perms=read_stream,publish_stream,offline_access";
+             "&req_perms=read_stream,publish_stream,offline_access,read_mailbox";
 
     connect(m_view, SIGNAL(authReceived()),
             this, SLOT(gotAuth()));
@@ -187,7 +187,7 @@ ErrorPage::ErrorPage(QWidget *parent) :
 
     QLabel *l = new QLabel("Unfortunately your Facebook Connect session didn't go as planned.<br><br>"
                 "Please go back and try again. Please note that this application requires read,"
-                " publish, and offline access to function.");
+                " publish, read_mailbox, and offline access to function.");
 
     l->setWordWrap(true);
     QVBoxLayout *layout = new QVBoxLayout;

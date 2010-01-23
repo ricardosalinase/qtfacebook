@@ -6,7 +6,8 @@ WebView::WebView(QWidget *parent) :
     QWebView(parent),
     m_readPermission(false),
     m_publishPermission(false),
-    m_offlineAccessPermission(false)
+    m_offlineAccessPermission(false),
+    m_readMailbox(false)
 {
     connect(this, SIGNAL(loadFinished(bool)),
             this, SLOT(loadFinished()));
@@ -44,7 +45,7 @@ void WebView::loadFinished() {
             }
         }
 
-        //rx.setPattern("\\[\"read_stream\",\"offline_access\",\"publish_stream\"\\]");
+        //rx.setPattern("\\[\"read_stream\",\"offline_access\",\"publish_stream\",\"read_mailbox\"\\]");
         rx.setPattern("permissions=\\[([^\\]]+)\\]");
         if (rx.indexIn(str) != -1) {
 
@@ -61,6 +62,10 @@ void WebView::loadFinished() {
             rx.setPattern("publish_stream");
             if (rx.indexIn(perms) != -1)
                 m_publishPermission = true;
+
+            rx.setPattern("read_mailbox");
+            if (rx.indexIn(perms) != -1)
+                m_readMailbox = true;
        }
 
         emit authReceived();
@@ -104,5 +109,6 @@ bool WebView::hasOfflineAccessPermission()
 bool WebView::permissionsGranted() {
     return(m_readPermission &&
            m_offlineAccessPermission &&
-           m_publishPermission);
+           m_publishPermission &&
+           m_readMailbox);
 }
