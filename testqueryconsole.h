@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QNetworkReply>
 
 #include "userinfo.h"
 
@@ -30,7 +31,7 @@ private:
 private slots:
     void addPostArgs();
     void sendQuery();
-
+    void gotReply(QNetworkReply *reply);
 
 };
 
