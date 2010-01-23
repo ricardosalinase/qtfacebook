@@ -26,6 +26,7 @@ private:
     Ui::TestQueryConsole *ui;
     UserInfo *m_userInfo;
     QString m_apiKey;
+    QNetworkAccessManager *m_manager;
 
 
 private slots:

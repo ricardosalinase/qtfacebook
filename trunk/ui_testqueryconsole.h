@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'testqueryconsole.ui'
 **
-** Created: Fri Jan 22 14:14:06 2010
-**      by: Qt User Interface Compiler version 4.6.1
+** Created: Sat Jan 23 09:13:39 2010
+**      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -84,16 +84,21 @@ public:
 
         encodedPostArgs = new QPlainTextEdit(TestQueryConsole);
         encodedPostArgs->setObjectName(QString::fromUtf8("encodedPostArgs"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(encodedPostArgs->sizePolicy().hasHeightForWidth());
+        encodedPostArgs->setSizePolicy(sizePolicy);
 
         gridLayout->addWidget(encodedPostArgs, 3, 0, 1, 5);
 
         scrollArea = new QScrollArea(TestQueryConsole);
         scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(scrollArea->sizePolicy().hasHeightForWidth());
-        scrollArea->setSizePolicy(sizePolicy);
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Minimum);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(scrollArea->sizePolicy().hasHeightForWidth());
+        scrollArea->setSizePolicy(sizePolicy1);
         scrollArea->setMinimumSize(QSize(0, 400));
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();

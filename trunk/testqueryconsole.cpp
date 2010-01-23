@@ -27,6 +27,9 @@ TestQueryConsole::TestQueryConsole(QString apiKey, UserInfo *userInfo, QWidget *
     connect(ui->sendButton, SIGNAL(clicked()),
             this, SLOT(sendQuery()));
 
+    m_manager = new QNetworkAccessManager(this);
+    connect(m_manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(gotReply(QNetworkReply *)));
 
 }
 
@@ -131,16 +134,14 @@ void TestQueryConsole::sendQuery() {
 
     QUrl url("http://api.facebook.com/restserver.php");
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+
     QNetworkRequest nr;
     nr.setUrl(url);
     nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QNetworkReply *reply = 0;
 
-    connect(manager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(gotReply(QNetworkReply *)));
 
-    reply = manager->post(nr,encodedArgs);
+    reply = m_manager->post(nr,encodedArgs);
 
 
 
@@ -149,12 +150,15 @@ void TestQueryConsole::sendQuery() {
 void TestQueryConsole::gotReply(QNetworkReply *reply) {
 
     if (reply->error() > 0) {
-            qDebug() << "Error number = " << reply->errorString();
-        }
-        else {
-            QByteArray data = reply->readAll();
-            ui->outputFrame->setText(QString(data));
-        }
+        qDebug() << "Error number = " << reply->errorString();
+    }
+    else {
+        QByteArray data = reply->readAll();
+        ui->outputFrame->setText(QString(data));
+    }
+
+    reply->deleteLater();
+
 }
 
 
