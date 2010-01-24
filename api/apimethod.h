@@ -2,8 +2,8 @@
 #define APIMETHOD_H
 
 /*******************************************************************
-* This is the base class for all API Methods. All actual methods
-* subclass it.
+* This is the base class for all API Methods. All actual methods   *
+* subclass it.                                                     *
 *******************************************************************/
 
 #include <QString>
@@ -34,6 +34,8 @@ namespace API
         QString m_methodName;
         virtual bool validateArgs();
         virtual QString getMethodName() = 0;
+
+
 
 
 

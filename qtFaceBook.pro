@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     qtfacebook.cpp \
     userinfo.cpp \
     testqueryconsole.cpp \
-    api/apimethod.cpp
+    api/apimethod.cpp \
+    api/factory.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     cookiejar.h \
@@ -16,7 +17,8 @@ HEADERS += fbconnectwizard.h \
     testqueryconsole.h \
     ui_testqueryconsole.h \
     api/apimethod.h \
-    api/observer.h
+    api/observer.h \
+    api/factory.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg
