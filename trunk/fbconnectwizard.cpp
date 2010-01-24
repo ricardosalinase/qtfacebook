@@ -137,7 +137,8 @@ void ConnectPage::gotAuth() {
     {
         initializePage();
 
-        UserInfo *i = new UserInfo(m_view->getSessionKey(),m_view->getSecret(),m_view->getUID());
+        UserInfo *i = new UserInfo(m_view->getSessionKey(),m_view->getSecret(),
+                                   m_view->getUID(), m_apiKey);
         emit userAuthenticated(i);
 
         m_gotAuth = true;

@@ -13,13 +13,13 @@
 
 #include <sys/time.h>
 
-TestQueryConsole::TestQueryConsole(QString apiKey, UserInfo *userInfo, QWidget *parent) :
+TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TestQueryConsole)
 {
     ui->setupUi(this);
     m_userInfo = userInfo;
-    m_apiKey = apiKey;
+    m_apiKey = m_userInfo->getApiKey();
 
     connect(ui->addButton, SIGNAL(clicked()),
             this, SLOT(addPostArgs()));
