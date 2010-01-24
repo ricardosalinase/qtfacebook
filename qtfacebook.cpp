@@ -55,6 +55,7 @@ void QtFacebook::saveUserInfo(UserInfo *info) {
     settings.setValue("Secret", info->getSecret());
     settings.endGroup();
 
+
 }
 
 /*************************************************************
@@ -81,7 +82,7 @@ bool QtFacebook::loadUserInfo() {
     if (m_userInfo != 0)
         delete m_userInfo;
 
-    m_userInfo = new UserInfo(sKey, secret, uid);
+    m_userInfo = new UserInfo(sKey, secret, uid, API_KEY);
 
     qDebug() << "Session Key: " << m_userInfo->getSessionKey() <<
             "Secret: " << m_userInfo->getSecret() <<
@@ -95,7 +96,7 @@ bool QtFacebook::loadUserInfo() {
 
 void QtFacebook::fbWizardComplete() {
 
-    m_testConsole = new TestQueryConsole(API_KEY, m_userInfo);
+    m_testConsole = new TestQueryConsole(m_userInfo);
     m_testConsole->show();
 
 }

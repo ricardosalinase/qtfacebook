@@ -14,7 +14,7 @@ namespace Ui {
 class TestQueryConsole : public QWidget {
     Q_OBJECT
 public:
-    TestQueryConsole(QString apiKey, UserInfo *userInfo, QWidget *parent = 0);
+    TestQueryConsole(UserInfo *userInfo, QWidget *parent = 0);
     ~TestQueryConsole();
 
 

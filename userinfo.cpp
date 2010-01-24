@@ -1,9 +1,10 @@
 #include "userinfo.h"
 
-UserInfo::UserInfo(QString sessionKey, QString secret, QString uid) :
+UserInfo::UserInfo(QString sessionKey, QString secret, QString uid, QString apiKey) :
         m_sessionKey(sessionKey),
         m_secret(secret),
-        m_uid(uid)
+        m_uid(uid),
+        m_apiKey(apiKey)
 {
 }
 
@@ -17,4 +18,8 @@ QString UserInfo::getSessionKey() {
 
 QString UserInfo::getUID() {
     return m_uid;
+}
+
+QString UserInfo::getApiKey() {
+    return m_apiKey;
 }
