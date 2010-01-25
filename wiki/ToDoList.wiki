@@ -30,3 +30,5 @@ Here we can list things that need to be done and who is working on them
         * *`[`DONE`]`* My thought there was a factory that returned various API call objects. Each would encapsulate the required arguments for each API method, provide setters for them, sanity checking, and then an execute() method. There would also be single QNEtworkAccessManager object (Factory would be singleton?) Thoughts?
         * Do XML parsing inside the {{{API::Method}}} derived classes. See [TheApiNamespace] for my thoughts on this.
       * Start building widgets for displaying various components and allowing for input
+        * The app will revolve around the system tray icon. We need to decide on the UI. What happens when you click on it? What's the context menu going to look like?
+        * One thing for certain we'll need is a preferences widget for various options
