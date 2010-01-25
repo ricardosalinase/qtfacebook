@@ -2,6 +2,8 @@
 
 #include "friends_get.h"
 #include "comments_get.h"
+#include "notifications_get.h"
+#include "notifications_getlist.h"
 
 namespace API {
 
@@ -41,6 +43,12 @@ Method * Factory::createMethod(apiMethod m) {
         break;
     case API_FRIENDS_GET:
         return prepareMethod(new Friends::Get());
+        break;
+    case API_NOTIFICATIONS_GET:
+        return prepareMethod(new Notifications::Get());
+        break;
+    case API_NOTIFICATIONS_GETLIST:
+        return prepareMethod(new Notifications::GetList());
         break;
     default:
         return 0;

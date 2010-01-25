@@ -5,6 +5,8 @@
 
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QUrl>
+#include <QNetworkRequest>
 
 namespace API {
 

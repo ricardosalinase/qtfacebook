@@ -6,7 +6,6 @@
 #include <QNetworkReply>
 
 #include "userinfo.h"
-#include "api/observer.h"
 
 namespace Ui {
     class TestQueryConsole;

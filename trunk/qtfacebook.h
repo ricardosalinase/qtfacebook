@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVBoxLayout>
+#include <QSystemTrayIcon>
 
 #include "userinfo.h"
 #include "fbconnectwizard.h"
@@ -20,12 +21,14 @@ public slots:
     void fbWizardComplete();
     void saveUserInfo(UserInfo *info);
     void fbWizardCanceled();
+    void updateIcon();
 
 private:
     UserInfo *m_userInfo;
     bool loadUserInfo();
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
+    QSystemTrayIcon *m_trayIcon;
 };
 
 #endif // QTFACEBOOK_H
