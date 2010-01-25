@@ -1,5 +1,6 @@
 #include "testqueryconsole.h"
 #include "ui_testqueryconsole.h"
+#include "api/factory.h"
 
 
 #include <QNetworkAccessManager>
@@ -14,9 +15,10 @@
 #include <sys/time.h>
 
 TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
-    QWidget(parent),
+    ObserverWidget(parent),
     ui(new Ui::TestQueryConsole)
 {
+
     ui->setupUi(this);
     m_userInfo = userInfo;
     m_apiKey = m_userInfo->getApiKey();
@@ -31,12 +33,32 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
     connect(m_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotReply(QNetworkReply *)));
 
+    API::Factory *factory = API::Factory::getInstance(m_userInfo);
+    API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
+    method->setReplyTo(this);
+    method->execute();
+
 }
 
 TestQueryConsole::~TestQueryConsole()
 {
     delete ui;
 }
+
+
+void TestQueryConsole::processMethodResults(QNetworkReply *reply) {
+    if (reply->error() > 0) {
+        qDebug() << "Error number = " << reply->errorString();
+    }
+    else {
+        QByteArray data = reply->readAll();
+        ui->outputFrame->setText(QString(data));
+    }
+
+    reply->deleteLater();
+}
+
+
 
 void TestQueryConsole::addPostArgs() {
 

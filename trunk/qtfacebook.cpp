@@ -8,6 +8,7 @@
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
+#include "api/factory.h"
 
 #define API_KEY "61cecf6f7ee5528d294e1d6bf675f424"
 
@@ -98,6 +99,12 @@ void QtFacebook::fbWizardComplete() {
 
     m_testConsole = new TestQueryConsole(m_userInfo);
     m_testConsole->show();
+
+
+
+
+
+
 
 }
 

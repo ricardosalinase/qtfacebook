@@ -8,16 +8,46 @@
 
 namespace API {
 
-Method::Method(UserInfo *info, QNetworkAccessManager *manager, QObject *parent) :
-    QObject(parent),
-    m_userInfo(info),
-    m_manager(manager)
+Method::Method(QObject *parent) :
+    QObject(parent)
 {
 
 }
 
 Method::~Method() {
 
+}
+
+void Method::setAccessManager(QNetworkAccessManager *manager) {
+    m_manager = manager;
+}
+
+void Method::setUserInfo(UserInfo *userInfo) {
+    m_userInfo = userInfo;
+}
+
+void Method::setReplyTo(ObserverWidget *observer)
+{
+    m_observerWidget = observer;
+    m_observerObject = 0;
+}
+
+void Method::setReplyTo(ObserverObject *observer)
+{
+    m_observerObject = observer;
+    m_observerWidget = 0;
+}
+
+QString Method::getErrorStr() {
+    return m_errStr;
+}
+
+void Method::setArgument(QString arg, int value) {
+    m_argMap.insert(arg, value);
+}
+
+void Method::setArgument(QString arg, QString value) {
+    m_argMap.insert(arg, value);
 }
 
 /*************************************************************************************/
@@ -27,13 +57,13 @@ Method::~Method() {
 /* inherit from Oberver we have a nice interface connecting them together and this   */
 /* object can be safely disposed.                                                    */
 /*************************************************************************************/
-bool Method::execute(Observer *observer) {
+bool Method::execute() {
 
-    if (!validateArgs())
+    if (!validate())
         return false;
 
     // THese are always constant with API requests
-    m_argMap.insert("method", getMethodName());
+    m_argMap.insert("method", m_methodName);
     m_argMap.insert("api_key", m_userInfo->getApiKey());
     m_argMap.insert("v","1.0");
     m_argMap.insert("session_key",m_userInfo->getSessionKey());
@@ -100,17 +130,92 @@ bool Method::execute(Observer *observer) {
 
     reply = m_manager->post(nr,postArgs);
 
-    connect(reply, SIGNAL(finished()),
-            observer, SLOT(processMethodResults(QNetworkReply*)));
+    connect();
 
     return true;
 
 }
 
-// virtual
-bool Method::validateArgs() {
+void Method::connect() {
+
+    if (m_observerWidget != 0)
+        QObject::connect(m_manager, SIGNAL(finished(QNetworkReply*)),
+            m_observerWidget, SLOT(processMethodResults(QNetworkReply*)));
+    else
+        QObject::connect(m_manager, SIGNAL(finished(QNetworkReply*)),
+            m_observerObject, SLOT(processMethodResults(QNetworkReply*)));
+
+}
+
+// Go through the requiredArgs list and make user they all exist in the args map
+
+bool Method::validate() {
+
+    bool allGood = true;
+
+    for (int i = 0; i < m_requiredArgs.size() ; i++) {
+        if (m_requiredArgs.at(i).type() == QVariant::String)
+            allGood &= m_argMap.contains(m_requiredArgs.at(i).toString());
+        else if (m_requiredArgs.at(i).type() == QVariant::List) {
+            bool hasAtLeastOne = false;
+            for (int j = 0; j < m_requiredArgs.at(i).toList().size(); j++) {
+                hasAtLeastOne |= m_argMap.contains(m_requiredArgs.at(i).toList().at(j).toString());
+            }
+            allGood &= hasAtLeastOne;
+        }
+    }
+
+    if (!allGood) {
+        m_errStr = "Missing Arguments; required:" + getRequiredArgsString();
+        return false;
+    }
+
+    if (m_methodName.compare("") == 0) {
+        m_errStr = "Missing method name!";
+        return false;
+    }
+
+    if (m_observerWidget == 0 && m_observerObject == 0) {
+        m_errStr = "No Observer!";
+        return false;
+    }
+
+
     return true;
 }
+
+QString Method::getRequiredArgsString() {
+
+    QString required;
+    for (int i = 0; i < m_requiredArgs.size() ; i++) {
+        if (m_requiredArgs.at(i).type() == QVariant::String )
+            required.append(m_requiredArgs.at(i).toString() + " ");
+        else if (m_requiredArgs.at(i).type() == QVariant::List) {
+            required.append("{ ");
+            for (int j = 0; j < m_requiredArgs.at(i).toList().size(); j++)
+                required.append(m_requiredArgs.at(i).toList().at(j).toString() + " | ");
+            required.append("} ");
+        }
+    }
+    required.chop(1);
+    return required;
+
+}
+
+QList<QVariant> Method::getRequiredArgsList() {
+    return m_requiredArgs;
+}
+
+void Method::requires(QString arg) {
+    m_requiredArgs.append(arg);
+}
+
+void Method::requiresOneOf(QStringList args) {
+    QList<QVariant> list;
+    list.append(args);
+    m_requiredArgs.append(list);
+}
+
 
 
 } // namespace API
