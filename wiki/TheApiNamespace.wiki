@@ -20,6 +20,8 @@ All the actual facebook API calls are objects derived from API::Method. When cre
 
 I don't know that the API::Factory class needs to be a singleton. It seemed like a good idea in terms of resource allocation, but I don't know that it actually matters.
 
+I'm thinking that the XML parsing should happen inside the derived {{{API::Method}}} objects. If we deliver the signal to the derived {{{API::Method}}} class and parse it there, we make the whole thing nice and tidy. The derived class would then send it's own signal to the caller with a pointer to itself. The derived class would then return Objects representing the data returned by the API call. The trick there is coming up with an interface for getting at the various types of data.
+
 = Details =
 
 *Example API::Factory usage:*
