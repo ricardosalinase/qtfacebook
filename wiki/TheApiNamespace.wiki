@@ -1,0 +1,87 @@
+#summary Details of the API:: namespace which encapsulates the calls to the Facebook API
+
+= Introduction =
+
+Located in the /api directory you'll now find a set of classes that talk to the facebook REST server. It is all contained within the API namespace.
+
+It's designed around a simple factory (API::Factory) that is also a singleton so that there is only a single <a href=http://qt.nokia.com/doc/4.6/qnetworkaccessmanager.html> QNetworkAccessManager</a>. I keep going back and forth to whether that's really necessary or not, but that's how I've implemented it at the moment.
+
+{{{API::Factory::createMethod(enum apiMethod)}}} returns a pointer to the appropriate {{{API::Method}}} object. You then set any arguments the call needs via {{{API::Method::setArgument(key, value)}}}. 
+
+After working on this today, and doing a lot of googling I've found that ... Qt is really not happy with multiple inheritance. That becomes a problem is you want to design a pure virtual class as an interface, defining slots and/or signals. You can't inherit from two classes that also inherit from QObject or QWidget. 
+
+SO ... I just scrapped that whole design and {{{API::Method:execute()}}} returns a pointer to the <a href=http://qt.nokia.com/doc/4.6/qnetworkreply.html >QNetworkReply</a> and you set up the signal/slot handling yourself.
+
+You need to check to see if the QNetworkReply pointer is NULL (0). If it is, the call couldn't be done. The reason can be retrieved as a QString via {{{API::Method::errStr()}}}. Remember to delete the {{{API::Method}}} object; it's safe to do so once you have a non-null QNetworkReply pointer.
+
+All the actual facebook API calls are objects derived from API::Method. When creating one, you simply inherit from API::Method and then set the name and required parameters in the constructor via the {{{requires(QString arg)}}} and {{{requiresOneOf(QStringList args)}}} calls (see example below). The API::Factory has an enum (apiMethod) containing each call and a switch statement for instantiating the correct Method derived class.
+
+= Current Thoughts on this Design =
+
+I don't know that the API::Factory class needs to be a singleton. It seemed like a good idea in terms of resource allocation, but I don't know that it actually matters.
+
+= Details =
+
+*Example API::Factory usage:*
+{{{
+API::Factory *factory = API::Factory::getInstance(m_userInfo);
+API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
+QNetworkReply *reply = method->execute();
+if (reply == 0)
+    qDebug() << method->errStr();
+else
+    connect(reply->manager() , SIGNAL(finished(QNetworkReply*)),
+                this, SLOT(gotReply(QNetworkReply*)));
+delete method;
+}}}
+
+*Example slot implementation*
+{{{
+void TestQueryConsole::gotReady(QNetworkReply *reply) {
+    if (reply->error() > 0) {
+        qDebug() << "Error number = " << reply->errorString();
+    }
+    else {
+        QByteArray data = reply->readAll();
+        ui->outputFrame->setText(QString(data));
+    }
+
+    reply->deleteLater();
+}
+}}}
+
+*Example API::Method derived class*
+{{{
+#include "apimethod.h"
+
+namespace API {
+namespace Comments {
+
+class Get : public API::Method
+{
+public:
+    Get();
+};
+
+} // namespace Comments
+} // namespace API
+
+#include "comments_get.h"
+
+namespace API {
+namespace Comments {
+
+Get::Get()
+{
+    m_methodName = "comments.get";
+
+    QStringList oneOf;
+    oneOf.append("xid");
+    oneOf.append("object_id");
+
+    requiresOneOf(oneOf);
+}
+
+} // namespace Comments
+} // namespace API
+}}}
