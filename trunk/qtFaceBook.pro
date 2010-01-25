@@ -18,11 +18,10 @@ HEADERS += fbconnectwizard.h \
     userinfo.h \
     testqueryconsole.h \
     ui_testqueryconsole.h \
-    api/apimethod.h \
-    api/observer.h \
     api/factory.h \
     api/comments_get.h \
-    api/friends_get.h
+    api/friends_get.h \
+    api/apimethod.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg

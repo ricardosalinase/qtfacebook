@@ -12,7 +12,7 @@ namespace Ui {
     class TestQueryConsole;
 }
 
-class TestQueryConsole : public API::ObserverWidget {
+class TestQueryConsole : public QWidget {
     Q_OBJECT
 public:
     TestQueryConsole(UserInfo *userInfo, QWidget *parent = 0);
@@ -30,7 +30,7 @@ private:
     QNetworkAccessManager *m_manager;
 
 public slots:
-    void processMethodResults(QNetworkReply *reply);
+
 
 private slots:
     void addPostArgs();

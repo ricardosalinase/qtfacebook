@@ -15,7 +15,7 @@
 #include <sys/time.h>
 
 TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
-    ObserverWidget(parent),
+    QWidget(parent),
     ui(new Ui::TestQueryConsole)
 {
 
@@ -35,29 +35,19 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
 
     API::Factory *factory = API::Factory::getInstance(m_userInfo);
     API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
-    method->setReplyTo(this);
-    method->execute();
-
+    QNetworkReply *reply;
+    reply = method->execute();
+    if (reply != 0)
+        connect(reply->manager() , SIGNAL(finished(QNetworkReply*)),
+                this, SLOT(gotReply(QNetworkReply*)));
+    else
+        qDebug() << method->getErrorStr();
 }
 
 TestQueryConsole::~TestQueryConsole()
 {
     delete ui;
 }
-
-
-void TestQueryConsole::processMethodResults(QNetworkReply *reply) {
-    if (reply->error() > 0) {
-        qDebug() << "Error number = " << reply->errorString();
-    }
-    else {
-        QByteArray data = reply->readAll();
-        ui->outputFrame->setText(QString(data));
-    }
-
-    reply->deleteLater();
-}
-
 
 
 void TestQueryConsole::addPostArgs() {

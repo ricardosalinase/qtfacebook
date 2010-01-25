@@ -29,11 +29,9 @@ namespace API
 
         void setAccessManager(QNetworkAccessManager *manager);
         void setUserInfo(UserInfo *userInfo);
-        void setReplyTo(ObserverWidget *observer);
-        void setReplyTo(ObserverObject *observer);
         QString getRequiredArgsString();
         QList<QVariant> getRequiredArgsList();
-        bool execute();
+        QNetworkReply * execute();
         QString getErrorStr();
 
         void setArgument(QString arg, QString value);
@@ -43,9 +41,7 @@ namespace API
     private:
         QString m_errStr;
         bool validate();
-        ObserverWidget *m_observerWidget;
-        ObserverObject *m_observerObject;
-        void connect();
+
 
     protected:
         UserInfo *m_userInfo;

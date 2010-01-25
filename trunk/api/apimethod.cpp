@@ -26,17 +26,7 @@ void Method::setUserInfo(UserInfo *userInfo) {
     m_userInfo = userInfo;
 }
 
-void Method::setReplyTo(ObserverWidget *observer)
-{
-    m_observerWidget = observer;
-    m_observerObject = 0;
-}
 
-void Method::setReplyTo(ObserverObject *observer)
-{
-    m_observerObject = observer;
-    m_observerWidget = 0;
-}
 
 QString Method::getErrorStr() {
     return m_errStr;
@@ -57,10 +47,10 @@ void Method::setArgument(QString arg, QString value) {
 /* inherit from Oberver we have a nice interface connecting them together and this   */
 /* object can be safely disposed.                                                    */
 /*************************************************************************************/
-bool Method::execute() {
+QNetworkReply * Method::execute() {
 
     if (!validate())
-        return false;
+        return 0;
 
     // THese are always constant with API requests
     m_argMap.insert("method", m_methodName);
@@ -130,22 +120,11 @@ bool Method::execute() {
 
     reply = m_manager->post(nr,postArgs);
 
-    connect();
-
-    return true;
+    return reply;
 
 }
 
-void Method::connect() {
 
-    if (m_observerWidget != 0)
-        QObject::connect(m_manager, SIGNAL(finished(QNetworkReply*)),
-            m_observerWidget, SLOT(processMethodResults(QNetworkReply*)));
-    else
-        QObject::connect(m_manager, SIGNAL(finished(QNetworkReply*)),
-            m_observerObject, SLOT(processMethodResults(QNetworkReply*)));
-
-}
 
 // Go through the requiredArgs list and make user they all exist in the args map
 
@@ -175,10 +154,7 @@ bool Method::validate() {
         return false;
     }
 
-    if (m_observerWidget == 0 && m_observerObject == 0) {
-        m_errStr = "No Observer!";
-        return false;
-    }
+
 
 
     return true;
