@@ -21,7 +21,7 @@ public:
     static Factory* getInstance();
     static Factory* getInstance(UserInfo *userInfo);
 
-    enum apiMethod { API_FRIENDS_GET, API_COMMENTS_GET };
+    enum apiMethod { API_FRIENDS_GET, API_COMMENTS_GET, API_NOTIFICATIONS_GET, API_NOTIFICATIONS_GETLIST };
 
     void setUserInfo(UserInfo *userInfo);
     API::Method* createMethod(apiMethod m);

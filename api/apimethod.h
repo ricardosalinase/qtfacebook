@@ -14,7 +14,6 @@
 #include <QStringList>
 
 #include <userinfo.h>
-#include "observer.h"
 
 namespace API
 {

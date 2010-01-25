@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QSettings>
+#include <QTimer>
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
@@ -100,12 +101,20 @@ void QtFacebook::fbWizardComplete() {
     m_testConsole = new TestQueryConsole(m_userInfo);
     m_testConsole->show();
 
+    QIcon qi(":facebookIcon");
+    m_trayIcon = new QSystemTrayIcon(qi);
+    m_trayIcon->show();
+    if (!QSystemTrayIcon::supportsMessages())
+        qDebug() << "Awwww ... bummer. It doesn't support messages";
 
 
+    QTimer::singleShot(2000, this, SLOT(updateIcon()));
 
 
+}
 
-
+void QtFacebook::updateIcon() {
+    m_trayIcon->showMessage("Startup","You've started qtFacebook!",QSystemTrayIcon::Information);
 }
 
 void QtFacebook::fbWizardCanceled() {
