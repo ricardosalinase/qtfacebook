@@ -10,7 +10,7 @@ It's designed around a simple factory (API::Factory) that is also a singleton so
 
 After working on this today, and doing a lot of googling I've found that ... Qt is really not happy with multiple inheritance. That becomes a problem is you want to design a pure virtual class as an interface, defining slots and/or signals. You can't inherit from two classes that also inherit from QObject or QWidget. 
 
-SO ... I just scrapped that whole design and {{{API::Method:execute()}}} returns a pointer to the <a href=http://qt.nokia.com/doc/4.6/qnetworkreply.html >QNetworkReply</a> and you set up the signal/slot handling yourself.
+SO ... I just scrapped that whole design and {{{API::Method::execute()}}} returns a pointer to the <a href=http://qt.nokia.com/doc/4.6/qnetworkreply.html >QNetworkReply</a> and you set up the signal/slot handling yourself.
 
 You need to check to see if the QNetworkReply pointer is NULL (0). If it is, the call couldn't be done. The reason can be retrieved as a QString via {{{API::Method::errStr()}}}. Remember to delete the {{{API::Method}}} object; it's safe to do so once you have a non-null QNetworkReply pointer.
 
