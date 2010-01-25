@@ -6,12 +6,13 @@
 #include <QNetworkReply>
 
 #include "userinfo.h"
+#include "api/observer.h"
 
 namespace Ui {
     class TestQueryConsole;
 }
 
-class TestQueryConsole : public QWidget {
+class TestQueryConsole : public API::ObserverWidget {
     Q_OBJECT
 public:
     TestQueryConsole(UserInfo *userInfo, QWidget *parent = 0);
@@ -28,11 +29,14 @@ private:
     QString m_apiKey;
     QNetworkAccessManager *m_manager;
 
+public slots:
+    void processMethodResults(QNetworkReply *reply);
 
 private slots:
     void addPostArgs();
     void sendQuery();
     void gotReply(QNetworkReply *reply);
+
 
 };
 
