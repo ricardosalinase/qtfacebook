@@ -9,7 +9,14 @@ namespace Notifications {
 class GetList : public API::Method
 {
 public:
-    GetList();
+    GetList(QObject *parent = 0);
+    bool startElement(const QString &namespaceURI, const QString &localName,
+                      const QString &qName, const QXmlAttributes &attributes);
+    bool endElement(const QString &namespaceURI, const QString &localName,
+                    const QString &qName);
+    QString getMethodName();
+
+
 };
 
 } // namespace Notifications

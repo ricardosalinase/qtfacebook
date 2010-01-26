@@ -3,12 +3,27 @@
 namespace API {
 namespace Users {
 
-GetLoggedInUser::GetLoggedInUser()
+    GetLoggedInUser::GetLoggedInUser(QObject *parent) : Method(parent)
 {
-    m_methodName = "users.getLoggedInUser";
+
 
 
 }
+bool GetLoggedInUser::startElement(const QString &, const QString &,
+                                  const QString &, const QXmlAttributes &) {
+    return true;
+}
+
+bool GetLoggedInUser::endElement(const QString &, const QString &,
+                                const QString &) {
+    return true;
+}
+
+QString GetLoggedInUser::getMethodName() {
+    return "users.getLoggedInUser";
+}
+
+
 
 } // namespace Users
 } // namespace API

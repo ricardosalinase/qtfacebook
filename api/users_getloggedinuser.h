@@ -9,7 +9,14 @@ namespace Users {
 class GetLoggedInUser : public API::Method
 {
 public:
-    GetLoggedInUser();
+    GetLoggedInUser(QObject *parent = 0);
+    bool startElement(const QString &namespaceURI, const QString &localName,
+                      const QString &qName, const QXmlAttributes &attributes);
+    bool endElement(const QString &namespaceURI, const QString &localName,
+                    const QString &qName);
+    QString getMethodName();
+
+
 };
 
 } // namespace Users

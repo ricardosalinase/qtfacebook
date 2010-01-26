@@ -3,9 +3,9 @@
 namespace API {
 namespace Friends {
 
-Get::Get()
+Get::Get(QObject *parent) : Method(parent)
 {
-   m_methodName = "friends.get";
+
 
 }
 
@@ -19,6 +19,10 @@ bool Get::startElement(const QString &namespaceURI, const QString &localName,
     m_currentText.clear();
     return true;
 
+}
+
+QString Get::getMethodName() {
+    return "friends.get";
 }
 
 // m_currentText is defined in the base API::Method class, as is the method that
@@ -37,6 +41,7 @@ bool Get::endElement(const QString &namespaceURI, const QString &localName,
 QStringList Get::getFriendIdList() {
     return m_uids;
 }
+
 
 } // namespace Freinds
 } // namespace API

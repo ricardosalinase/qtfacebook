@@ -6,11 +6,15 @@
 
 #include "userinfo.h"
 #include "apimethod.h"
+#include "friends_get.h"
+#include "comments_get.h"
+#include "notifications_get.h"
+#include "notifications_getlist.h"
+#include "users_getloggedinuser.h"
+
 
 // Simple factory created as a singleton so that there is a single
 // instance of QNetworkAcceessManager
-
-
 
 namespace API {
 
@@ -21,17 +25,16 @@ public:
     static Factory* getInstance();
     static Factory* getInstance(UserInfo *userInfo);
 
-    enum apiMethod { API_FRIENDS_GET, API_COMMENTS_GET, API_NOTIFICATIONS_GET, API_NOTIFICATIONS_GETLIST,
-                    API_USERS_GETLOGGEDINUSER};
-
     void setUserInfo(UserInfo *userInfo);
-    API::Method* createMethod(apiMethod m);
+    API::Method* createMethod(MethodType::type m);
 
 
 
 signals:
+    void apiFriendsGet(API::Friends::Get*);
 
 public slots:
+    void dispatch(API::Method *);
 
 protected:
     Factory(QObject *parent = 0);
@@ -40,7 +43,7 @@ private:
     QNetworkAccessManager *m_manager;
     UserInfo *m_userInfo;
     static Factory *m_factory;
-    Method* prepareMethod(Method *m);
+    Method* prepareMethod(MethodType t, Method *m);
 };
 
 } // namespace API

@@ -17,8 +17,34 @@
 
 #include <userinfo.h>
 
+
+
 namespace API
 {
+
+    class MethodType
+    {
+    public:
+        enum type { FRIENDS_GET, COMMENTS_GET, NOTIFICATIONS_GET, NOTIFICATIONS_GETLIST,
+                             USERS_GETLOGGEDINUSER };
+
+        MethodType() {};
+        explicit MethodType(type t) : m_type(t) {};
+        ~MethodType() {};
+
+        inline type getType() { return m_type; }
+        inline void setType(type t) { m_type = t; }
+        inline bool operator==(const MethodType::type &other) const {
+            return (m_type == other);
+        }
+        inline bool operator!=(const MethodType::type &other) const {
+            return (m_type != other);
+        }
+
+    private:
+        type m_type;
+
+    };
 
     class Method : public QObject, public QXmlDefaultHandler
     {
@@ -30,6 +56,8 @@ namespace API
 
         void setAccessManager(QNetworkAccessManager *manager);
         void setUserInfo(UserInfo *userInfo);
+        void setMethodType(MethodType methodType);
+        MethodType getMethodType();
         QString getRequiredArgsString();
         QList<QVariant> getRequiredArgsList();
         bool execute();
@@ -38,13 +66,16 @@ namespace API
         void setArgument(QString arg, QString value);
         void setArgument(QString arg, int value);
 
-        // Override methods from QXmlDefaultHandler
-        virtual bool startElement(const QString &namespaceURI, const QString &localName,
-                          const QString &qName, const QXmlAttributes &attributes);
-        virtual bool endElement(const QString &namespaceURI, const QString &localName,
-                        const QString &qName);
         bool characters(const QString &str);
         bool fatalError(const QXmlParseException &exception);
+
+        // Override methods from QXmlDefaultHandler
+        virtual bool startElement(const QString &namespaceURI, const QString &localName,
+                          const QString &qName, const QXmlAttributes &attributes) = 0;
+        virtual bool endElement(const QString &namespaceURI, const QString &localName,
+                        const QString &qName) = 0;
+
+        virtual QString getMethodName() = 0;
 
     public slots:
         void gotReply(QNetworkReply *reply);
@@ -56,7 +87,7 @@ namespace API
     private:
         QString m_errStr;
         bool validate();
-
+        MethodType m_methodType;
 
 
     protected:
@@ -64,7 +95,6 @@ namespace API
         QMap<QString, QVariant> m_argMap;
         QList<QVariant> m_requiredArgs;
         QNetworkAccessManager *m_manager;
-        QString m_methodName;
         QString m_currentText;
 
         void requires(QString arg);
