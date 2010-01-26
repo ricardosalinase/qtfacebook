@@ -1,6 +1,7 @@
 #include "testqueryconsole.h"
 #include "ui_testqueryconsole.h"
 #include "api/factory.h"
+#include "api/friends_get.h"
 
 
 #include <QNetworkAccessManager>
@@ -35,13 +36,13 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
 
     API::Factory *factory = API::Factory::getInstance(m_userInfo);
     API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
-    QNetworkReply *reply;
-    reply = method->execute();
-    if (reply != 0)
-        connect(reply->manager() , SIGNAL(finished(QNetworkReply*)),
-                this, SLOT(gotReply(QNetworkReply*)));
-    else
+    connect(method, SIGNAL(methodComplete(API::Method*)),
+            this, SLOT(methodReturned(API::Method*)));
+
+    bool rc = method->execute();
+    if (!rc)
         qDebug() << method->getErrorStr();
+
 }
 
 TestQueryConsole::~TestQueryConsole()
@@ -170,6 +171,22 @@ void TestQueryConsole::gotReply(QNetworkReply *reply) {
     }
 
     reply->deleteLater();
+
+}
+
+void TestQueryConsole::methodReturned(API::Method *method) {
+
+    qDebug() << "methodReturned()";
+
+    API::Friends::Get *fgMethod = (API::Friends::Get *)method;
+    QStringList friends = fgMethod->getFriendIdList();
+
+    ui->outputFrame->append("\n\nHere are the uids for your " + QString::number(friends.size()) + " friends\n");
+
+    for (int i = 0; i < friends.size(); i++)
+        ui->outputFrame->append(friends.at(i));
+
+
 
 }
 

@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 
 #include "userinfo.h"
+#include "api/apimethod.h"
 
 namespace Ui {
     class TestQueryConsole;
@@ -29,6 +30,7 @@ private:
     QNetworkAccessManager *m_manager;
 
 public slots:
+    void methodReturned(API::Method *method);
 
 
 private slots:

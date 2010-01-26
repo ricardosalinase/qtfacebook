@@ -1,5 +1,6 @@
 QT += webkit \
-    network
+    network \
+    xml
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
