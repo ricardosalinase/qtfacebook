@@ -10,9 +10,11 @@ It's designed around a simple factory (API::Factory) that is also a singleton so
 
 After working on this today, and doing a lot of googling I've found that ... Qt is really not happy with multiple inheritance. That becomes a problem is you want to design a pure virtual class as an interface, defining slots and/or signals. You can't inherit from two classes that also inherit from QObject or QWidget. 
 
-SO ... I just scrapped that whole design and {{{API::Method::execute()}}} returns a pointer to the <a href=http://qt.nokia.com/doc/4.6/qnetworkreply.html >QNetworkReply</a> and you set up the signal/slot handling yourself.
+~~SO ... I just scrapped that whole design and {{{API::Method::execute()}}} returns a pointer to the <a href=http://qt.nokia.com/doc/4.6/qnetworkreply.html >QNetworkReply</a> and you set up the signal/slot handling yourself.~~
 
-You need to check to see if the QNetworkReply pointer is NULL (0). If it is, the call couldn't be done. The reason can be retrieved as a QString via {{{API::Method::errStr()}}}. Remember to delete the {{{API::Method}}} object; it's safe to do so once you have a non-null QNetworkReply pointer.
+~~You need to check to see if the QNetworkReply pointer is NULL (0). If it is, the call couldn't be done. The reason can be retrieved as a QString via {{{API::Method::errStr()}}}. Remember to delete the {{{API::Method}}} object; it's safe to do so once you have a non-null QNetworkReply pointer. ~~
+
+*You now connect the caller to the method object itself. See the SVN log for the latest check in, I'll update this page tomorrow to fully explain things with the final version. The code examples below have been updated but will change slightly.*
 
 All the actual facebook API calls are objects derived from API::Method. When creating one, you simply inherit from API::Method and then set the name and required parameters in the constructor via the {{{requires(QString arg)}}} and {{{requiresOneOf(QStringList args)}}} calls (see example below). The API::Factory has an enum (apiMethod) containing each call and a switch statement for instantiating the correct Method derived class.
 
@@ -20,35 +22,39 @@ All the actual facebook API calls are objects derived from API::Method. When cre
 
 I don't know that the API::Factory class needs to be a singleton. It seemed like a good idea in terms of resource allocation, but I don't know that it actually matters.
 
+* This is now almost done. See the latest SVN log for details *
 I'm thinking that the XML parsing should happen inside the derived {{{API::Method}}} objects. If we deliver the signal to the derived {{{API::Method}}} class and parse it there, we make the whole thing nice and tidy. The derived class would then send it's own signal to the caller with a pointer to itself. The derived class would then return Objects representing the data returned by the API call. The trick there is coming up with an interface for getting at the various types of data.
 
 = Details =
 
+
+
 *Example API::Factory usage:*
 {{{
 API::Factory *factory = API::Factory::getInstance(m_userInfo);
-API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
-QNetworkReply *reply = method->execute();
-if (reply == 0)
-    qDebug() << method->errStr();
-else
-    connect(reply->manager() , SIGNAL(finished(QNetworkReply*)),
-                this, SLOT(gotReply(QNetworkReply*)));
-delete method;
+    API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
+    connect(method, SIGNAL(methodComplete(API::Method*)),
+            this, SLOT(methodReturned(API::Method*)));
+
+    bool rc = method->execute();
+    if (!rc)
+        qDebug() << method->getErrorStr();
 }}}
 
 *Example slot implementation*
 {{{
-void TestQueryConsole::gotReady(QNetworkReply *reply) {
-    if (reply->error() > 0) {
-        qDebug() << "Error number = " << reply->errorString();
-    }
-    else {
-        QByteArray data = reply->readAll();
-        ui->outputFrame->setText(QString(data));
-    }
+void TestQueryConsole::methodReturned(API::Method *method) {
 
-    reply->deleteLater();
+    qDebug() << "methodReturned()";
+
+    API::Friends::Get *fgMethod = (API::Friends::Get *)method;
+    QStringList friends = fgMethod->getFriendIdList();
+
+    ui->outputFrame->append("\n\nHere are the uids for your " + QString::number(friends.size()) + " friends\n");
+
+    for (int i = 0; i < friends.size(); i++)
+        ui->outputFrame->append(friends.at(i));
+
 }
 }}}
 
@@ -57,33 +63,72 @@ void TestQueryConsole::gotReady(QNetworkReply *reply) {
 #include "apimethod.h"
 
 namespace API {
-namespace Comments {
+namespace Friends {
 
 class Get : public API::Method
 {
 public:
     Get();
+
+    // Overridden from QXmlDefaultHandler
+    bool startElement(const QString &namespaceURI, const QString &localName,
+                                    const QString &qName, const QXmlAttributes &attributes);
+    bool endElement(const QString &namespaceURI, const QString &localName,
+                                  const QString &qName);
+
+    QStringList getFriendIdList();
+
+private:
+    QStringList m_uids;
+
 };
 
-} // namespace Comments
+} // namespace Freinds
 } // namespace API
 
-#include "comments_get.h"
+#include "friends_get.h"
 
 namespace API {
-namespace Comments {
+namespace Friends {
 
 Get::Get()
 {
-    m_methodName = "comments.get";
+   m_methodName = "friends.get";
 
-    QStringList oneOf;
-    oneOf.append("xid");
-    oneOf.append("object_id");
-
-    requiresOneOf(oneOf);
 }
 
-} // namespace Comments
+// m_currentText is defined in the base API::Method class, as is the method that
+// fills it during the XML parsing
+bool Get::startElement(const QString &namespaceURI, const QString &localName,
+                       const QString &qName, const QXmlAttributes &attributes) {
+
+
+
+    m_currentText.clear();
+    return true;
+
+}
+
+// m_currentText is defined in the base API::Method class, as is the method that
+// fills it during the XML parsing
+
+bool Get::endElement(const QString &namespaceURI, const QString &localName,
+                     const QString &qName) {
+
+    if (qName == "uid")
+        m_uids.append(m_currentText);
+
+    return true;
+
+}
+
+QStringList Get::getFriendIdList() {
+    return m_uids;
+}
+
+} // namespace Freinds
 } // namespace API
+
+
+
 }}}
