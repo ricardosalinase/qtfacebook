@@ -12,13 +12,15 @@
 #include <QNetworkAccessManager>
 #include <QList>
 #include <QStringList>
+#include <QXmlDefaultHandler>
+#include <QNetworkReply>
 
 #include <userinfo.h>
 
 namespace API
 {
 
-    class Method : public QObject
+    class Method : public QObject, public QXmlDefaultHandler
     {
         Q_OBJECT
 
@@ -30,16 +32,31 @@ namespace API
         void setUserInfo(UserInfo *userInfo);
         QString getRequiredArgsString();
         QList<QVariant> getRequiredArgsList();
-        QNetworkReply * execute();
+        bool execute();
         QString getErrorStr();
 
         void setArgument(QString arg, QString value);
         void setArgument(QString arg, int value);
 
+        // Override methods from QXmlDefaultHandler
+        virtual bool startElement(const QString &namespaceURI, const QString &localName,
+                          const QString &qName, const QXmlAttributes &attributes);
+        virtual bool endElement(const QString &namespaceURI, const QString &localName,
+                        const QString &qName);
+        bool characters(const QString &str);
+        bool fatalError(const QXmlParseException &exception);
+
+    public slots:
+        void gotReply(QNetworkReply *reply);
+
+    signals:
+        void methodComplete(API::Method *thisMethod);
+
 
     private:
         QString m_errStr;
         bool validate();
+
 
 
     protected:
@@ -48,7 +65,7 @@ namespace API
         QList<QVariant> m_requiredArgs;
         QNetworkAccessManager *m_manager;
         QString m_methodName;
-
+        QString m_currentText;
 
         void requires(QString arg);
         void requiresOneOf(QStringList args);

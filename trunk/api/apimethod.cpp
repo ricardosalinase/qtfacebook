@@ -7,6 +7,7 @@
 #include <QCryptographicHash>
 #include <QUrl>
 #include <QNetworkRequest>
+#include <QXmlInputSource>
 
 namespace API {
 
@@ -49,10 +50,10 @@ void Method::setArgument(QString arg, QString value) {
 /* inherit from Oberver we have a nice interface connecting them together and this   */
 /* object can be safely disposed.                                                    */
 /*************************************************************************************/
-QNetworkReply * Method::execute() {
+bool Method::execute() {
 
     if (!validate())
-        return 0;
+        return false;
 
     // THese are always constant with API requests
     m_argMap.insert("method", m_methodName);
@@ -118,12 +119,19 @@ QNetworkReply * Method::execute() {
     nr.setUrl(url);
     nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    QNetworkReply *reply;
+    QNetworkReply *reply = 0;
 
     reply = m_manager->post(nr,postArgs);
 
-    return reply;
-
+    if (reply != 0) {
+        connect(m_manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(gotReply(QNetworkReply*)));
+        return true;
+    }
+    else {
+        m_errStr = "The reply was null";
+        return false;
+    }
 }
 
 
@@ -192,6 +200,49 @@ void Method::requiresOneOf(QStringList args) {
     QList<QVariant> list;
     list.append(args);
     m_requiredArgs.append(list);
+}
+
+bool Method::characters(const QString &str)
+{
+    m_currentText += str;
+    return true;
+}
+
+bool Method::fatalError(const QXmlParseException &exception)
+{
+    qDebug("Parse error at line %d, column %d:\n%s", exception.lineNumber(),
+                    exception.columnNumber(), exception.message().toStdString().c_str() );
+
+    return false;
+}
+
+void Method::gotReply(QNetworkReply *reply) {
+
+    qDebug() << "Got reply!";
+
+    QXmlInputSource is;
+    is.setData(reply->readAll());
+    QXmlSimpleReader reader;
+    reader.setContentHandler(this);
+    reader.setErrorHandler(this);
+    reader.parse(is);
+
+    qDebug() << "Sending Second signal";
+    emit methodComplete((API::Method*)this);
+
+}
+
+
+// These both need to be implemented in the derived classes to parse the XML
+
+bool Method::startElement(const QString &, const QString &,
+                                  const QString &, const QXmlAttributes &) {
+    return true;
+}
+
+bool Method::endElement(const QString &, const QString &,
+                                const QString &) {
+    return true;
 }
 
 
