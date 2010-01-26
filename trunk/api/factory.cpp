@@ -1,10 +1,7 @@
 #include "factory.h"
 
-#include "friends_get.h"
-#include "comments_get.h"
-#include "notifications_get.h"
-#include "notifications_getlist.h"
-#include "users_getloggedinuser.h"
+
+
 
 namespace API {
 
@@ -34,43 +31,48 @@ Factory * Factory::getInstance(UserInfo *userInfo) {
     return m_factory;
 }
 
-Method * Factory::createMethod(apiMethod m) {
+Method * Factory::createMethod(MethodType::type t) {
 
     Q_ASSERT_X(0 != m_userInfo, "createMethod()","UserInfo object not set in factory" );
 
-    switch (m) {
-    case API_COMMENTS_GET:
-        return prepareMethod(new Comments::Get());
+    switch (t) {
+    case MethodType::COMMENTS_GET:
+        return prepareMethod(MethodType(t), new Comments::Get());
         break;
-    case API_FRIENDS_GET:
-        return prepareMethod(new Friends::Get());
+    case MethodType::FRIENDS_GET:
+        return prepareMethod(MethodType(t), new Friends::Get());
         break;
-    case API_NOTIFICATIONS_GET:
-        return prepareMethod(new Notifications::Get());
+    case MethodType::NOTIFICATIONS_GET:
+        return prepareMethod(MethodType(t), new Notifications::Get());
         break;
-    case API_NOTIFICATIONS_GETLIST:
-        return prepareMethod(new Notifications::GetList());
+    case MethodType::NOTIFICATIONS_GETLIST:
+        return prepareMethod(MethodType(t), new Notifications::GetList());
         break;
-    case API_USERS_GETLOGGEDINUSER:
-        return prepareMethod(new Users::GetLoggedInUser());
+    case MethodType::USERS_GETLOGGEDINUSER:
+        return prepareMethod(MethodType(t), new Users::GetLoggedInUser());
         break;
     default:
         return 0;
         break;
     }
 
-
-
-
 }
 
-Method * Factory::prepareMethod(Method *m) {
+Method * Factory::prepareMethod(MethodType t, Method *m) {
 
     m->setAccessManager(m_manager);
     m->setUserInfo(m_userInfo);
-
+    m->setMethodType(t);
+    connect(m,SIGNAL(methodComplete(API::Method*)),
+            this, SLOT(dispatch(API::Method*)));
     return m;
 
+}
+
+void Factory::dispatch(API::Method *method) {
+
+    if (method->getMethodType() == API::MethodType::FRIENDS_GET)
+        emit apiFriendsGet((API::Friends::Get*)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {

@@ -43,20 +43,14 @@ void Method::setArgument(QString arg, QString value) {
     m_argMap.insert(arg, value);
 }
 
-/*************************************************************************************/
-/* The Observer class contains a single pure virtual function (processMethodResults) */
-/* The reason I went this way is because once the QNetworkAccessManager returns the  */
-/* QNetworkReply this object is no longer necessary. By requiring that all callers   */
-/* inherit from Oberver we have a nice interface connecting them together and this   */
-/* object can be safely disposed.                                                    */
-/*************************************************************************************/
+
 bool Method::execute() {
 
     if (!validate())
         return false;
 
     // THese are always constant with API requests
-    m_argMap.insert("method", m_methodName);
+    m_argMap.insert("method", getMethodName());
     m_argMap.insert("api_key", m_userInfo->getApiKey());
     m_argMap.insert("v","1.0");
     m_argMap.insert("session_key",m_userInfo->getSessionKey());
@@ -159,7 +153,7 @@ bool Method::validate() {
         return false;
     }
 
-    if (m_methodName.compare("") == 0) {
+    if (getMethodName().compare("") == 0) {
         m_errStr = "Missing method name!";
         return false;
     }
@@ -228,13 +222,24 @@ void Method::gotReply(QNetworkReply *reply) {
     reader.parse(is);
 
     qDebug() << "Sending Second signal";
+
     emit methodComplete((API::Method*)this);
+
+    reply->deleteLater();
 
 }
 
+void Method::setMethodType(MethodType methodType) {
+    m_methodType = methodType;
+
+}
+
+MethodType Method::getMethodType() {
+    return m_methodType;
+}
 
 // These both need to be implemented in the derived classes to parse the XML
-
+/*
 bool Method::startElement(const QString &, const QString &,
                                   const QString &, const QXmlAttributes &) {
     return true;
@@ -244,7 +249,7 @@ bool Method::endElement(const QString &, const QString &,
                                 const QString &) {
     return true;
 }
-
+*/
 
 
 } // namespace API

@@ -3,11 +3,27 @@
 namespace API {
 namespace Notifications {
 
-GetList::GetList()
+GetList::GetList(QObject *parent) : Method(parent)
 {
-    m_methodName = "notifications.getList";
+
 
 }
+
+bool GetList::startElement(const QString &, const QString &,
+                                  const QString &, const QXmlAttributes &) {
+    return true;
+}
+
+bool GetList::endElement(const QString &, const QString &,
+                                const QString &) {
+    return true;
+}
+
+QString GetList::getMethodName() {
+    return "notifications.getList";
+}
+
+
 
 } // namespace Notifications
 } // namespace API

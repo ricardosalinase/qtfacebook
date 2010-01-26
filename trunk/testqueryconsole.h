@@ -7,6 +7,7 @@
 
 #include "userinfo.h"
 #include "api/apimethod.h"
+#include "api/friends_get.h"
 
 namespace Ui {
     class TestQueryConsole;
@@ -31,7 +32,7 @@ private:
 
 public slots:
     void methodReturned(API::Method *method);
-
+    void apiFriendsGet(API::Friends::Get *);
 
 private slots:
     void addPostArgs();

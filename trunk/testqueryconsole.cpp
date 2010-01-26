@@ -1,7 +1,6 @@
 #include "testqueryconsole.h"
 #include "ui_testqueryconsole.h"
 #include "api/factory.h"
-#include "api/friends_get.h"
 
 
 #include <QNetworkAccessManager>
@@ -35,9 +34,14 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
             this, SLOT(gotReply(QNetworkReply *)));
 
     API::Factory *factory = API::Factory::getInstance(m_userInfo);
-    API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
-    connect(method, SIGNAL(methodComplete(API::Method*)),
-            this, SLOT(methodReturned(API::Method*)));
+    API::Method *method = factory->createMethod(API::MethodType::FRIENDS_GET);
+
+    //connect(method, SIGNAL(methodComplete(API::Method*)),
+    //        this, SLOT(methodReturned(API::Method*)));
+
+    connect(factory, SIGNAL(apiFriendsGet(API::Friends::Get*)),
+            this, SLOT(apiFriendsGet(API::Friends::Get*)));
+
 
     bool rc = method->execute();
     if (!rc)
@@ -178,7 +182,25 @@ void TestQueryConsole::methodReturned(API::Method *method) {
 
     qDebug() << "methodReturned()";
 
-    API::Friends::Get *fgMethod = (API::Friends::Get *)method;
+    if (method->getMethodType() == API::MethodType::FRIENDS_GET)
+    {
+        API::Friends::Get *fgMethod = (API::Friends::Get *)method;
+        QStringList friends = fgMethod->getFriendIdList();
+
+        ui->outputFrame->append("\n\nHere are the uids for your " + QString::number(friends.size()) + " friends\n");
+
+        for (int i = 0; i < friends.size(); i++)
+            ui->outputFrame->append(friends.at(i));
+    }
+
+    method->deleteLater();
+
+}
+
+void TestQueryConsole::apiFriendsGet(API::Friends::Get *fgMethod) {
+
+    qDebug() << "apiFriendsGet()";
+
     QStringList friends = fgMethod->getFriendIdList();
 
     ui->outputFrame->append("\n\nHere are the uids for your " + QString::number(friends.size()) + " friends\n");
@@ -187,10 +209,9 @@ void TestQueryConsole::methodReturned(API::Method *method) {
         ui->outputFrame->append(friends.at(i));
 
 
+    fgMethod->deleteLater();
 
 }
-
-
 void TestQueryConsole::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);

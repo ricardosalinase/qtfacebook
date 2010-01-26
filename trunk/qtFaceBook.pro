@@ -28,7 +28,8 @@ HEADERS += fbconnectwizard.h \
     api/apimethod.h \
     api/notifications_get.h \
     api/notifications_getlist.h \
-    api/users_getloggedinuser.h
+    api/users_getloggedinuser.h \
+    api/apiCallTypes.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
