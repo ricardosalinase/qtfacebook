@@ -4,6 +4,7 @@
 #include "comments_get.h"
 #include "notifications_get.h"
 #include "notifications_getlist.h"
+#include "users_getloggedinuser.h"
 
 namespace API {
 
@@ -49,6 +50,9 @@ Method * Factory::createMethod(apiMethod m) {
         break;
     case API_NOTIFICATIONS_GETLIST:
         return prepareMethod(new Notifications::GetList());
+        break;
+    case API_USERS_GETLOGGEDINUSER:
+        return prepareMethod(new Users::GetLoggedInUser());
         break;
     default:
         return 0;
