@@ -50,6 +50,9 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
     connect(factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
             this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
 
+    method->setArgument("include_read","true");
+
+
     bool rc = method->execute();
     if (!rc)
         qDebug() << method->getErrorStr();
