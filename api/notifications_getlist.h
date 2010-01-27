@@ -2,6 +2,7 @@
 #define NOTIFICATIONS_GETLIST_H
 
 #include "apimethod.h"
+#include "notification.h"
 
 namespace API {
 namespace Notifications {
@@ -16,7 +17,11 @@ public:
                     const QString &qName);
     QString getMethodName();
 
+    QList<Notification *> * getNotifications();
 
+private:
+    QList<Notification *> *m_notifications;
+    Notification *m_currentNotification;
 };
 
 } // namespace Notifications

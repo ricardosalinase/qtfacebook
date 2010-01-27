@@ -22,29 +22,7 @@
 namespace API
 {
 
-    class MethodType
-    {
-    public:
-        enum type { FRIENDS_GET, COMMENTS_GET, NOTIFICATIONS_GET, NOTIFICATIONS_GETLIST,
-                             USERS_GETLOGGEDINUSER };
 
-        MethodType() {};
-        explicit MethodType(type t) : m_type(t) {};
-        ~MethodType() {};
-
-        inline type getType() { return m_type; }
-        inline void setType(type t) { m_type = t; }
-        inline bool operator==(const MethodType::type &other) const {
-            return (m_type == other);
-        }
-        inline bool operator!=(const MethodType::type &other) const {
-            return (m_type != other);
-        }
-
-    private:
-        type m_type;
-
-    };
 
     class Method : public QObject, public QXmlDefaultHandler
     {
@@ -56,8 +34,6 @@ namespace API
 
         void setAccessManager(QNetworkAccessManager *manager);
         void setUserInfo(UserInfo *userInfo);
-        void setMethodType(MethodType methodType);
-        MethodType getMethodType();
         QString getRequiredArgsString();
         QList<QVariant> getRequiredArgsList();
         bool execute();
@@ -87,7 +63,7 @@ namespace API
     private:
         QString m_errStr;
         bool validate();
-        MethodType m_methodType;
+
 
 
     protected:

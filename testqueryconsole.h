@@ -8,6 +8,7 @@
 #include "userinfo.h"
 #include "api/apimethod.h"
 #include "api/friends_get.h"
+#include "api/notifications_getlist.h"
 
 namespace Ui {
     class TestQueryConsole;
@@ -33,6 +34,7 @@ private:
 public slots:
     void methodReturned(API::Method *method);
     void apiFriendsGet(API::Friends::Get *);
+    void apiNotificationsGetList(API::Notifications::GetList*);
 
 private slots:
     void addPostArgs();

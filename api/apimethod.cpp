@@ -229,14 +229,7 @@ void Method::gotReply(QNetworkReply *reply) {
 
 }
 
-void Method::setMethodType(MethodType methodType) {
-    m_methodType = methodType;
 
-}
-
-MethodType Method::getMethodType() {
-    return m_methodType;
-}
 
 // These both need to be implemented in the derived classes to parse the XML
 /*
