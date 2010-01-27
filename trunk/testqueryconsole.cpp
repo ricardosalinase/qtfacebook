@@ -1,6 +1,7 @@
 #include "testqueryconsole.h"
 #include "ui_testqueryconsole.h"
 #include "api/factory.h"
+#include "api/notification.h"
 
 
 #include <QNetworkAccessManager>
@@ -34,14 +35,20 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
             this, SLOT(gotReply(QNetworkReply *)));
 
     API::Factory *factory = API::Factory::getInstance(m_userInfo);
-    API::Method *method = factory->createMethod(API::MethodType::FRIENDS_GET);
+
+    /*
+    API::Method *method = factory->createMethod("friends.get");
 
     //connect(method, SIGNAL(methodComplete(API::Method*)),
     //        this, SLOT(methodReturned(API::Method*)));
 
     connect(factory, SIGNAL(apiFriendsGet(API::Friends::Get*)),
             this, SLOT(apiFriendsGet(API::Friends::Get*)));
+    */
 
+    API::Method * method = factory->createMethod("notifications.getList");
+    connect(factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
+            this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
 
     bool rc = method->execute();
     if (!rc)
@@ -182,7 +189,7 @@ void TestQueryConsole::methodReturned(API::Method *method) {
 
     qDebug() << "methodReturned()";
 
-    if (method->getMethodType() == API::MethodType::FRIENDS_GET)
+    if (method->getMethodName() == "friends.get")
     {
         API::Friends::Get *fgMethod = (API::Friends::Get *)method;
         QStringList friends = fgMethod->getFriendIdList();
@@ -191,6 +198,23 @@ void TestQueryConsole::methodReturned(API::Method *method) {
 
         for (int i = 0; i < friends.size(); i++)
             ui->outputFrame->append(friends.at(i));
+    }
+
+    method->deleteLater();
+
+}
+
+void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *method) {
+
+    qDebug() << "apiNotificationsGetList()";
+
+    QList<API::Notifications::Notification *> *list;
+    list = method->getNotifications();
+
+    for (int i =0; i < list->size(); i++)
+    {
+        ui->outputFrame->append(list->at(i)->getTitleHtml());
+        ui->outputFrame->append(list->at(i)->getBodyHtml());
     }
 
     method->deleteLater();
