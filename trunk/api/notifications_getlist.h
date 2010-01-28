@@ -20,7 +20,9 @@ public:
     QList<Notification *> * getNotifications();
 
 private:
-    QList<Notification *> *m_notifications;
+    QList<Notification *> * m_notifications;
+    Person *m_currentPerson;
+    App *m_currentApp;
     Notification *m_currentNotification;
 };
 
