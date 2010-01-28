@@ -12,6 +12,7 @@
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QByteArray>
+#include <QTextDocument>
 
 #include <sys/time.h>
 
@@ -214,11 +215,14 @@ void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *meth
     QList<API::Notifications::Notification *> *list;
     list = method->getNotifications();
 
+    //ui->outputFrame->acceptRichText();
     for (int i =0; i < list->size(); i++)
     {
-        ui->outputFrame->append(list->at(i)->getTitleHtml());
-        ui->outputFrame->append(list->at(i)->getBodyHtml());
+        if (list->at(i)->getIsHidden() == false) {
+            ui->outputFrame->append(list->at(i)->getTitleHtml());
+            ui->outputFrame->append(list->at(i)->getBodyText());
 
+        }
     }
 
     method->deleteLater();

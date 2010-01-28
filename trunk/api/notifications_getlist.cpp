@@ -58,9 +58,9 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "app_id")
             m_currentNotification->setAppId(m_currentText);
         else if (qName == "is_unread")
-            m_currentNotification->setIsRead(m_currentText.compare("1") ? true : false);
+            m_currentNotification->setIsRead((m_currentText.compare("1") == 0) ? true : false);
         else if (qName == "is_hidden")
-            m_currentNotification->setIsHidden(m_currentText.compare("1") ? true : false);
+            m_currentNotification->setIsHidden((m_currentText.compare("1") == 0) ? true : false);
         else if (qName == "notification") {
             m_notifications->append(m_currentNotification);
             m_currentNotification = 0;
@@ -68,8 +68,33 @@ bool GetList::endElement(const QString &namespaceURI,
 
     } else if (m_currentAppInfo) {
 
-
-        if (qName == "app_info") {
+        if (qName == "app_id")
+            m_currentAppInfo->setAppId(qName);
+        else if (qName == "api_key")
+            m_currentAppInfo->setApiKey(qName);
+        else if (qName == "canvas_name")
+            m_currentAppInfo->setCanvasName(qName);
+        else if (qName == "display_name")
+            m_currentAppInfo->setDisplayName(qName);
+        else if (qName == "icon_url")
+            m_currentAppInfo->setIconUrl(qName);
+        else if (qName == "logo_url")
+            m_currentAppInfo->setLogoUrl(qName);
+        else if (qName == "company_name")
+            m_currentAppInfo->setCompanyName(qName);
+        else if (qName == "description")
+            m_currentAppInfo->setDescription(qName);
+        else if (qName == "daily_active_users")
+            m_currentAppInfo->setDailyActiveUsers(qName);
+        else if (qName == "weekly_active_users")
+            m_currentAppInfo->setWeeklyActiveUsers(qName);
+        else if (qName == "monthly_active_users")
+            m_currentAppInfo->setMonthlyActiveUsers(qName);
+        else if (qName == "category")
+            m_currentAppInfo->setCategory(qName);
+        else if (qName == "subcategory")
+            m_currentAppInfo->setSubCategory(qName);
+        else if (qName == "app_info") {
             m_appInfo->append(m_currentAppInfo);
             m_currentAppInfo = 0;
         }
@@ -87,6 +112,10 @@ QString GetList::getMethodName() {
 
 QList<Notification *> * GetList::getNotifications() {
     return m_notifications;
+}
+
+QList<AppInfo *> * GetList::getAppInfo() {
+    return m_appInfo;
 }
 
 } // namespace Notifications

@@ -211,5 +211,13 @@ QString AppInfo::getSubCategory() {
     return m_subCategory;
 }
 
+void AppInfo::setCanvasName(QString cn) {
+    m_canvasName = cn;
+}
+
+QString AppInfo::getCanvasName() {
+    return m_canvasName;
+}
+
 }
 }

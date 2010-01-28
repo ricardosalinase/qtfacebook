@@ -87,6 +87,8 @@ public:
     QString getCategory();
     void setSubCategory(QString sc);
     QString getSubCategory();
+    void setCanvasName(QString cn);
+    QString getCanvasName();
 
 private:
     QString m_appId;
@@ -101,6 +103,7 @@ private:
     QString m_monthlyActiveUsers;
     QString m_category;
     QString m_subCategory;
+    QString m_canvasName;
 
 };
 
