@@ -10,26 +10,8 @@ class Notification
 {
 
 public:
-    enum type { PERSON, APP };
-
     Notification();
     virtual ~Notification() {};
-
-    type getType();
-    void setType(type t);
-
-protected:
-    type m_type;
-
-
-};
-
-class Person : public Notification
-{
-
-public:
-    Person();
-    ~Person() {};
 
     void setNotificationId(QString nid);
     QString getNotificaitonId();
@@ -75,11 +57,11 @@ private:
 
 };
 
-class App : public Notification
+class AppInfo
 {
 public:
-    App();
-    ~App() {};
+    AppInfo();
+    ~AppInfo() {};
 
     void setAppId(QString appId);
     QString getAppId();
