@@ -23,8 +23,9 @@ public:
 private:
     QList<Notification *> * m_notifications;
     QList<AppInfo *> * m_appInfo;
-    AppInfo *m_currentAppInfo;
     Notification *m_currentNotification;
+    AppInfo *m_currentAppInfo;
+
 
 };
 
