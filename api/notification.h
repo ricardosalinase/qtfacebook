@@ -8,9 +8,28 @@ namespace Notifications {
 
 class Notification
 {
+
 public:
+    enum type { PERSON, APP };
+
     Notification();
-    ~Notification() {};
+    virtual ~Notification() {};
+
+    type getType();
+    void setType(type t);
+
+protected:
+    type m_type;
+
+
+};
+
+class Person : public Notification
+{
+
+public:
+    Person();
+    ~Person() {};
 
     void setNotificationId(QString nid);
     QString getNotificaitonId();
@@ -55,6 +74,54 @@ private:
     bool m_isHidden;
 
 };
+
+class App : public Notification
+{
+public:
+    App();
+    ~App() {};
+
+    void setAppId(QString appId);
+    QString getAppId();
+    void setApiKey(QString apiKey);
+    QString getApiKey();
+    void setDisplayName(QString dn);
+    QString getDisplayName();
+    void setIconUrl(QString iu);
+    QString getIconUrl();
+    void setLogoUrl(QString lu);
+    QString getLogoUrl();
+    void setCompanyName(QString cn);
+    QString getCompanyName();
+    void setDescription(QString d);
+    QString getDescription();
+    void setDailyActiveUsers(QString dau);
+    QString getDailyActiveUsers();
+    void setWeeklyActiveUsers(QString wau);
+    QString getWeeklyActiveUsers();
+    void setMonthlyActiveUsers(QString mau);
+    QString getMonthlyActiveUsers();
+    void setCategory(QString c);
+    QString getCategory();
+    void setSubCategory(QString sc);
+    QString getSubCategory();
+
+private:
+    QString m_appId;
+    QString m_apiKey;
+    QString m_displayName;
+    QString m_iconUrl;
+    QString m_logoUrl;
+    QString m_companyName;
+    QString m_description;
+    QString m_dailyActiveUsers;
+    QString m_weeklyActiveUsers;
+    QString m_monthlyActiveUsers;
+    QString m_category;
+    QString m_subCategory;
+
+};
+
 
 } // End namespace Notifications
 } // End namespace API
