@@ -7,219 +7,207 @@ Notification::Notification()
 
 }
 
-Notification::type Notification::getType() {
-    return m_type;
-}
-
-void Notification::setType(Notification::type t) {
-    m_type = t;
-}
-
-Person::Person() {
-    setType(PERSON);
-}
-
-void Person::setNotificationId(QString nid) {
+void Notification::setNotificationId(QString nid) {
     m_notificationId = nid;
 }
 
-QString Person::getNotificaitonId() {
+QString Notification::getNotificaitonId() {
     return m_notificationId;
 }
 
-void Person::setSenderId(QString sid) {
+void Notification::setSenderId(QString sid) {
     m_senderId = sid;
 }
 
-QString Person::getSenderId() {
+QString Notification::getSenderId() {
     return m_senderId;
 }
 
-void Person::setRecipientId(QString rid) {
+void Notification::setRecipientId(QString rid) {
     m_recipientId = rid;
 }
 
-QString Person::getRecipientId() {
+QString Notification::getRecipientId() {
     return m_recipientId;
 }
 
-void Person::setCreatedTime(QString ctime) {
+void Notification::setCreatedTime(QString ctime) {
     m_createdTime = ctime;
 }
 
-QString Person::getCreatedTime() {
+QString Notification::getCreatedTime() {
     return m_createdTime;
 }
 
-void Person::setUpdatedTime(QString utime) {
+void Notification::setUpdatedTime(QString utime) {
     m_updatedTime = utime;
 }
 
-QString Person::getUpdatedTime() {
+QString Notification::getUpdatedTime() {
     return m_updatedTime;
 }
 
-void Person::setTitleHtml(QString html) {
+void Notification::setTitleHtml(QString html) {
     m_titleHtml = html;
 }
 
-QString Person::getTitleHtml() {
+QString Notification::getTitleHtml() {
     return m_titleHtml;
 }
 
-void Person::setTitleText(QString text) {
+void Notification::setTitleText(QString text) {
     m_titleText = text;
 }
 
-QString Person::getTitleText() {
+QString Notification::getTitleText() {
     return m_titleText;
 }
 
-void Person::setBodyHtml(QString html) {
+void Notification::setBodyHtml(QString html) {
     m_bodyHtml = html;
 }
 
-QString Person::getBodyHtml() {
+QString Notification::getBodyHtml() {
     return m_bodyHtml;
 }
 
-void Person::setBodyText(QString text) {
+void Notification::setBodyText(QString text) {
     m_bodyText = text;
 }
 
-QString Person::getBodyText() {
+QString Notification::getBodyText() {
     return m_bodyText;
 }
 
-void Person::setHref(QString href) {
+void Notification::setHref(QString href) {
     m_href = href;
 }
 
-QString Person::getHref() {
+QString Notification::getHref() {
     return m_href;
 }
 
-void Person::setAppId(QString aid) {
+void Notification::setAppId(QString aid) {
     m_appId = aid;
 }
 
-QString Person::getAppId() {
+QString Notification::getAppId() {
     return m_appId;
 }
 
-void Person::setIsRead(bool ir) {
+void Notification::setIsRead(bool ir) {
     m_isRead = ir;
 }
 
-bool Person::getIsRead() {
+bool Notification::getIsRead() {
     return m_isRead;
 }
 
-void Person::setIsHidden(bool ih) {
+void Notification::setIsHidden(bool ih) {
     m_isHidden = ih;
 }
 
-bool Person::getIsHidden() {
+bool Notification::getIsHidden() {
     return m_isHidden;
 }
 
-App::App() {
-    setType(APP);
+AppInfo::AppInfo() {
+
 }
 
-void App::setAppId(QString appId) {
+void AppInfo::setAppId(QString appId) {
     m_appId = appId;
 }
 
-QString App::getAppId() {
+QString AppInfo::getAppId() {
     return m_appId;
 }
 
-void App::setApiKey(QString apiKey) {
+void AppInfo::setApiKey(QString apiKey) {
     m_apiKey = apiKey;
 }
 
-QString App::getApiKey() {
+QString AppInfo::getApiKey() {
     return m_apiKey;
 }
 
-void App::setDisplayName(QString dn) {
+void AppInfo::setDisplayName(QString dn) {
     m_displayName = dn;
 }
 
-QString App::getDisplayName() {
+QString AppInfo::getDisplayName() {
     return m_displayName;
 }
 
-void App::setIconUrl(QString iu) {
+void AppInfo::setIconUrl(QString iu) {
     m_iconUrl = iu;
 }
 
-QString App::getIconUrl() {
+QString AppInfo::getIconUrl() {
     return m_iconUrl;
 }
 
-void App::setLogoUrl(QString lu) {
+void AppInfo::setLogoUrl(QString lu) {
     m_logoUrl = lu;
 }
 
-QString App::getLogoUrl() {
+QString AppInfo::getLogoUrl() {
     return m_logoUrl;
 }
 
-void App::setCompanyName(QString cn) {
+void AppInfo::setCompanyName(QString cn) {
     m_companyName = cn;
 }
 
-QString App::getCompanyName() {
+QString AppInfo::getCompanyName() {
     return m_companyName;
 }
 
-void App::setDescription(QString d) {
+void AppInfo::setDescription(QString d) {
     m_description = d;
 }
 
-QString App::getDescription() {
+QString AppInfo::getDescription() {
     return m_description;
 }
 
-void App::setDailyActiveUsers(QString dau) {
+void AppInfo::setDailyActiveUsers(QString dau) {
     m_dailyActiveUsers = dau;
 }
 
-QString App::getDailyActiveUsers() {
+QString AppInfo::getDailyActiveUsers() {
     return m_dailyActiveUsers;
 }
 
-void App::setWeeklyActiveUsers(QString wau) {
+void AppInfo::setWeeklyActiveUsers(QString wau) {
     m_weeklyActiveUsers = wau;
 }
 
-QString App::getWeeklyActiveUsers() {
+QString AppInfo::getWeeklyActiveUsers() {
     return m_weeklyActiveUsers;
 }
 
-void App::setMonthlyActiveUsers(QString mau) {
+void AppInfo::setMonthlyActiveUsers(QString mau) {
     m_monthlyActiveUsers = mau;
 }
 
-QString App::getMonthlyActiveUsers() {
+QString AppInfo::getMonthlyActiveUsers() {
     return m_monthlyActiveUsers;
 }
 
-void App::setCategory(QString c) {
+void AppInfo::setCategory(QString c) {
     m_category = c;
 }
 
-QString App::getCategory() {
+QString AppInfo::getCategory() {
     return m_category;
 }
 
-void App::setSubCategory(QString sc) {
+void AppInfo::setSubCategory(QString sc) {
     m_subCategory = sc;
 }
 
-QString App::getSubCategory() {
+QString AppInfo::getSubCategory() {
     return m_subCategory;
 }
 

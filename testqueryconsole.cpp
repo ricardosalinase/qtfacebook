@@ -216,10 +216,9 @@ void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *meth
 
     for (int i =0; i < list->size(); i++)
     {
-        if (list->at(i)->getType() == API::Notifications::Notification::PERSON) {
-            ui->outputFrame->append(((API::Notifications::Person*)(list->at(i)))->getTitleHtml());
-            ui->outputFrame->append(((API::Notifications::Person*)(list->at(i)))->getBodyHtml());
-        }
+        ui->outputFrame->append(list->at(i)->getTitleHtml());
+        ui->outputFrame->append(list->at(i)->getBodyHtml());
+
     }
 
     method->deleteLater();

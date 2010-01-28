@@ -18,12 +18,14 @@ public:
     QString getMethodName();
 
     QList<Notification *> * getNotifications();
+    QList<AppInfo *> * getAppInfo();
 
 private:
     QList<Notification *> * m_notifications;
-    Person *m_currentPerson;
-    App *m_currentApp;
+    QList<AppInfo *> * m_appInfo;
+    AppInfo *m_currentAppInfo;
     Notification *m_currentNotification;
+
 };
 
 } // namespace Notifications
