@@ -9,7 +9,7 @@ NotificationCheck::NotificationCheck(UserInfo *userInfo, int interval)
     m_checkInterval = interval;
 
     // Init the factory
-    m_factory = API::Factory::getInstance(m_userInfo);
+    m_factory = new API::Factory(m_userInfo);
 
     connect(m_factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
                 this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
@@ -23,7 +23,7 @@ NotificationCheck::~NotificationCheck() {
 
 void NotificationCheck::setUserInfo(UserInfo *userInfo) {
     m_userInfo = userInfo;
-    API::Factory::getInstance(m_userInfo);
+    m_factory->setUserInfo(m_userInfo);
 }
 
 void NotificationCheck::run() {

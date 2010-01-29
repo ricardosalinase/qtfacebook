@@ -5,31 +5,17 @@
 
 namespace API {
 
-Factory* Factory::m_factory = 0;
 
-Factory::Factory(QObject *parent) :
+
+Factory::Factory(UserInfo *userInfo, QObject *parent) :
     QObject(parent)
 {
     m_manager = new QNetworkAccessManager();
+    m_userInfo = userInfo;
 }
 
-Factory * Factory::getInstance() {
-
-    if (m_factory == 0) {
-        m_factory = new Factory();
-    }
-
-    return m_factory;
-
-}
-
-Factory * Factory::getInstance(UserInfo *userInfo) {
-    if (m_factory == 0)
-        m_factory = new Factory();
-
-    m_factory->setUserInfo(userInfo);
-
-    return m_factory;
+Factory::~Factory() {
+    delete m_manager;
 }
 
 Method * Factory::createMethod(QString method) {
