@@ -111,7 +111,7 @@ void QtFacebook::fbWizardComplete() {
 
     QTimer::singleShot(200, this, SLOT(updateIcon()));
 
-    NotificationCheck *nc = new NotificationCheck(m_userInfo,1);
+    NotificationCheck *nc = new NotificationCheck(m_userInfo,5);
 
     connect(nc, SIGNAL(newNotifications(QList<API::Notifications::Notification>*)),
             this, SLOT(notificationCheck(QList<API::Notifications::Notification>*)),

@@ -33,7 +33,6 @@ private slots:
 private:
     UserInfo *m_userInfo;
     int m_checkInterval;
-    bool m_firstTime;
     API::Factory *m_factory;
     QTimer *m_timer;
 
