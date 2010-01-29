@@ -3,8 +3,7 @@
 
 #include <QDebug>
 
-NotificationCheck::NotificationCheck(UserInfo *userInfo, int interval) :
-        m_firstTime(true)
+NotificationCheck::NotificationCheck(UserInfo *userInfo, int interval)
 {
     m_userInfo = userInfo;
     m_checkInterval = interval;
@@ -48,10 +47,6 @@ void NotificationCheck::checkForNotifiations() {
 
     API::Method *method = m_factory->createMethod("notifications.getList");
 
-
-    if (m_firstTime == true)
-        method->setArgument("include_read","true");
-
     bool rc = method->execute();
     if (!rc)
         qDebug() << method->getErrorStr();
@@ -62,8 +57,6 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
 
     qDebug() << "apiNotificationsGetList()";
 
-    if (m_firstTime == true)
-        m_firstTime = false;
 
     QList<API::Notifications::Notification> list;
     list = method->getNotifications();
@@ -83,7 +76,14 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
 
     if (nList->size() != 0)
         emit newNotifications(nList);
+    else
+        delete nList;
 
     delete method;
 
+}
+
+void NotificationCheck::setCheckInterval(int minutes) {
+    m_timer->stop();
+    m_timer->start(minutes * 60000);
 }
