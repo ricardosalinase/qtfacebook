@@ -219,9 +219,12 @@ void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *meth
     for (int i =0; i < list->size(); i++)
     {
         if (list->at(i)->getIsHidden() == false) {
-            ui->outputFrame->append(list->at(i)->getTitleHtml());
-            ui->outputFrame->append(list->at(i)->getBodyText());
-
+            ui->outputFrame->textCursor().insertHtml(list->at(i)->getTitleHtml());
+            ui->outputFrame->textCursor().insertHtml("<BR>");
+            //ui->outputFrame->append(list->at(i)->getTitleHtml());
+            ui->outputFrame->textCursor().insertHtml(list->at(i)->getBodyHtml());
+            //ui->outputFrame->append(list->at(i)->getBodyText());
+            ui->outputFrame->textCursor().insertHtml("<BR><BR>");
         }
     }
 
