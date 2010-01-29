@@ -35,29 +35,6 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
     connect(m_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotReply(QNetworkReply *)));
 
-    API::Factory *factory = API::Factory::getInstance(m_userInfo);
-
-    /*
-    API::Method *method = factory->createMethod("friends.get");
-
-    //connect(method, SIGNAL(methodComplete(API::Method*)),
-    //        this, SLOT(methodReturned(API::Method*)));
-
-    connect(factory, SIGNAL(apiFriendsGet(API::Friends::Get*)),
-            this, SLOT(apiFriendsGet(API::Friends::Get*)));
-
-
-    API::Method * method = factory->createMethod("notifications.getList");
-    connect(factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
-            this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
-
-    method->setArgument("include_read","true");
-
-
-    bool rc = method->execute();
-    if (!rc)
-        qDebug() << method->getErrorStr();
-    */
 }
 
 TestQueryConsole::~TestQueryConsole()

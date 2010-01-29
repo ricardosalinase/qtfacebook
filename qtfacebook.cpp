@@ -183,6 +183,8 @@ void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nLis
             m_trayAnimationTimer->start(250);
 
     }
+    else
+        m_trayAnimationTimer->stop();
 }
 
 void QtFacebook::showNotificationBalloon()

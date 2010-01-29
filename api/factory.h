@@ -13,15 +13,14 @@
 #include "users_getloggedinuser.h"
 
 
-// Simple factory created as a singleton so that there is a single
-// instance of QNetworkAcceessManager
+// Simple factory
 
 namespace API {
 
 
 /**
  * @class API::Factory factory.h api/factory.h
- * The API::Factory class is a singleton simple factory that produces API::Method derived
+ * The API::Factory class is a simple factory that produces API::Method derived
  * objects. These objects are the network interface to the Facebook REST API.
  */
 class Factory : public QObject
@@ -29,21 +28,13 @@ class Factory : public QObject
 Q_OBJECT
 public:
 
+    /*!
+     * Constructs a factory which will use the data in the supplied UserInfo object for making API calls to facebook
+     */
+    Factory(UserInfo *userInfo, QObject *parent = 0);
+    ~Factory();
     /**
-    * @brief Returns the instance of the API::Factory.
-    * @param userInfo
-    * @return Factory
-    */
-    static Factory * getInstance(UserInfo *userInfo );
-
-    /**
-    * Returns the instance of the Factory. If the factory has not already been initialized setUserInfo() must be called
-    * @return Factory
-    */
-    static Factory * getInstance();
-
-    /**
-    * @brief Sets the UserInfo property of the factory.
+    * @brief Sets the UserInfo property of the factory, replacing the existing one
     * @param userInfo
     */
     void setUserInfo(UserInfo *userInfo);
@@ -81,9 +72,6 @@ signals:
 public slots:
     void dispatch(API::Method *);
 
-protected:
-    Factory(QObject *parent = 0);
-
 private:
     /**
     * @brief The private QNetworkAccessManager
@@ -97,12 +85,6 @@ private:
     * @var m_userInfo
     */
     UserInfo *m_userInfo;
-    /**
-    * @brief API::Factory is a singleton. This is the private instantiation
-    *
-    * @var m_factory
-    */
-    static Factory *m_factory;
     /**
     * @brief Private method that sets the UserInfo and QNetworkManager or the produced API::Method
     *
