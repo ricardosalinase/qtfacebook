@@ -58,7 +58,7 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "app_id")
             m_currentNotification->setAppId(m_currentText);
         else if (qName == "is_unread")
-            m_currentNotification->setIsRead((m_currentText.compare("1") == 0) ? true : false);
+            m_currentNotification->setIsRead((m_currentText.compare("1") == 0) ? false : true);
         else if (qName == "is_hidden")
             m_currentNotification->setIsHidden((m_currentText.compare("1") == 0) ? true : false);
         else if (qName == "notification") {

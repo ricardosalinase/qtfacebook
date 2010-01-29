@@ -45,7 +45,7 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
 
     connect(factory, SIGNAL(apiFriendsGet(API::Friends::Get*)),
             this, SLOT(apiFriendsGet(API::Friends::Get*)));
-    */
+
 
     API::Method * method = factory->createMethod("notifications.getList");
     connect(factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
@@ -57,7 +57,7 @@ TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
     bool rc = method->execute();
     if (!rc)
         qDebug() << method->getErrorStr();
-
+    */
 }
 
 TestQueryConsole::~TestQueryConsole()

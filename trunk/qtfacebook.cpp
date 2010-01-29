@@ -10,6 +10,7 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/factory.h"
+#include "notificationcheck.h"
 
 #define API_KEY "61cecf6f7ee5528d294e1d6bf675f424"
 
@@ -108,13 +109,29 @@ void QtFacebook::fbWizardComplete() {
         qDebug() << "Awwww ... bummer. It doesn't support messages";
 
 
-    QTimer::singleShot(2000, this, SLOT(updateIcon()));
+    QTimer::singleShot(200, this, SLOT(updateIcon()));
+
+    NotificationCheck *nc = new NotificationCheck(m_userInfo,1);
+
+    connect(nc, SIGNAL(newNotifications(QList<API::Notifications::Notification>*)),
+            this, SLOT(notificationCheck(QList<API::Notifications::Notification>*)),
+            Qt::QueuedConnection);
+
+    nc->start();
+
 
 
 }
 
 void QtFacebook::updateIcon() {
     m_trayIcon->showMessage("Startup","You've started qtFacebook!",QSystemTrayIcon::Information);
+}
+
+void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nList) {
+    QString s = "You have "  + QString::number(nList->size())  + " new notificaions!";
+    m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information);
+
+    delete nList;
 }
 
 void QtFacebook::fbWizardCanceled() {
