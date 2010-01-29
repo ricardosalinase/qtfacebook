@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QTimer>
+#include <QMatrix>
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
@@ -18,7 +19,12 @@ QtFacebook::QtFacebook(QObject *parent) :
     QObject(parent),
     m_userInfo(0),
     m_wizard(0),
-    m_testConsole(0)
+    m_testConsole(0),
+    m_notificationList(0),
+    m_traySingleClicked(false),
+    m_balloonMessageClicked(false),
+    m_trayIconIndex(0),
+    m_animatingTrayIcon(false)
 {
 
     // load session_key, uid, and secret
@@ -102,16 +108,40 @@ void QtFacebook::fbWizardComplete() {
     m_testConsole = new TestQueryConsole(m_userInfo);
     m_testConsole->show();
 
-    QIcon qi(":facebookIcon");
-    m_trayIcon = new QSystemTrayIcon(qi);
+    QPixmap *tmp;
+    QMatrix m;
+
+
+    for (int i = 0, r = 0; i < 4; i++, r+=45) {
+        tmp = new QPixmap();
+        tmp->load(":facebookIcon");
+        //m.rotate(r);
+        QTransform tf;
+        tf.rotate(r,Qt::ZAxis);
+        //tmp->transformed(tf);
+        m_trayIcons[i] = new QIcon(tmp->transformed(tf));
+        delete tmp;
+    }
+
+
+
+    m_trayIcon = new QSystemTrayIcon(*m_trayIcons[0]);
     m_trayIcon->show();
     if (!QSystemTrayIcon::supportsMessages())
         qDebug() << "Awwww ... bummer. It doesn't support messages";
 
+    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
+    connect(m_trayIcon, SIGNAL(messageClicked()),
+            this, SLOT(balloonMessageClicked()));
 
     QTimer::singleShot(200, this, SLOT(updateIcon()));
 
-    NotificationCheck *nc = new NotificationCheck(m_userInfo,5);
+    m_trayAnimationTimer = new QTimer();
+    connect(m_trayAnimationTimer, SIGNAL(timeout()),
+            this, SLOT(nextTrayIcon()));
+
+    NotificationCheck *nc = new NotificationCheck(m_userInfo,1);
 
     connect(nc, SIGNAL(newNotifications(QList<API::Notifications::Notification>*)),
             this, SLOT(notificationCheck(QList<API::Notifications::Notification>*)),
@@ -127,13 +157,65 @@ void QtFacebook::updateIcon() {
     m_trayIcon->showMessage("Startup","You've started qtFacebook!",QSystemTrayIcon::Information);
 }
 
-void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nList) {
-    QString s = "You have "  + QString::number(nList->size())  + " new notificaions!";
-    m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information);
+void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 
-    delete nList;
+    qDebug() << "trayActivated()";
+
+    if (reason == QSystemTrayIcon::Trigger) {
+       showNotificationBalloon();
+    }
+}
+
+void QtFacebook::balloonMessageClicked() {
+     qDebug() << "balloonMessageClicked()";
+     m_trayAnimationTimer->stop();
+     m_trayIcon->setIcon(*m_trayIcons[0]);
+}
+
+void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nList) {
+
+    delete m_notificationList;
+    m_notificationList = nList;
+
+    if (m_notificationList->size() != 0) {
+        showNotificationBalloon();
+        if (!m_trayAnimationTimer->isActive())
+            m_trayAnimationTimer->start(250);
+
+    }
+}
+
+void QtFacebook::showNotificationBalloon()
+{
+    int nNotifications = 0;
+    if (m_notificationList)
+        nNotifications = m_notificationList->size();
+    QString s = "You have "  + QString::number(nNotifications)  + " new notificaions!";
+    m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);
+    m_trayIcon->setToolTip(s);
+
 }
 
 void QtFacebook::fbWizardCanceled() {
     exit(0);
+}
+
+void QtFacebook::nextTrayIcon() {
+
+
+    m_trayIconIndex++;
+
+
+    if (m_trayIconIndex == 4) {
+        m_trayAnimationTimer->stop();
+        m_trayIconIndex = -1;
+        m_trayAnimationTimer->start(2000);
+        m_trayIcon->setIcon(*m_trayIcons[0]);
+    }
+    else
+    {
+        m_trayIcon->setIcon(*m_trayIcons[m_trayIconIndex]);
+        if (m_trayIconIndex == 0)
+            m_trayAnimationTimer->start(250);
+    }
 }
