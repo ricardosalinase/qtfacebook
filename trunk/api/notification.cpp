@@ -11,7 +11,7 @@ void Notification::setNotificationId(QString nid) {
     m_notificationId = nid;
 }
 
-QString Notification::getNotificaitonId() {
+QString Notification::getNotificationId() {
     return m_notificationId;
 }
 
