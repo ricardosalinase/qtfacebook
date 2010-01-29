@@ -24,10 +24,11 @@ Factory * Factory::getInstance() {
 }
 
 Factory * Factory::getInstance(UserInfo *userInfo) {
-    if (m_factory == 0) {
+    if (m_factory == 0)
         m_factory = new Factory();
-        m_factory->setUserInfo(userInfo);
-    }
+
+    m_factory->setUserInfo(userInfo);
+
     return m_factory;
 }
 

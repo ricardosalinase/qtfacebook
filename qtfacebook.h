@@ -23,6 +23,9 @@ public slots:
     void fbWizardCanceled();
     void updateIcon();
 
+private slots:
+    void notificationCheck(QList<API::Notifications::Notification> *nList);
+
 private:
     UserInfo *m_userInfo;
     bool loadUserInfo();
