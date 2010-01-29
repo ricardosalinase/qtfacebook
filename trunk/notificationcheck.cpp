@@ -74,10 +74,8 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
 
     qDebug() << "nList->size(): " << nList->size();
 
-    if (nList->size() != 0)
-        emit newNotifications(nList);
-    else
-        delete nList;
+
+    emit newNotifications(nList);
 
     delete method;
 
