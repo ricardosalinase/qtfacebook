@@ -212,17 +212,20 @@ void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *meth
 
     qDebug() << "apiNotificationsGetList()";
 
-    QList<API::Notifications::Notification *> *list;
+    QList<API::Notifications::Notification> list;
     list = method->getNotifications();
+    // list = method->getNotifications();
 
     //ui->outputFrame->acceptRichText();
-    for (int i =0; i < list->size(); i++)
+    //for (int i =0; i < list.size(); i++)
+    while (!list.empty())
     {
-        if (list->at(i)->getIsHidden() == false) {
-            ui->outputFrame->textCursor().insertHtml(list->at(i)->getTitleHtml());
+        API::Notifications::Notification n = list.takeFirst();
+        if (n.getIsHidden() == false) {
+            ui->outputFrame->textCursor().insertHtml(n.getTitleHtml());
             ui->outputFrame->textCursor().insertHtml("<BR>");
             //ui->outputFrame->append(list->at(i)->getTitleHtml());
-            ui->outputFrame->textCursor().insertHtml(list->at(i)->getBodyHtml());
+            ui->outputFrame->textCursor().insertHtml(n.getBodyHtml());
             //ui->outputFrame->append(list->at(i)->getBodyText());
             ui->outputFrame->textCursor().insertHtml("<BR><BR>");
         }

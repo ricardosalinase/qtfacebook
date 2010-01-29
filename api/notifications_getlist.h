@@ -17,12 +17,12 @@ public:
                     const QString &qName);
     QString getMethodName();
 
-    QList<Notification *> * getNotifications();
-    QList<AppInfo *> * getAppInfo();
+    QList<Notification> getNotifications();
+    QList<AppInfo> getAppInfo();
 
 private:
-    QList<Notification *> * m_notifications;
-    QList<AppInfo *> * m_appInfo;
+    QList<Notification> m_notifications;
+    QList<AppInfo> m_appInfo;
     Notification *m_currentNotification;
     AppInfo *m_currentAppInfo;
 

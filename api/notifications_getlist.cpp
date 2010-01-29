@@ -8,8 +8,8 @@ GetList::GetList(QObject *parent) : Method(parent),
     m_currentNotification(0),
     m_currentAppInfo(0)
 {
-    m_notifications = new QList<Notification*>;
-    m_appInfo = new QList<AppInfo *>;
+    //m_notifications = new QList<Notification*>;
+    //m_appInfo = new QList<AppInfo *>;
 
 }
 
@@ -62,7 +62,8 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "is_hidden")
             m_currentNotification->setIsHidden((m_currentText.compare("1") == 0) ? true : false);
         else if (qName == "notification") {
-            m_notifications->append(m_currentNotification);
+            m_notifications.append(Notification(*m_currentNotification));
+            delete m_currentNotification;
             m_currentNotification = 0;
         }
 
@@ -95,7 +96,8 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "subcategory")
             m_currentAppInfo->setSubCategory(qName);
         else if (qName == "app_info") {
-            m_appInfo->append(m_currentAppInfo);
+            m_appInfo.append(AppInfo(*m_currentAppInfo));
+            delete m_currentAppInfo;
             m_currentAppInfo = 0;
         }
     }
@@ -110,11 +112,11 @@ QString GetList::getMethodName() {
     return "notifications.getList";
 }
 
-QList<Notification *> * GetList::getNotifications() {
+QList<Notification> GetList::getNotifications() {
     return m_notifications;
 }
 
-QList<AppInfo *> * GetList::getAppInfo() {
+QList<AppInfo> GetList::getAppInfo() {
     return m_appInfo;
 }
 
