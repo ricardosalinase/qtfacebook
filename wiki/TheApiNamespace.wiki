@@ -8,22 +8,16 @@ It's designed around a simple factory (API::Factory) that is also a singleton so
 
 {{{API::Factory::createMethod(enum apiMethod)}}} returns a pointer to the appropriate {{{API::Method}}} object. You then set any arguments the call needs via {{{API::Method::setArgument(key, value)}}}. 
 
-After working on this today, and doing a lot of googling I've found that ... Qt is really not happy with multiple inheritance. That becomes a problem is you want to design a pure virtual class as an interface, defining slots and/or signals. You can't inherit from two classes that also inherit from QObject or QWidget. 
+All the actual facebook API calls are objects derived from API::Method. When creating one, you simply inherit from API::Method and then set the name and required parameters in the constructor via the {{{requires(QString arg)}}} and {{{requiresOneOf(QStringList args)}}} calls (see example below). 
 
-~~SO ... I just scrapped that whole design and {{{API::Method::execute()}}} returns a pointer to the <a href=http://qt.nokia.com/doc/4.6/qnetworkreply.html >QNetworkReply</a> and you set up the signal/slot handling yourself.~~
+XML parsing is done within each derived class via two overridden methods. 
 
-~~You need to check to see if the QNetworkReply pointer is NULL (0). If it is, the call couldn't be done. The reason can be retrieved as a QString via {{{API::Method::errStr()}}}. Remember to delete the {{{API::Method}}} object; it's safe to do so once you have a non-null QNetworkReply pointer. ~~
-
-*You now connect the caller to the method object itself. See the SVN log for the latest check in, I'll update this page tomorrow to fully explain things with the final version. The code examples below have been updated but will change slightly.*
-
-All the actual facebook API calls are objects derived from API::Method. When creating one, you simply inherit from API::Method and then set the name and required parameters in the constructor via the {{{requires(QString arg)}}} and {{{requiresOneOf(QStringList args)}}} calls (see example below). The API::Factory has an enum (apiMethod) containing each call and a switch statement for instantiating the correct Method derived class.
+You can now generate Doxygen docs for these classes. The Doxyfile is in SVN.
 
 = Current Thoughts on this Design =
 
 I don't know that the API::Factory class needs to be a singleton. It seemed like a good idea in terms of resource allocation, but I don't know that it actually matters.
 
-* This is now almost done. See the latest SVN log for details *
-I'm thinking that the XML parsing should happen inside the derived {{{API::Method}}} objects. If we deliver the signal to the derived {{{API::Method}}} class and parse it there, we make the whole thing nice and tidy. The derived class would then send it's own signal to the caller with a pointer to itself. The derived class would then return Objects representing the data returned by the API call. The trick there is coming up with an interface for getting at the various types of data.
 
 = Details =
 
@@ -31,102 +25,196 @@ I'm thinking that the XML parsing should happen inside the derived {{{API::Metho
 
 *Example API::Factory usage:*
 {{{
+
 API::Factory *factory = API::Factory::getInstance(m_userInfo);
-    API::Method *method = factory->createMethod(API::Factory::API_FRIENDS_GET);
-    connect(method, SIGNAL(methodComplete(API::Method*)),
-            this, SLOT(methodReturned(API::Method*)));
+
+    API::Method * method = factory->createMethod("notifications.getList");
+    connect(factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
+            this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
+
+    method->setArgument("include_read","true");
 
     bool rc = method->execute();
     if (!rc)
         qDebug() << method->getErrorStr();
+
 }}}
 
 *Example slot implementation*
 {{{
-void TestQueryConsole::methodReturned(API::Method *method) {
+void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *method) {
 
-    qDebug() << "methodReturned()";
+    qDebug() << "apiNotificationsGetList()";
 
-    API::Friends::Get *fgMethod = (API::Friends::Get *)method;
-    QStringList friends = fgMethod->getFriendIdList();
+    QList<API::Notifications::Notification *> *list;
+    list = method->getNotifications();
 
-    ui->outputFrame->append("\n\nHere are the uids for your " + QString::number(friends.size()) + " friends\n");
-
-    for (int i = 0; i < friends.size(); i++)
-        ui->outputFrame->append(friends.at(i));
-
-}
+    for (int i =0; i < list->size(); i++)
+    {
+        if (list->at(i)->getIsHidden() == false) {
+            ui->outputFrame->textCursor().insertHtml(list->at(i)->getTitleHtml());
+            ui->outputFrame->textCursor().insertHtml("<BR>");
+            ui->outputFrame->textCursor().insertHtml(list->at(i)->getBodyHtml());
+            ui->outputFrame->textCursor().insertHtml("<BR><BR>");
+        }
+    }
 }}}
 
 *Example API::Method derived class*
 {{{
 #include "apimethod.h"
+#include "notification.h"
 
 namespace API {
-namespace Friends {
+namespace Notifications {
 
-class Get : public API::Method
+class GetList : public API::Method
 {
 public:
-    Get();
-
-    // Overridden from QXmlDefaultHandler
+    GetList(QObject *parent = 0);
     bool startElement(const QString &namespaceURI, const QString &localName,
-                                    const QString &qName, const QXmlAttributes &attributes);
+                      const QString &qName, const QXmlAttributes &attributes);
     bool endElement(const QString &namespaceURI, const QString &localName,
-                                  const QString &qName);
+                    const QString &qName);
+    QString getMethodName();
 
-    QStringList getFriendIdList();
+    QList<Notification *> * getNotifications();
+    QList<AppInfo *> * getAppInfo();
 
 private:
-    QStringList m_uids;
+    QList<Notification *> * m_notifications;
+    QList<AppInfo *> * m_appInfo;
+    Notification *m_currentNotification;
+    AppInfo *m_currentAppInfo;
+
 
 };
 
-} // namespace Freinds
+} // namespace Notifications
 } // namespace API
 
-#include "friends_get.h"
+
+#include "notifications_getlist.h"
+#include <QDebug>
 
 namespace API {
-namespace Friends {
+namespace Notifications {
 
-Get::Get()
+GetList::GetList(QObject *parent) : Method(parent),
+    m_currentNotification(0),
+    m_currentAppInfo(0)
 {
-   m_methodName = "friends.get";
+    m_notifications = new QList<Notification*>;
+    m_appInfo = new QList<AppInfo *>;
 
 }
 
-// m_currentText is defined in the base API::Method class, as is the method that
-// fills it during the XML parsing
-bool Get::startElement(const QString &namespaceURI, const QString &localName,
-                       const QString &qName, const QXmlAttributes &attributes) {
-
-
+bool GetList::startElement(const QString & /* namespaceURI */,
+                           const QString & /* localName */,
+                           const QString &qName,
+                           const QXmlAttributes &attributes) {
+    qDebug() << "Start: " << qName;
+    if (qName == "notification")
+        m_currentNotification = new Notification();
+    else if (qName == "app_info")
+        m_currentAppInfo = new AppInfo();
 
     m_currentText.clear();
     return true;
-
 }
 
-// m_currentText is defined in the base API::Method class, as is the method that
-// fills it during the XML parsing
+bool GetList::endElement(const QString &namespaceURI,
+                         const QString &localName,
+                         const QString &qName) {
 
-bool Get::endElement(const QString &namespaceURI, const QString &localName,
-                     const QString &qName) {
 
-    if (qName == "uid")
-        m_uids.append(m_currentText);
+    if (m_currentNotification)
+    {
+
+        if (qName == "notification_id")
+            m_currentNotification->setNotificationId(m_currentText);
+        else if (qName == "sender_id")
+            m_currentNotification->setSenderId(m_currentText);
+        else if (qName == "recipient_id")
+            m_currentNotification->setRecipientId(m_currentText);
+        else if (qName == "created_time")
+            m_currentNotification->setCreatedTime(m_currentText);
+        else if (qName == "updated_time")
+            m_currentNotification->setUpdatedTime(m_currentText);
+        else if (qName == "title_html")
+            m_currentNotification->setTitleHtml(m_currentText);
+        else if (qName == "title_text")
+            m_currentNotification->setTitleText(m_currentText);
+        else if (qName == "body_html")
+            m_currentNotification->setBodyHtml(m_currentText);
+        else if (qName == "body_text")
+            m_currentNotification->setBodyText(m_currentText);
+        else if (qName == "href")
+            m_currentNotification->setHref(m_currentText);
+        else if (qName == "app_id")
+            m_currentNotification->setAppId(m_currentText);
+        else if (qName == "is_unread")
+            m_currentNotification->setIsRead((m_currentText.compare("1") == 0) ? true : false);
+        else if (qName == "is_hidden")
+            m_currentNotification->setIsHidden((m_currentText.compare("1") == 0) ? true : false);
+        else if (qName == "notification") {
+            m_notifications->append(m_currentNotification);
+            m_currentNotification = 0;
+        }
+
+    } else if (m_currentAppInfo) {
+
+        if (qName == "app_id")
+            m_currentAppInfo->setAppId(qName);
+        else if (qName == "api_key")
+            m_currentAppInfo->setApiKey(qName);
+        else if (qName == "canvas_name")
+            m_currentAppInfo->setCanvasName(qName);
+        else if (qName == "display_name")
+            m_currentAppInfo->setDisplayName(qName);
+        else if (qName == "icon_url")
+            m_currentAppInfo->setIconUrl(qName);
+        else if (qName == "logo_url")
+            m_currentAppInfo->setLogoUrl(qName);
+        else if (qName == "company_name")
+            m_currentAppInfo->setCompanyName(qName);
+        else if (qName == "description")
+            m_currentAppInfo->setDescription(qName);
+        else if (qName == "daily_active_users")
+            m_currentAppInfo->setDailyActiveUsers(qName);
+        else if (qName == "weekly_active_users")
+            m_currentAppInfo->setWeeklyActiveUsers(qName);
+        else if (qName == "monthly_active_users")
+            m_currentAppInfo->setMonthlyActiveUsers(qName);
+        else if (qName == "category")
+            m_currentAppInfo->setCategory(qName);
+        else if (qName == "subcategory")
+            m_currentAppInfo->setSubCategory(qName);
+        else if (qName == "app_info") {
+            m_appInfo->append(m_currentAppInfo);
+            m_currentAppInfo = 0;
+        }
+    }
+
+    qDebug() << "End: " << qName << " " <<  m_currentText;
+
 
     return true;
-
 }
 
-QStringList Get::getFriendIdList() {
-    return m_uids;
+QString GetList::getMethodName() {
+    return "notifications.getList";
 }
 
-} // namespace Freinds
+QList<Notification *> * GetList::getNotifications() {
+    return m_notifications;
+}
+
+QList<AppInfo *> * GetList::getAppInfo() {
+    return m_appInfo;
+}
+
+} // namespace Notifications
 } // namespace API
 
 
