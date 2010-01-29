@@ -35,6 +35,7 @@ HEADERS += fbconnectwizard.h \
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
-    uiImages/facebook-small-logo-thumb-360x360-75537-thumb-300x300-78195.png
+    uiImages/facebook-small-logo-thumb-360x360-75537-thumb-300x300-78195.png \
+    Doxyfile
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
