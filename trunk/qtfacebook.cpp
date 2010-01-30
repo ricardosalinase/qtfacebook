@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QMatrix>
+#include <QMenu>
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
@@ -108,6 +109,8 @@ void QtFacebook::fbWizardComplete() {
     m_testConsole = new TestQueryConsole(m_userInfo);
     m_testConsole->show();
 
+
+    // Create the context menu and system tray icon
     QPixmap *tmp;
     QMatrix m;
 
@@ -115,25 +118,41 @@ void QtFacebook::fbWizardComplete() {
     for (int i = 0, r = 0; i < 4; i++, r+=45) {
         tmp = new QPixmap();
         tmp->load(":facebookIcon");
-        //m.rotate(r);
         QTransform tf;
         tf.rotate(r,Qt::ZAxis);
-        //tmp->transformed(tf);
         m_trayIcons[i] = new QIcon(tmp->transformed(tf));
         delete tmp;
     }
 
-
-
     m_trayIcon = new QSystemTrayIcon(*m_trayIcons[0]);
+
+    QMenu *menu = new QMenu();
+
+    menu->addSeparator();
+    m_notificationCountMenuAction = menu->addAction("You have 0 new notifications");
+    m_notificationCountMenuAction->setDisabled(true);
+    m_ackNotificationsMenuAction = menu->addAction("Mark as read");
+    m_ackNotificationsMenuAction->setDisabled(true);
+    m_viewAllNotificationsMenuAction = menu->addAction("View all");
+    menu->addSeparator();
+    QAction *exit = menu->addAction("Exit");
+
+    connect(exit, SIGNAL(triggered()),
+            this, SLOT(exitMenuAction()));
+    connect(m_ackNotificationsMenuAction, SIGNAL(triggered()),
+            this, SLOT(ackNewNotifications()));
+    connect(m_viewAllNotificationsMenuAction, SIGNAL(triggered()),
+            this, SLOT(viewAllNotifications()));
+
+
+    m_trayIcon->setContextMenu(menu);
     m_trayIcon->show();
+
     if (!QSystemTrayIcon::supportsMessages())
         qDebug() << "Awwww ... bummer. It doesn't support messages";
 
     connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
-    connect(m_trayIcon, SIGNAL(messageClicked()),
-            this, SLOT(balloonMessageClicked()));
 
     QTimer::singleShot(200, this, SLOT(updateIcon()));
 
@@ -148,10 +167,9 @@ void QtFacebook::fbWizardComplete() {
             Qt::QueuedConnection);
 
     nc->start();
-
-
-
 }
+
+
 
 void QtFacebook::updateIcon() {
     m_trayIcon->showMessage("Startup","You've started qtFacebook!",QSystemTrayIcon::Information);
@@ -160,17 +178,12 @@ void QtFacebook::updateIcon() {
 void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 
     qDebug() << "trayActivated()";
-
-    if (reason == QSystemTrayIcon::Trigger) {
-       showNotificationBalloon();
+    if (reason == QSystemTrayIcon::Trigger ) {
+        if (!m_trayIcon->contextMenu()->isVisible())
+            m_trayIcon->contextMenu()->exec(QCursor::pos());
     }
 }
 
-void QtFacebook::balloonMessageClicked() {
-     qDebug() << "balloonMessageClicked()";
-     m_trayAnimationTimer->stop();
-     m_trayIcon->setIcon(*m_trayIcons[0]);
-}
 
 void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nList) {
 
@@ -178,16 +191,23 @@ void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nLis
     m_notificationList = nList;
 
     if (m_notificationList->size() != 0) {
-        showNotificationBalloon();
+        showNotifications();
         if (!m_trayAnimationTimer->isActive())
             m_trayAnimationTimer->start(250);
-
     }
     else
+    {
         m_trayAnimationTimer->stop();
+        m_trayIcon->setIcon(*m_trayIcons[0]);
+        m_ackNotificationsMenuAction->setEnabled(false);
+        m_notificationCountMenuAction->setText("You have 0 new notifications");
+        m_notificationCountMenuAction->setEnabled(false);
+
+    }
+
 }
 
-void QtFacebook::showNotificationBalloon()
+void QtFacebook::showNotifications()
 {
     int nNotifications = 0;
     if (m_notificationList)
@@ -195,7 +215,11 @@ void QtFacebook::showNotificationBalloon()
     QString s = "You have "  + QString::number(nNotifications)  + " new notificaions!";
     m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);
     m_trayIcon->setToolTip(s);
-
+    m_ackNotificationsMenuAction->setEnabled(true);
+    m_notificationCountMenuAction->setText("View "
+                                           + QString::number(nNotifications)
+                                           + " new notifications)");
+    m_notificationCountMenuAction->setEnabled(true);
 }
 
 void QtFacebook::fbWizardCanceled() {
@@ -204,9 +228,7 @@ void QtFacebook::fbWizardCanceled() {
 
 void QtFacebook::nextTrayIcon() {
 
-
     m_trayIconIndex++;
-
 
     if (m_trayIconIndex == 4) {
         m_trayAnimationTimer->stop();
@@ -220,4 +242,42 @@ void QtFacebook::nextTrayIcon() {
         if (m_trayIconIndex == 0)
             m_trayAnimationTimer->start(250);
     }
+}
+
+void QtFacebook::exitMenuAction() {
+    exit(0);
+}
+
+/************** Notifications ************************/
+void QtFacebook::ackNewNotifications() {
+
+    API::Factory *factory = new API::Factory(m_userInfo);
+    API::Method *method = factory->createMethod("notifications.markRead");
+    QString ids;
+    while (!m_notificationList->empty()) {
+        API::Notifications::Notification n = m_notificationList->takeFirst();
+        ids.append(n.getNotificationId() + ",");
+    }
+    ids.chop(1);
+
+    connect(factory, SIGNAL(apiNotificationsMarkRead(API::Notifications::MarkRead*)),
+            this, SLOT(apiNotificationsMarkRead(API::Notifications::MarkRead*)));
+    method->setArgument("notification_ids",ids);
+    method->execute();
+
+    m_trayAnimationTimer->stop();
+    m_trayIcon->setIcon(*m_trayIcons[0]);
+    m_ackNotificationsMenuAction->setEnabled(false);
+    m_notificationCountMenuAction->setText("You have 0 new notifications");
+    m_notificationCountMenuAction->setEnabled(false);
+}
+
+void QtFacebook::apiNotificationsMarkRead(API::Notifications::MarkRead *method) {
+
+    qDebug() << "apiNotificationsMarkRead(): " << method->successful();
+
+}
+
+void QtFacebook::viewAllNotifications() {
+
 }

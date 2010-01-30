@@ -11,6 +11,7 @@
 #include "notifications_get.h"
 #include "notifications_getlist.h"
 #include "users_getloggedinuser.h"
+#include "notifications_markread.h"
 
 
 // Simple factory
@@ -65,9 +66,14 @@ signals:
     */
     void apiNotificationsGetList(API::Notifications::GetList *method);
     /*!
+    * This signal is emitted whenever a API::Notifications::MarkRead method has completed
+    */
+    void apiNotificationsMarkRead(API::Notifications::MarkRead *method);
+    /*!
     * This signal is emitted whenever a API::Users::getLoggedInUser method has completed
     */
     void apiUsersGetLoggedInUser(API::Users::GetLoggedInUser *method);
+
 
 public slots:
     void dispatch(API::Method *);

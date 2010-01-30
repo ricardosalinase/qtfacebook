@@ -22,16 +22,18 @@ Method * Factory::createMethod(QString method) {
 
     Q_ASSERT_X(0 != m_userInfo, "createMethod()","UserInfo object not set in factory" );
 
-    if (method == "comments.get")
+    if (method.compare("comments.get",Qt::CaseInsensitive) == 0)
         return prepareMethod(new Comments::Get());
-    else if (method == "friends.get")
+    else if (method.compare("friends.get",Qt::CaseInsensitive) == 0)
         return prepareMethod(new Friends::Get());
-    else if (method == "notifications.get")
+    else if (method.compare("notifications.get", Qt::CaseInsensitive) == 0)
         return prepareMethod(new Notifications::Get());
-    else if (method == "notifications.getList")
+    else if (method.compare("notifications.getList", Qt::CaseInsensitive) == 0)
         return prepareMethod(new Notifications::GetList());
-    else if (method == "users.getLoggedInUser")
+    else if (method.compare("users.getLoggedInUser", Qt::CaseInsensitive) == 0)
         return prepareMethod(new Users::GetLoggedInUser());
+    else if (method.compare("notifications.markRead", Qt::CaseInsensitive) == 0)
+        return prepareMethod(new Notifications::MarkRead());
     else
         return 0;
 }
@@ -49,14 +51,16 @@ Method * Factory::prepareMethod(Method *m) {
 
 void Factory::dispatch(API::Method *method) {
 
-    if (method->getMethodName() == "friends.get")
+    if (method->getMethodName().compare("friends.get", Qt::CaseInsensitive) == 0)
         emit apiFriendsGet((API::Friends::Get*)method);
-    else if (method->getMethodName() == "notifications.getList")
+    else if (method->getMethodName().compare("notifications.getList", Qt::CaseInsensitive) == 0)
         emit apiNotificationsGetList((API::Notifications::GetList*)method);
-    else if (method->getMethodName() == "notifications.get")
+    else if (method->getMethodName().compare("notifications.get", Qt::CaseInsensitive) == 0)
         emit apiNotificationsGet((API::Notifications::Get*)method);
-    else if (method->getMethodName() == "users.getLoggedInUser")
+    else if (method->getMethodName().compare("users.getLoggedInUser", Qt::CaseInsensitive) == 0)
         emit apiUsersGetLoggedInUser((API::Users::GetLoggedInUser*)method);
+    else if (method->getMethodName().compare("notifications.markRead", Qt::CaseInsensitive) == 0)
+        emit apiNotificationsMarkRead((API::Notifications::MarkRead*)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {
