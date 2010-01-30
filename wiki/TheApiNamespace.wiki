@@ -4,7 +4,7 @@
 
 Located in the /api directory you'll now find a set of classes that talk to the facebook REST server. It is all contained within the API namespace.
 
-It's designed around a simple factory (API::Factory) that is also a singleton so that there is only a single <a href=http://qt.nokia.com/doc/4.6/qnetworkaccessmanager.html> QNetworkAccessManager</a>. I keep going back and forth to whether that's really necessary or not, but that's how I've implemented it at the moment.
+It's designed around a simple factory (API::Factory).
 
 {{{API::Factory::createMethod(enum apiMethod)}}} returns a pointer to the appropriate {{{API::Method}}} object. You then set any arguments the call needs via {{{API::Method::setArgument(key, value)}}}. 
 
@@ -14,11 +14,6 @@ XML parsing is done within each derived class via two overridden methods.
 
 You can now generate Doxygen docs for these classes. The Doxyfile is in SVN.
 
-= Current Thoughts on this Design =
-
-I don't know that the API::Factory class needs to be a singleton. It seemed like a good idea in terms of resource allocation, but I don't know that it actually matters.
-
-
 = Details =
 
 
@@ -26,7 +21,7 @@ I don't know that the API::Factory class needs to be a singleton. It seemed like
 *Example API::Factory usage:*
 {{{
 
-API::Factory *factory = API::Factory::getInstance(m_userInfo);
+    API::Factory *factory = new Factory(m_userInfo);
 
     API::Method * method = factory->createMethod("notifications.getList");
     connect(factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
