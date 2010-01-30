@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     api/notifications_getlist.cpp \
     api/users_getloggedinuser.cpp \
     api/notification.cpp \
-    notificationcheck.cpp
+    notificationcheck.cpp \
+    api/notifications_markread.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     cookiejar.h \
@@ -33,7 +34,8 @@ HEADERS += fbconnectwizard.h \
     api/users_getloggedinuser.h \
     api/apiCallTypes.h \
     api/notification.h \
-    notificationcheck.h
+    notificationcheck.h \
+    api/notifications_markread.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
