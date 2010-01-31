@@ -10,6 +10,7 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/notifications_markread.h"
+#include "gui/notifications_listview.h"
 
 class QtFacebook : public QObject
 {
@@ -33,6 +34,7 @@ private slots:
     void viewAllNotifications();
     void exitMenuAction();
     void apiNotificationsMarkRead(API::Notifications::MarkRead *method);
+    void testQueryConsole();
 
 private:
     void showNotifications();
@@ -41,6 +43,7 @@ private:
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
     QSystemTrayIcon *m_trayIcon;
+    GUI::Notifications::ListView *m_notificationListView;
     QList<API::Notifications::Notification> *m_notificationList;
     QIcon *m_trayIcons[4];
     bool m_traySingleClicked;
@@ -51,7 +54,7 @@ private:
     QAction *m_notificationCountMenuAction;
     QAction *m_ackNotificationsMenuAction;
     QAction *m_viewAllNotificationsMenuAction;
-
+    QByteArray m_geometry;
 };
 
 #endif // QTFACEBOOK_H
