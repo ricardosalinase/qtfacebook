@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QMatrix>
 #include <QMenu>
+#include <QApplication>
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
@@ -21,12 +22,16 @@ QtFacebook::QtFacebook(QObject *parent) :
     m_userInfo(0),
     m_wizard(0),
     m_testConsole(0),
+    m_notificationListView(0),
     m_notificationList(0),
     m_traySingleClicked(false),
     m_balloonMessageClicked(false),
     m_trayIconIndex(0),
     m_animatingTrayIcon(false)
+
 {
+
+    QApplication::setQuitOnLastWindowClosed(false);
 
     // load session_key, uid, and secret
     bool hasInfo = loadUserInfo();
@@ -106,9 +111,6 @@ bool QtFacebook::loadUserInfo() {
 
 void QtFacebook::fbWizardComplete() {
 
-    m_testConsole = new TestQueryConsole(m_userInfo);
-    m_testConsole->show();
-
 
     // Create the context menu and system tray icon
     QPixmap *tmp;
@@ -128,6 +130,8 @@ void QtFacebook::fbWizardComplete() {
 
     QMenu *menu = new QMenu();
 
+    QAction *tqc = menu->addAction("Test Query Console");
+
     menu->addSeparator();
     m_notificationCountMenuAction = menu->addAction("You have 0 new notifications");
     m_notificationCountMenuAction->setDisabled(true);
@@ -137,6 +141,8 @@ void QtFacebook::fbWizardComplete() {
     menu->addSeparator();
     QAction *exit = menu->addAction("Exit");
 
+    connect(tqc, SIGNAL(triggered()),
+            this, SLOT(testQueryConsole()));
     connect(exit, SIGNAL(triggered()),
             this, SLOT(exitMenuAction()));
     connect(m_ackNotificationsMenuAction, SIGNAL(triggered()),
@@ -248,6 +254,16 @@ void QtFacebook::exitMenuAction() {
     exit(0);
 }
 
+void QtFacebook::testQueryConsole() {
+    if (m_testConsole == 0)
+        m_testConsole = new TestQueryConsole(m_userInfo);
+    else if (m_testConsole->isMinimized())
+        m_testConsole->showNormal();
+
+    m_testConsole->show();
+
+}
+
 /************** Notifications ************************/
 void QtFacebook::ackNewNotifications() {
 
@@ -280,4 +296,17 @@ void QtFacebook::apiNotificationsMarkRead(API::Notifications::MarkRead *method) 
 
 void QtFacebook::viewAllNotifications() {
 
+    if (m_notificationListView == 0) {
+        m_notificationListView = new GUI::Notifications::ListView(m_userInfo);
+    } else if (m_notificationListView != 0 && m_notificationListView->isMinimized()) {
+        m_notificationListView->showNormal();
+    }  else {
+        m_notificationListView->restoreWindow();
+        m_notificationListView->activateWindow();
+    }
+
+    m_notificationListView->show();
+    m_notificationListView->raise();
 }
+
+

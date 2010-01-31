@@ -70,34 +70,34 @@ bool GetList::endElement(const QString &namespaceURI,
     } else if (m_currentAppInfo) {
 
         if (qName == "app_id")
-            m_currentAppInfo->setAppId(qName);
+            m_currentAppInfo->setAppId(m_currentText);
         else if (qName == "api_key")
-            m_currentAppInfo->setApiKey(qName);
+            m_currentAppInfo->setApiKey(m_currentText);
         else if (qName == "canvas_name")
-            m_currentAppInfo->setCanvasName(qName);
+            m_currentAppInfo->setCanvasName(m_currentText);
         else if (qName == "display_name")
-            m_currentAppInfo->setDisplayName(qName);
+            m_currentAppInfo->setDisplayName(m_currentText);
         else if (qName == "icon_url")
-            m_currentAppInfo->setIconUrl(qName);
+            m_currentAppInfo->setIconUrl(m_currentText,false);
         else if (qName == "logo_url")
-            m_currentAppInfo->setLogoUrl(qName);
+            m_currentAppInfo->setLogoUrl(m_currentText,false);
         else if (qName == "company_name")
-            m_currentAppInfo->setCompanyName(qName);
+            m_currentAppInfo->setCompanyName(m_currentText);
         else if (qName == "description")
-            m_currentAppInfo->setDescription(qName);
+            m_currentAppInfo->setDescription(m_currentText);
         else if (qName == "daily_active_users")
-            m_currentAppInfo->setDailyActiveUsers(qName);
+            m_currentAppInfo->setDailyActiveUsers(m_currentText);
         else if (qName == "weekly_active_users")
-            m_currentAppInfo->setWeeklyActiveUsers(qName);
+            m_currentAppInfo->setWeeklyActiveUsers(m_currentText);
         else if (qName == "monthly_active_users")
-            m_currentAppInfo->setMonthlyActiveUsers(qName);
+            m_currentAppInfo->setMonthlyActiveUsers(m_currentText);
         else if (qName == "category")
-            m_currentAppInfo->setCategory(qName);
+            m_currentAppInfo->setCategory(m_currentText);
         else if (qName == "subcategory")
-            m_currentAppInfo->setSubCategory(qName);
+            m_currentAppInfo->setSubCategory(m_currentText);
         else if (qName == "app_info") {
-            m_appInfo.append(AppInfo(*m_currentAppInfo));
-            delete m_currentAppInfo;
+            m_appInfo.insert(m_currentAppInfo->getAppId(), m_currentAppInfo);
+            //delete m_currentAppInfo;
             m_currentAppInfo = 0;
         }
     }
@@ -116,7 +116,7 @@ QList<Notification> GetList::getNotifications() {
     return m_notifications;
 }
 
-QList<AppInfo> GetList::getAppInfo() {
+QMap<QString,AppInfo* > GetList::getAppInfo() {
     return m_appInfo;
 }
 

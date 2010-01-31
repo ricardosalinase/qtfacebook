@@ -1,4 +1,5 @@
 #include "notifications_markread.h"
+#include <QDebug>
 
 namespace API {
 namespace Notifications {

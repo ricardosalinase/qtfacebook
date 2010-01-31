@@ -3,6 +3,7 @@
 
 #include "apimethod.h"
 #include "notification.h"
+#include <QMap>
 
 namespace API {
 namespace Notifications {
@@ -18,11 +19,11 @@ public:
     QString getMethodName();
 
     QList<Notification> getNotifications();
-    QList<AppInfo> getAppInfo();
+    QMap<QString, AppInfo*> getAppInfo();
 
 private:
     QList<Notification> m_notifications;
-    QList<AppInfo> m_appInfo;
+    QMap<QString, AppInfo* > m_appInfo;
     Notification *m_currentNotification;
     AppInfo *m_currentAppInfo;
 

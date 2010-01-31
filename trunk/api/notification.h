@@ -1,7 +1,11 @@
 #ifndef NOTIFICATION_H
 #define NOTIFICATION_H
 
+#include <QObject>
 #include <QString>
+#include <QTextBrowser>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 namespace API {
 namespace Notifications {
@@ -18,6 +22,7 @@ public:
      */
     Notification();
     virtual ~Notification() {};
+    //Notification(const Notification &orig)();
 
     void setNotificationId(QString nid);
     /*!
@@ -124,12 +129,14 @@ private:
  * used to post a comment that it also returned. This includes the standard Facebook UI itself.
  * (See: Notification )
  */
-class AppInfo
+class AppInfo : QObject
 {
+    Q_OBJECT
 public:
-    AppInfo();
-    ~AppInfo() {};
+    AppInfo(QObject *parent = 0);
+     ~AppInfo() {};
 
+    AppInfo * clone();
     void setAppId(QString appId);
     /*!
      * Returns the <api_id> for this Facebook application. This can be cross-referenced to a Notification
@@ -145,17 +152,27 @@ public:
      * Returns the <display_name> for this Facebook application.
      */
     QString getDisplayName();
-    void setIconUrl(QString iu);
+    void setIconUrl(QString iu, bool fetchPixmap = true);
     /*!
      * Returns the <icon_url> for this Facebook application. These are the small icons to the left of each notification
      * in the standard Facebook UI and are set by the application ower (including the Facebook UI itself). It may be empty.
      */
     QString getIconUrl();
-    void setLogoUrl(QString lu);
+    void setIconPixmap(QPixmap *p);
+    /*!
+     * Returns a QPixmap created from the <icon_url> (See: getIconUrl())
+     */
+    QPixmap * getIconPixmap();
+    void setLogoUrl(QString lu, bool fetchPixmap = true);
     /*!
      * Returns the <logo_url> for this Facebook application. A larger icon set by the Application developer.
      */
     QString getLogoUrl();
+    void setLogoPixmap(QPixmap *p);
+    /*!
+     * Return a QPixmap created from the <logo_url> (See: getLogoUrl())
+     */
+    QPixmap * getLogoPixmap();
     void setCompanyName(QString cn);
     /*!
      * Returns the <company_name> for this Facebook application. It may be empty.
@@ -197,6 +214,10 @@ public:
      */
     QString getCanvasName();
 
+private slots:
+    void gotReply(QNetworkReply *reply);
+
+
 private:
     QString m_appId;
     QString m_apiKey;
@@ -211,10 +232,19 @@ private:
     QString m_category;
     QString m_subCategory;
     QString m_canvasName;
+    QPixmap *m_iconPixmap;
+    QPixmap *m_logoPixmap;
+
+    QNetworkAccessManager *m_nam;
+    QNetworkReply *m_iconReply;
+    QNetworkReply *m_logoReply;
 
 };
 
 
 } // End namespace Notifications
 } // End namespace API
+
+
+
 #endif // NOTIFICATION_H
