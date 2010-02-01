@@ -15,11 +15,12 @@ SOURCES += main.cpp \
     api/notifications_get.cpp \
     api/notifications_getlist.cpp \
     api/users_getloggedinuser.cpp \
-    api/notification.cpp \
     notificationcheck.cpp \
     api/notifications_markread.cpp \
     gui/notifications_listview.cpp \
-    gui/notifications_widget.cpp
+    gui/notifications_widget.cpp \
+    data/notification.cpp \
+    data/appinfo.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     cookiejar.h \
@@ -35,11 +36,12 @@ HEADERS += fbconnectwizard.h \
     api/notifications_getlist.h \
     api/users_getloggedinuser.h \
     api/apiCallTypes.h \
-    api/notification.h \
     notificationcheck.h \
     api/notifications_markread.h \
     gui/notifications_listview.h \
-    gui/notifications_widget.h
+    gui/notifications_widget.h \
+    data/notification.h \
+    data/appinfo.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

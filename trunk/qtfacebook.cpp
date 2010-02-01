@@ -171,8 +171,8 @@ void QtFacebook::fbWizardComplete() {
 
     NotificationCheck *nc = new NotificationCheck(m_userInfo,1);
 
-    connect(nc, SIGNAL(newNotifications(QList<API::Notifications::Notification>*)),
-            this, SLOT(notificationCheck(QList<API::Notifications::Notification>*)),
+    connect(nc, SIGNAL(newNotifications(QList<DATA::Notification*>*)),
+            this, SLOT(notificationCheck(QList<DATA::Notification*>*)),
             Qt::QueuedConnection);
 
     nc->start();
@@ -194,7 +194,7 @@ void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 
-void QtFacebook::notificationCheck(QList<API::Notifications::Notification> *nList) {
+void QtFacebook::notificationCheck(QList<DATA::Notification *> *nList) {
 
     delete m_notificationList;
     m_notificationList = nList;
@@ -274,8 +274,8 @@ void QtFacebook::ackNewNotifications() {
     API::Method *method = factory->createMethod("notifications.markRead");
     QString ids;
     while (!m_notificationList->empty()) {
-        API::Notifications::Notification n = m_notificationList->takeFirst();
-        ids.append(n.getNotificationId() + ",");
+        DATA::Notification *n = m_notificationList->takeFirst();
+        ids.append(n->getNotificationId() + ",");
     }
     ids.chop(1);
 

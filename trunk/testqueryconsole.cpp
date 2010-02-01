@@ -1,7 +1,6 @@
 #include "testqueryconsole.h"
 #include "ui_testqueryconsole.h"
 #include "api/factory.h"
-#include "api/notification.h"
 
 
 #include <QNetworkAccessManager>
@@ -189,13 +188,13 @@ void TestQueryConsole::apiNotificationsGetList(API::Notifications::GetList *meth
 
     qDebug() << "apiNotificationsGetList()";
 
-    QList<API::Notifications::Notification *> *list;
+    QList<DATA::Notification *> *list;
     list = method->getNotificationList();
     //ui->outputFrame->acceptRichText();
     //for (int i =0; i < list.size(); i++)
     while (!list->empty())
     {
-        API::Notifications::Notification *n = list->takeFirst();
+        DATA::Notification *n = list->takeFirst();
         if (n->getIsHidden() == false) {
             ui->outputFrame->textCursor().insertHtml(n->getTitleHtml());
             ui->outputFrame->textCursor().insertHtml("<BR>");

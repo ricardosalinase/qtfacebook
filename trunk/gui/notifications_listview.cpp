@@ -31,7 +31,7 @@ namespace Notifications {
     m_scrollArea->setWidgetResizable(true);
     m_nContainer = new QWidget();
     m_nContainer->resize(200,600);
-    m_nContainer->setStyleSheet("background: white");
+    m_nContainer->setStyleSheet("background: white;");
     QVBoxLayout *vbl = new QVBoxLayout();
     m_nContainer->setLayout(vbl);
     m_scrollArea->setWidget(m_nContainer);
@@ -59,7 +59,6 @@ namespace Notifications {
     setStyleSheet("background: #526ea6");
     restoreWindow();
 
-    //getNotifications(m);
 
 
 }
@@ -154,9 +153,9 @@ void ListView::getPixmaps() {
     bool sentRequest = false;
     QPixmap *pixmap = 0;
 
-    QMap<QString,API::Notifications::AppInfo* >::const_iterator i = m_appInfoMap->constBegin();
+    QMap<QString,DATA::AppInfo* >::const_iterator i = m_appInfoMap->constBegin();
     while (i != m_appInfoMap->constEnd()) {
-        API::Notifications::AppInfo *ai = i.value();
+        DATA::AppInfo *ai = i.value();
         if (m_pixmapCache.contains(ai->getAppId()))
             ai->setIconPixmap(m_pixmapCache[ai->getAppId()]);
         else {
@@ -181,7 +180,7 @@ void ListView::gotPixmap(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError)
     {
         QString aid = m_tmpMap.take(reply);
-        API::Notifications::AppInfo *a = m_appInfoMap->value(aid);
+        DATA::AppInfo *a = m_appInfoMap->value(aid);
         QPixmap *p = new QPixmap();
         p->loadFromData(reply->readAll());
         a->setIconPixmap(p);
@@ -218,8 +217,8 @@ void ListView::displayResults()
 
     while (!m_notificationList->empty())
     {
-        API::Notifications::Notification *n = m_notificationList->takeFirst();
-        API::Notifications::AppInfo *ai = m_appInfoMap->value(n->getAppId());
+        DATA::Notification *n = m_notificationList->takeFirst();
+        DATA::AppInfo *ai = m_appInfoMap->value(n->getAppId());
         nWidget = new Widget(n->getTitleHtml(), ai->getIconPixmap());
         m_nContainer->layout()->addWidget(nWidget);
         delete n;
@@ -231,7 +230,7 @@ void ListView::displayResults()
 
     // Clear the AppInfoMap
     // TODO: Think about caching this data?
-    QMap<QString, API::Notifications::AppInfo*>::const_iterator i = m_appInfoMap->constBegin();
+    QMap<QString, DATA::AppInfo*>::const_iterator i = m_appInfoMap->constBegin();
     while (i != m_appInfoMap->constEnd()) {
         delete i.value();
         i++;

@@ -58,15 +58,15 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
     qDebug() << "apiNotificationsGetList()";
 
 
-    QList<API::Notifications::Notification*> *list = method->getNotificationList();
+    QList<DATA::Notification*> *list = method->getNotificationList();
 
     qDebug() << "list.size(): " << list->size();
 
-    QList<API::Notifications::Notification*> *nList = new QList<API::Notifications::Notification*>;
+    QList<DATA::Notification*> *nList = new QList<DATA::Notification*>;
 
     while (!list->empty())
     {
-        API::Notifications::Notification *n = list->takeFirst();
+        DATA::Notification *n = list->takeFirst();
         if (n->getIsRead() == false && n->getIsHidden() == false)
             nList->prepend(n);
         else
