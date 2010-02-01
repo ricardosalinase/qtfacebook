@@ -10,6 +10,8 @@
 #include <QDialog>
 #include <QWebView>
 #include <QScrollArea>
+#include <QThreadStorage>
+#include <QCache>
 
 #include "userinfo.h"
 #include "api/factory.h"
@@ -44,12 +46,13 @@ protected:
     void closeEvent ( QCloseEvent * event );
 
 private:
+    void getPixmaps();
+    void cachePixmap(const QString &key, QPixmap *object);
+    bool getPixmapFromCache(const QString &key, QPixmap **pm);
     UserInfo *m_userInfo;
     API::Factory *m_factory;
     QMap<QString, API::Notifications::Notification> nMap;
-    void getPixmaps();
-
-
+    QMap<QString, QPixmap *> m_pixmapCache;
     QMap<QString, API::Notifications::AppInfo*> *m_appInfoMap;
     QList<API::Notifications::Notification*> *m_notificationList;
     QMap<QNetworkReply *, QString> m_tmpMap;
@@ -57,6 +60,9 @@ private:
     // UI componenets
     QScrollArea *m_scrollArea;
     QWidget *m_nContainer;
+
+
+
 
 };
 

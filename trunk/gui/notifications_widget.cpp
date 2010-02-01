@@ -8,7 +8,8 @@ namespace Notifications {
 Widget::Widget(QString text, QPixmap *p, QWidget *parent) :
     QWidget(parent)
 {
-    m_label = new QLabel(text);
+    m_label = new QLabel("<style type=\"text/css\">a { text-decoration: none; }</style>" + text );
+    m_label->setStyleSheet("QLabel { font-size : 12px; text-decoration : none;  }");
     m_icon = new QLabel();
     m_icon->setPixmap(*p);
     m_label->setWordWrap(true);
@@ -16,7 +17,8 @@ Widget::Widget(QString text, QPixmap *p, QWidget *parent) :
 
 
     QGridLayout *gl = new QGridLayout();
-    gl->addWidget(m_icon,0,0,Qt::AlignTop);
+    gl->setHorizontalSpacing(10);
+    gl->addWidget(m_icon,0,0,Qt::AlignTop | Qt::AlignLeft);
 
     gl->addWidget(m_label,0,1,Qt::AlignTop);
     gl->setColumnStretch(1,1);
