@@ -5,7 +5,7 @@
 #include <QTextBrowser>
 #include <QDesktopServices>
 #include <QNetworkDiskCache>
-#include <QPixmapCache>
+#include <QScrollBar>
 #include "notifications_listview.h"
 
 
@@ -24,7 +24,10 @@ namespace Notifications {
     connect(this, SIGNAL(gotAllPixmaps()),
             this, SLOT(displayResults()));
 
+
+
     m_scrollArea = new QScrollArea();
+    m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
     m_scrollArea->setWidgetResizable(true);
     m_nContainer = new QWidget();
     m_nContainer->resize(200,600);
@@ -60,8 +63,6 @@ namespace Notifications {
 
 
 }
-
-
 
 void ListView::closeEvent(QCloseEvent *event) {
 
@@ -134,10 +135,8 @@ void ListView::apiNotificationsGetList(API::Notifications::GetList *method) {
 void ListView::getPixmaps() {
 
     // Send off network requests to download the pixmaps.
-    // TODO: The QPixmapCache is NOT thread-safe. Need to implement QThreadStorage
 
-
-    // TODO: Also maybe do partial reads rather than waiting for the entire reply to come back?
+    // TODO: Maybe do partial reads rather than waiting for the entire reply to come back?
 
 
 
@@ -153,20 +152,20 @@ void ListView::getPixmaps() {
     QNetworkReply *reply;
 
     bool sentRequest = false;
-    QPixmap *pixmap;
+    QPixmap *pixmap = 0;
 
     QMap<QString,API::Notifications::AppInfo* >::const_iterator i = m_appInfoMap->constBegin();
     while (i != m_appInfoMap->constEnd()) {
         API::Notifications::AppInfo *ai = i.value();
-        //if (!QPixmapCache::find(ai->getAppId(), pixmap )) {
+        if (m_pixmapCache.contains(ai->getAppId()))
+            ai->setIconPixmap(m_pixmapCache[ai->getAppId()]);
+        else {
             sentRequest = true;
             QUrl url(ai->getIconUrl());
             reply = m_nam->get(QNetworkRequest(url));
             m_tmpMap.insert(reply, i.key());
-            ++i;
-        //}
-        //else
-        //    ai->setIconPixmap(pixmap);
+        }
+        ++i;
     }
 
     if (!sentRequest)
@@ -186,7 +185,7 @@ void ListView::gotPixmap(QNetworkReply *reply) {
         QPixmap *p = new QPixmap();
         p->loadFromData(reply->readAll());
         a->setIconPixmap(p);
-        //QPixmapCache::insert(a->getAppId(),*p);
+        m_pixmapCache.insert(a->getAppId(), p);
 
     } else {
         qDebug() << reply->errorString();
