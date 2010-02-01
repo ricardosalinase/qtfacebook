@@ -137,6 +137,7 @@ void QtFacebook::fbWizardComplete() {
     m_notificationCountMenuAction->setDisabled(true);
     m_ackNotificationsMenuAction = menu->addAction("Mark as read");
     m_ackNotificationsMenuAction->setDisabled(true);
+    QAction *act = menu->addAction("View Recent");
     m_viewAllNotificationsMenuAction = menu->addAction("View all");
     menu->addSeparator();
     QAction *exit = menu->addAction("Exit");
@@ -149,6 +150,8 @@ void QtFacebook::fbWizardComplete() {
             this, SLOT(ackNewNotifications()));
     connect(m_viewAllNotificationsMenuAction, SIGNAL(triggered()),
             this, SLOT(viewAllNotifications()));
+    connect(act, SIGNAL(triggered()),
+            this, SLOT(viewRecentNotifications()));
 
 
     m_trayIcon->setContextMenu(menu);
@@ -294,19 +297,31 @@ void QtFacebook::apiNotificationsMarkRead(API::Notifications::MarkRead *method) 
 
 }
 
-void QtFacebook::viewAllNotifications() {
+void QtFacebook::viewNewNotifications() {
+    viewNotifications(GUI::Notifications::ListView::NEW);
+}
 
+void QtFacebook::viewAllNotifications() {
+    viewNotifications(GUI::Notifications::ListView::ALL);
+}
+
+void QtFacebook::viewRecentNotifications() {
+    viewNotifications(GUI::Notifications::ListView::RECENT);
+}
+
+void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
     if (m_notificationListView == 0) {
         m_notificationListView = new GUI::Notifications::ListView(m_userInfo);
     } else if (m_notificationListView != 0 && m_notificationListView->isMinimized()) {
         m_notificationListView->showNormal();
-    }  else {
         m_notificationListView->restoreWindow();
+    }  else {
+        //m_notificationListView->restoreWindow();
         m_notificationListView->activateWindow();
     }
+
+    m_notificationListView->reload(m);
 
     m_notificationListView->show();
     m_notificationListView->raise();
 }
-
-

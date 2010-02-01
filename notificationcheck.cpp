@@ -58,22 +58,24 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
     qDebug() << "apiNotificationsGetList()";
 
 
-    QList<API::Notifications::Notification> list;
-    list = method->getNotifications();
+    QList<API::Notifications::Notification*> *list = method->getNotificationList();
 
-    qDebug() << "list.size(): " << list.size();
+    qDebug() << "list.size(): " << list->size();
 
-    QList<API::Notifications::Notification> *nList = new QList<API::Notifications::Notification>;
+    QList<API::Notifications::Notification*> *nList = new QList<API::Notifications::Notification*>;
 
-    while (!list.empty())
+    while (!list->empty())
     {
-        API::Notifications::Notification n = list.takeFirst();
-        if (n.getIsRead() == false && n.getIsHidden() == false)
+        API::Notifications::Notification *n = list->takeFirst();
+        if (n->getIsRead() == false && n->getIsHidden() == false)
             nList->prepend(n);
+        else
+            delete n;
     }
 
     qDebug() << "nList->size(): " << nList->size();
 
+    // We could get pixmaps here, with the caveat that some might never be used
 
     emit newNotifications(nList);
 

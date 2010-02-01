@@ -8,8 +8,8 @@ GetList::GetList(QObject *parent) : Method(parent),
     m_currentNotification(0),
     m_currentAppInfo(0)
 {
-    //m_notifications = new QList<Notification*>;
-    //m_appInfo = new QList<AppInfo *>;
+    m_notifications = new QList<Notification*>;
+    m_appInfo = new QMap<QString, AppInfo *>;
 
 }
 
@@ -62,8 +62,7 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "is_hidden")
             m_currentNotification->setIsHidden((m_currentText.compare("1") == 0) ? true : false);
         else if (qName == "notification") {
-            m_notifications.append(Notification(*m_currentNotification));
-            delete m_currentNotification;
+            m_notifications->append(m_currentNotification);
             m_currentNotification = 0;
         }
 
@@ -78,9 +77,9 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "display_name")
             m_currentAppInfo->setDisplayName(m_currentText);
         else if (qName == "icon_url")
-            m_currentAppInfo->setIconUrl(m_currentText,false);
+            m_currentAppInfo->setIconUrl(m_currentText);
         else if (qName == "logo_url")
-            m_currentAppInfo->setLogoUrl(m_currentText,false);
+            m_currentAppInfo->setLogoUrl(m_currentText);
         else if (qName == "company_name")
             m_currentAppInfo->setCompanyName(m_currentText);
         else if (qName == "description")
@@ -96,8 +95,7 @@ bool GetList::endElement(const QString &namespaceURI,
         else if (qName == "subcategory")
             m_currentAppInfo->setSubCategory(m_currentText);
         else if (qName == "app_info") {
-            m_appInfo.insert(m_currentAppInfo->getAppId(), m_currentAppInfo);
-            //delete m_currentAppInfo;
+            m_appInfo->insert(m_currentAppInfo->getAppId(), m_currentAppInfo);
             m_currentAppInfo = 0;
         }
     }
@@ -112,11 +110,11 @@ QString GetList::getMethodName() {
     return "notifications.getList";
 }
 
-QList<Notification> GetList::getNotifications() {
+QList<Notification*> * GetList::getNotificationList() {
     return m_notifications;
 }
 
-QMap<QString,AppInfo* > GetList::getAppInfo() {
+QMap<QString,AppInfo* > * GetList::getAppInfoMap() {
     return m_appInfo;
 }
 

@@ -32,11 +32,14 @@ private slots:
     void nextTrayIcon();
     void ackNewNotifications();
     void viewAllNotifications();
+    void viewRecentNotifications();
+    void viewNewNotifications();
     void exitMenuAction();
     void apiNotificationsMarkRead(API::Notifications::MarkRead *method);
     void testQueryConsole();
 
 private:
+    void viewNotifications(GUI::Notifications::ListView::mode m);
     void showNotifications();
     bool loadUserInfo();
     UserInfo *m_userInfo;
