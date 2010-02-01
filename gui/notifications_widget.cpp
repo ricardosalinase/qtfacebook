@@ -16,6 +16,7 @@ Widget::Widget(QString text, QPixmap *p, QWidget *parent) :
 
 
 
+
     QGridLayout *gl = new QGridLayout();
     gl->setHorizontalSpacing(10);
     gl->addWidget(m_icon,0,0,Qt::AlignTop | Qt::AlignLeft);

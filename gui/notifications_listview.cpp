@@ -202,10 +202,8 @@ void ListView::displayResults()
 {
     qDebug() << "nList.size(): " << m_notificationList->size();
 
-    // Clear current display
-    Widget *child;
-    while ((child = (Widget*) m_nContainer->layout()->takeAt(0)) != 0)
-        delete child;
+    // Clear current display. When you call QScrollArea::setWidget(newWidget*),
+    // it calls the destructor of the previous widget (which calls its children's ...)
 
     m_nContainer = new QWidget();
     m_nContainer->resize(200,600);
@@ -226,6 +224,10 @@ void ListView::displayResults()
         m_nContainer->layout()->addWidget(nWidget);
         delete n;
     }
+
+    // If there's not enough to cause scrollbars, this will bunch them
+    // at the top.
+    ((QVBoxLayout *)m_nContainer->layout())->addStretch();
 
     // Clear the AppInfoMap
     // TODO: Think about caching this data?
