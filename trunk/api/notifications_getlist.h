@@ -12,18 +12,19 @@ class GetList : public API::Method
 {
 public:
     GetList(QObject *parent = 0);
+    ~GetList() {};
     bool startElement(const QString &namespaceURI, const QString &localName,
                       const QString &qName, const QXmlAttributes &attributes);
     bool endElement(const QString &namespaceURI, const QString &localName,
                     const QString &qName);
     QString getMethodName();
 
-    QList<Notification> getNotifications();
-    QMap<QString, AppInfo*> getAppInfo();
+    QList<Notification*> * getNotificationList();
+    QMap<QString, AppInfo*> * getAppInfoMap();
 
 private:
-    QList<Notification> m_notifications;
-    QMap<QString, AppInfo* > m_appInfo;
+    QList<Notification *> *m_notifications;
+    QMap<QString, AppInfo* > *m_appInfo;
     Notification *m_currentNotification;
     AppInfo *m_currentAppInfo;
 

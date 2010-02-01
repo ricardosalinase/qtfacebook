@@ -5,6 +5,7 @@
 #include <QTextBrowser>
 #include <QDesktopServices>
 #include <QNetworkDiskCache>
+#include <QPixmapCache>
 #include "notifications_listview.h"
 
 
@@ -13,24 +14,25 @@ namespace GUI {
 namespace Notifications {
 
  ListView::ListView(UserInfo *userInfo, QWidget *parent) :
-            QDialog(parent),
+            QWidget(parent),
             m_userInfo(userInfo)
 {
-     m_factory = new API::Factory(userInfo);
+    m_factory = new API::Factory(userInfo);
 
-     connect(m_factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
+    connect(m_factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
              this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
+    connect(this, SIGNAL(gotAllPixmaps()),
+            this, SLOT(displayResults()));
 
-
-     QScrollArea *sa = new QScrollArea();
-     sa->setWidgetResizable(true);
-     m_nContainer = new QWidget();
-     m_nContainer->resize(200,600);
-     m_nContainer->setStyleSheet("background: white");
-     QVBoxLayout *vbl = new QVBoxLayout();
-     m_nContainer->setLayout(vbl);
-     sa->setWidget(m_nContainer);
-     sa->setStyleSheet("background: #e5e5e5");
+    m_scrollArea = new QScrollArea();
+    m_scrollArea->setWidgetResizable(true);
+    m_nContainer = new QWidget();
+    m_nContainer->resize(200,600);
+    m_nContainer->setStyleSheet("background: white");
+    QVBoxLayout *vbl = new QVBoxLayout();
+    m_nContainer->setLayout(vbl);
+    m_scrollArea->setWidget(m_nContainer);
+    m_scrollArea->setStyleSheet("background: #e5e5e5");
     QVBoxLayout *mainLayout = new QVBoxLayout();
 
     //m_webView = new QWebView();
@@ -42,7 +44,7 @@ namespace Notifications {
 
 
     QVBoxLayout *bottomLayout = new QVBoxLayout();
-    bottomLayout->addWidget(sa);
+    bottomLayout->addWidget(m_scrollArea);
 
 
     mainLayout->addLayout(bottomLayout);
@@ -54,7 +56,7 @@ namespace Notifications {
     setStyleSheet("background: #526ea6");
     restoreWindow();
 
-    getNotifications(true);
+    //getNotifications(m);
 
 
 }
@@ -92,14 +94,24 @@ void ListView::navigate(QUrl url) {
     qDebug() << "Url: " + url.toString();
 }
 
-void ListView::getNotifications(bool getAll) {
+void ListView::reload(mode m) {
 
-    qDebug() << "getNotifications()";
+    qDebug() << "reload()";
 
     API::Method *method = m_factory->createMethod("notifications.getList");
 
-    if (getAll)
+    if (m == ALL || RECENT)
         method->setArgument("include_read","true");
+
+    if (m == RECENT) {
+        time_t current = time(0);
+        time_t fromTime = current -= (60 * 60 * 24);
+        QString startTime = QString::number(fromTime);
+        method->setArgument("start_time",startTime);
+    }
+
+
+
 
     bool rc = method->execute();
     if (!rc)
@@ -111,8 +123,8 @@ void ListView::apiNotificationsGetList(API::Notifications::GetList *method) {
     qDebug() << "apiNotificationsGetList()";
 
 
-    m_appInfoMap = method->getAppInfo();
-    m_nList = method->getNotifications();
+    m_appInfoMap = method->getAppInfoMap();
+    m_notificationList = method->getNotificationList();
 
     method->deleteLater();
 
@@ -121,8 +133,13 @@ void ListView::apiNotificationsGetList(API::Notifications::GetList *method) {
 
 void ListView::getPixmaps() {
 
-    connect(this, SIGNAL(gotAllPixmaps()),
-            this, SLOT(displayResults()));
+    // Send off network requests to download the pixmaps.
+    // TODO: The QPixmapCache is NOT thread-safe. Need to implement QThreadStorage
+
+
+    // TODO: Also maybe do partial reads rather than waiting for the entire reply to come back?
+
+
 
     QNetworkAccessManager *m_nam = new QNetworkAccessManager();
     QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
@@ -134,13 +151,28 @@ void ListView::getPixmaps() {
 
 
     QNetworkReply *reply;
-    QMapIterator<QString, API::Notifications::AppInfo*> i(m_appInfoMap);
-    while (i.hasNext()) {
-        i.next();
-        QUrl url(i.value()->getIconUrl());
-        reply = m_nam->get(QNetworkRequest(url));
-        m_tmpMap.insert(reply, i.key());
+
+    bool sentRequest = false;
+    QPixmap *pixmap;
+
+    QMap<QString,API::Notifications::AppInfo* >::const_iterator i = m_appInfoMap->constBegin();
+    while (i != m_appInfoMap->constEnd()) {
+        API::Notifications::AppInfo *ai = i.value();
+        //if (!QPixmapCache::find(ai->getAppId(), pixmap )) {
+            sentRequest = true;
+            QUrl url(ai->getIconUrl());
+            reply = m_nam->get(QNetworkRequest(url));
+            m_tmpMap.insert(reply, i.key());
+            ++i;
+        //}
+        //else
+        //    ai->setIconPixmap(pixmap);
     }
+
+    if (!sentRequest)
+        emit gotAllPixmaps();
+
+
 }
 
 void ListView::gotPixmap(QNetworkReply *reply) {
@@ -150,10 +182,11 @@ void ListView::gotPixmap(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError)
     {
         QString aid = m_tmpMap.take(reply);
-        API::Notifications::AppInfo *a = m_appInfoMap.value(aid);
+        API::Notifications::AppInfo *a = m_appInfoMap->value(aid);
         QPixmap *p = new QPixmap();
         p->loadFromData(reply->readAll());
         a->setIconPixmap(p);
+        //QPixmapCache::insert(a->getAppId(),*p);
 
     } else {
         qDebug() << reply->errorString();
@@ -168,27 +201,43 @@ void ListView::gotPixmap(QNetworkReply *reply) {
 
 void ListView::displayResults()
 {
-    qDebug() << "nList.size(): " << m_nList.size();
+    qDebug() << "nList.size(): " << m_notificationList->size();
 
+    // Clear current display
+    Widget *child;
+    while ((child = (Widget*) m_nContainer->layout()->takeAt(0)) != 0)
+        delete child;
+
+    m_nContainer = new QWidget();
+    m_nContainer->resize(200,600);
+    m_nContainer->setStyleSheet("background: white");
+    QVBoxLayout *vbl = new QVBoxLayout();
+    m_nContainer->setLayout(vbl);
+
+    m_scrollArea->setWidget(m_nContainer);
 
     Widget *nWidget;
 
 
-    while (!m_nList.empty())
+    while (!m_notificationList->empty())
     {
-        API::Notifications::Notification n = m_nList.takeFirst();
-        API::Notifications::AppInfo *ai = m_appInfoMap.value(n.getAppId());
-        nWidget = new Widget(n.getTitleHtml(), ai->getIconPixmap());
+        API::Notifications::Notification *n = m_notificationList->takeFirst();
+        API::Notifications::AppInfo *ai = m_appInfoMap->value(n->getAppId());
+        nWidget = new Widget(n->getTitleHtml(), ai->getIconPixmap());
         m_nContainer->layout()->addWidget(nWidget);
+        delete n;
     }
 
+    // Clear the AppInfoMap
+    // TODO: Think about caching this data?
+    QMap<QString, API::Notifications::AppInfo*>::const_iterator i = m_appInfoMap->constBegin();
+    while (i != m_appInfoMap->constEnd()) {
+        delete i.value();
+        i++;
+    }
 
-
-
-
-
-
-
+    delete m_appInfoMap;
+    delete m_notificationList;
 
 }
 

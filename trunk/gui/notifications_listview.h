@@ -9,6 +9,7 @@
 #include <QMap>
 #include <QDialog>
 #include <QWebView>
+#include <QScrollArea>
 
 #include "userinfo.h"
 #include "api/factory.h"
@@ -18,13 +19,17 @@
 namespace GUI {
 namespace Notifications {
 
-class ListView : public QDialog
+class ListView : public QWidget
 {
 Q_OBJECT
 public:
+
+    enum mode { ALL, RECENT, NEW };
+
     ListView(UserInfo *userInfo, QWidget *parent = 0);
 
     void restoreWindow();
+    void reload(mode m);
 
 signals:
     void gotAllPixmaps();
@@ -43,13 +48,14 @@ private:
     API::Factory *m_factory;
     QMap<QString, API::Notifications::Notification> nMap;
     void getPixmaps();
-    void getNotifications(bool getAll = false);
 
-    QMap<QString, API::Notifications::AppInfo*> m_appInfoMap;
-    QList<API::Notifications::Notification> m_nList;
+
+    QMap<QString, API::Notifications::AppInfo*> *m_appInfoMap;
+    QList<API::Notifications::Notification*> *m_notificationList;
     QMap<QNetworkReply *, QString> m_tmpMap;
 
     // UI componenets
+    QScrollArea *m_scrollArea;
     QWidget *m_nContainer;
 
 };

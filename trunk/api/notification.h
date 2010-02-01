@@ -129,14 +129,14 @@ private:
  * used to post a comment that it also returned. This includes the standard Facebook UI itself.
  * (See: Notification )
  */
-class AppInfo : QObject
+class AppInfo
 {
-    Q_OBJECT
+
 public:
-    AppInfo(QObject *parent = 0);
+    AppInfo();
      ~AppInfo() {};
 
-    AppInfo * clone();
+
     void setAppId(QString appId);
     /*!
      * Returns the <api_id> for this Facebook application. This can be cross-referenced to a Notification
@@ -152,25 +152,35 @@ public:
      * Returns the <display_name> for this Facebook application.
      */
     QString getDisplayName();
-    void setIconUrl(QString iu, bool fetchPixmap = true);
+    void setIconUrl(QString iu);
     /*!
      * Returns the <icon_url> for this Facebook application. These are the small icons to the left of each notification
      * in the standard Facebook UI and are set by the application ower (including the Facebook UI itself). It may be empty.
      */
     QString getIconUrl();
+    /*!
+     * Store a QPixmap, usually created from the <icon_url> (See: getIconUrl()).
+     * Note that the destructor does not delete this and it is up to the user to manage the lifetime of this object.
+     */
     void setIconPixmap(QPixmap *p);
     /*!
-     * Returns a QPixmap created from the <icon_url> (See: getIconUrl())
+     * Returns a QPixmap, usually created from the <icon_url> (See: getIconUrl()) and stored with setIconPixmap().
+     * Note that the destructor does not delete this and it is up to the user to manage the lifetime of this object.
      */
     QPixmap * getIconPixmap();
-    void setLogoUrl(QString lu, bool fetchPixmap = true);
+    void setLogoUrl(QString lu);
     /*!
      * Returns the <logo_url> for this Facebook application. A larger icon set by the Application developer.
      */
     QString getLogoUrl();
+    /*!
+     * Store a QPixmap, usually created from the <logo_url> (See: getLogoUrl()).
+     * Note that the destructor does not delete this and it is up to the user to manage the lifetime of this object.
+     */
     void setLogoPixmap(QPixmap *p);
     /*!
-     * Return a QPixmap created from the <logo_url> (See: getLogoUrl())
+     * Returns a QPixmap, usually created from the <icon_url> (See: getIconUrl()) and stored with setIconPixmap().
+     * Note that the destructor does not delete this and it is up to the user to manage the lifetime of this object.
      */
     QPixmap * getLogoPixmap();
     void setCompanyName(QString cn);
@@ -214,9 +224,6 @@ public:
      */
     QString getCanvasName();
 
-private slots:
-    void gotReply(QNetworkReply *reply);
-
 
 private:
     QString m_appId;
@@ -232,12 +239,9 @@ private:
     QString m_category;
     QString m_subCategory;
     QString m_canvasName;
+
     QPixmap *m_iconPixmap;
     QPixmap *m_logoPixmap;
-
-    QNetworkAccessManager *m_nam;
-    QNetworkReply *m_iconReply;
-    QNetworkReply *m_logoReply;
 
 };
 
