@@ -27,7 +27,7 @@ public slots:
     void updateIcon();
 
 private slots:
-    void notificationCheck(QList<API::Notifications::Notification> *nList);
+    void notificationCheck(QList<DATA::Notification *> *nList);
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void nextTrayIcon();
     void ackNewNotifications();
@@ -47,7 +47,7 @@ private:
     TestQueryConsole *m_testConsole;
     QSystemTrayIcon *m_trayIcon;
     GUI::Notifications::ListView *m_notificationListView;
-    QList<API::Notifications::Notification> *m_notificationList;
+    QList<DATA::Notification *> *m_notificationList;
     QIcon *m_trayIcons[4];
     bool m_traySingleClicked;
     bool m_balloonMessageClicked;

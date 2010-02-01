@@ -2,8 +2,11 @@
 #define NOTIFICATIONS_GETLIST_H
 
 #include "apimethod.h"
-#include "notification.h"
+#include "data/notification.h"
+#include "data/appinfo.h"
 #include <QMap>
+
+using namespace DATA;
 
 namespace API {
 namespace Notifications {

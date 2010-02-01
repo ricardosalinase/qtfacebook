@@ -20,7 +20,7 @@ public:
     void setCheckInterval(int minutes);
 
 signals:
-    void newNotifications(QList<API::Notifications::Notification*> *nList);
+    void newNotifications(QList<DATA::Notification*> *nList);
     void sessionExpired();
 
 protected:

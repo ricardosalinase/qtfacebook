@@ -13,9 +13,9 @@
 #include <QThreadStorage>
 #include <QCache>
 
+
 #include "userinfo.h"
 #include "api/factory.h"
-#include "api/notification.h"
 #include "notifications_widget.h"
 
 namespace GUI {
@@ -51,10 +51,10 @@ private:
     bool getPixmapFromCache(const QString &key, QPixmap **pm);
     UserInfo *m_userInfo;
     API::Factory *m_factory;
-    QMap<QString, API::Notifications::Notification> nMap;
+    QMap<QString, DATA::Notification> nMap;
     QMap<QString, QPixmap *> m_pixmapCache;
-    QMap<QString, API::Notifications::AppInfo*> *m_appInfoMap;
-    QList<API::Notifications::Notification*> *m_notificationList;
+    QMap<QString, DATA::AppInfo*> *m_appInfoMap;
+    QList<DATA::Notification*> *m_notificationList;
     QMap<QNetworkReply *, QString> m_tmpMap;
 
     // UI componenets
