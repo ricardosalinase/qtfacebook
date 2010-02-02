@@ -56,7 +56,7 @@ private:
     QMap<QString, DATA::AppInfo*> *m_appInfoMap;
     QList<DATA::Notification*> *m_notificationList;
     QMap<QNetworkReply *, QString> m_tmpMap;
-
+    bool m_showHidden;
     // UI componenets
     QScrollArea *m_scrollArea;
     QWidget *m_nContainer;

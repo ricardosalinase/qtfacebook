@@ -10,7 +10,6 @@ Widget::Widget(DATA::Notification *n, DATA::AppInfo *a, QWidget *parent) :
 {
     m_label = n;
     m_icon = a;
-
     QGridLayout *gl = new QGridLayout();
     gl->setHorizontalSpacing(10);
     gl->addWidget(m_icon,0,0,Qt::AlignTop | Qt::AlignLeft);

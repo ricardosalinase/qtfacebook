@@ -15,7 +15,8 @@ namespace Notifications {
 
  ListView::ListView(UserInfo *userInfo, QWidget *parent) :
             QWidget(parent),
-            m_userInfo(userInfo)
+            m_userInfo(userInfo),
+            m_showHidden(false)
 {
     m_factory = new API::Factory(userInfo);
 
@@ -100,12 +101,13 @@ void ListView::reload(mode m) {
 
     API::Method *method = m_factory->createMethod("notifications.getList");
 
-    if (m == ALL || RECENT)
+    if (m == ALL || m == RECENT)
         method->setArgument("include_read","true");
 
     if (m == RECENT) {
         time_t current = time(0);
         time_t fromTime = current -= (60 * 60 * 24);
+        qDebug() << "Begin time: " << fromTime;
         QString startTime = QString::number(fromTime);
         method->setArgument("start_time",startTime);
     }
@@ -218,9 +220,11 @@ void ListView::displayResults()
     while (!m_notificationList->empty())
     {
         DATA::Notification *n = m_notificationList->takeFirst();
-        DATA::AppInfo *ai = m_appInfoMap->value(n->getAppId());
-        nWidget = new Widget(n->getTitleHtml(), ai->getIconPixmap());
-        m_nContainer->layout()->addWidget(nWidget);
+        if (!n->getIsHidden() || m_showHidden) {
+            DATA::AppInfo *ai = m_appInfoMap->value(n->getAppId());
+            nWidget = new Widget(n->getTitleHtml(), ai->getIconPixmap());
+            m_nContainer->layout()->addWidget(nWidget);
+        }
         delete n;
     }
 
