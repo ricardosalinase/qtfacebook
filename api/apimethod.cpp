@@ -49,6 +49,9 @@ bool Method::execute() {
     if (!validate())
         return false;
 
+    if (!prepare())
+        return false;
+
     // THese are always constant with API requests
     m_argMap.insert("method", getMethodName());
     m_argMap.insert("api_key", m_userInfo->getApiKey());
@@ -128,7 +131,9 @@ bool Method::execute() {
     }
 }
 
-
+bool Method::prepare() {
+    return true;
+}
 
 // Go through the requiredArgs list and make user they all exist in the args map
 

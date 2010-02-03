@@ -36,7 +36,6 @@ HEADERS += fbconnectwizard.h \
     api/notifications_get.h \
     api/notifications_getlist.h \
     api/users_getloggedinuser.h \
-    api/apiCallTypes.h \
     notificationcheck.h \
     api/notifications_markread.h \
     gui/notifications_listview.h \
