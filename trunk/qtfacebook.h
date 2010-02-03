@@ -39,10 +39,11 @@ private slots:
     void exitMenuAction();
     void apiNotificationsMarkRead(API::Notifications::MarkRead *method);
     void testQueryConsole();
+    void receivedNewNotifications(int numNew);
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);
-    void showNotifications();
+    void showNotifications(int numNew);
     bool loadUserInfo();
     UserInfo *m_userInfo;
     FBConnectWizard *m_wizard;
