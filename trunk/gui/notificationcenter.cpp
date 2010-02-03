@@ -96,6 +96,11 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
     // Notify Tray Icon
     emit receivedNewNotifications(nList->size());
 
+    // If the list is empty and we still think there's new notificaions,
+    // the user viewed them via facebook and they're no longer "unread"
+    //if (nList->size() == 0 && our new list != 0 )
+    // return
+    //else
     // Display new Notifications
     m_nContainer = new QWidget();
     m_nContainer->resize(200,600);
