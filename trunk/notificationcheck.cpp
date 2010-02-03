@@ -77,7 +77,6 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
     // We could get pixmaps here, with the caveat that some might never be used
 
     emit newNotifications(nList, method->getAppInfoMap());
-    emit newNotifications(nList);
     delete method;
 
 }
