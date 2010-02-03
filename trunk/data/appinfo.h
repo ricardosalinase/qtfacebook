@@ -1,7 +1,8 @@
 #ifndef APPINFO_H
 #define APPINFO_H
 
-#include <QLabel>
+#include <QString>
+#include <QPixmap>
 
 namespace DATA {
 /*!
@@ -10,11 +11,13 @@ namespace DATA {
  * used to post a comment that it also returned. This includes the standard Facebook UI itself.
  * (See: Notification )
  */
-class AppInfo : public QLabel
+class AppInfo
 {
-Q_OBJECT
+
 public:
-    explicit AppInfo(QWidget *parent = 0);
+    explicit AppInfo();
+    ~AppInfo();
+
     void setAppId(QString appId);
     /*!
      * Returns the <api_id> for this Facebook application. This can be cross-referenced to a Notification
@@ -116,12 +119,8 @@ private:
     QString m_category;
     QString m_subCategory;
     QString m_canvasName;
-    bool displayLogoPixmap;
     QPixmap *m_iconPixmap;
     QPixmap *m_logoPixmap;
-signals:
-
-public slots:
 
 };
 

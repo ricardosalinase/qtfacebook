@@ -21,7 +21,10 @@ SOURCES += main.cpp \
     gui/notifications_widget.cpp \
     data/notification.cpp \
     data/appinfo.cpp \
-    gui/notificationlabel.cpp
+    gui/notificationlabel.cpp \
+    gui/appinfolabel.cpp \
+    gui/notificationcenter.cpp \
+    gui/notificationwidget.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     cookiejar.h \
@@ -42,7 +45,10 @@ HEADERS += fbconnectwizard.h \
     gui/notifications_widget.h \
     data/notification.h \
     data/appinfo.h \
-    gui/notificationlabel.h
+    gui/notificationlabel.h \
+    gui/appinfolabel.h \
+    gui/notificationcenter.h \
+    gui/notificationwidget.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

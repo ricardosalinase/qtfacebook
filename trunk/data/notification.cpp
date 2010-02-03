@@ -4,14 +4,8 @@
 
 namespace DATA {
 
-Notification::Notification(QWidget *parent) :
-    QLabel(parent)
-{
-    m_displayHtml = true;
+Notification::Notification() {
 
-
-    setStyleSheet("QLabel { font-size : 12px; text-decoration : none;  }");
-    setWordWrap(true);
 }
 
 
@@ -57,7 +51,6 @@ QString Notification::getUpdatedTime() {
 
 void Notification::setTitleHtml(QString html) {
     m_titleHtml = html;
-    setText("<style type=\"text/css\">a { text-decoration: none; }</style>" + html);
 }
 
 QString Notification::getTitleHtml() {

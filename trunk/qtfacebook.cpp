@@ -126,12 +126,16 @@ void QtFacebook::fbWizardComplete() {
         delete tmp;
     }
 
+    m_notificationCenter = new GUI::NotificationCenter(m_userInfo);
+
     m_trayIcon = new QSystemTrayIcon(*m_trayIcons[0]);
 
     QMenu *menu = new QMenu();
 
     QAction *tqc = menu->addAction("Test Query Console");
 
+    menu->addSeparator();
+    QAction *ncr = menu->addAction("Notification Center");
     menu->addSeparator();
     m_notificationCountMenuAction = menu->addAction("You have 0 new notifications");
     m_notificationCountMenuAction->setDisabled(true);
@@ -144,6 +148,7 @@ void QtFacebook::fbWizardComplete() {
 
     connect(tqc, SIGNAL(triggered()),
             this, SLOT(testQueryConsole()));
+
     connect(exit, SIGNAL(triggered()),
             this, SLOT(exitMenuAction()));
     connect(m_ackNotificationsMenuAction, SIGNAL(triggered()),
@@ -153,6 +158,8 @@ void QtFacebook::fbWizardComplete() {
     connect(act, SIGNAL(triggered()),
             this, SLOT(viewRecentNotifications()));
 
+    connect(ncr, SIGNAL(triggered()),
+            m_notificationCenter, SLOT(showYourself()));
 
     m_trayIcon->setContextMenu(menu);
     m_trayIcon->show();

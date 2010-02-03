@@ -2,12 +2,17 @@
 
 namespace DATA {
 
-AppInfo::AppInfo(QWidget *parent) :
-    QLabel(parent)
+AppInfo::AppInfo()
 {
-    displayLogoPixmap = true;
     m_iconPixmap = 0;
     m_logoPixmap = 0;
+}
+
+AppInfo::~AppInfo() {
+    if (m_iconPixmap != 0)
+        delete m_iconPixmap;
+    if (m_logoPixmap != 0)
+        delete m_logoPixmap;
 }
 
 void AppInfo::setAppId(QString appId) {
@@ -127,8 +132,6 @@ QPixmap * AppInfo::getLogoPixmap() {
 
 void AppInfo::setIconPixmap(QPixmap *p) {
     m_iconPixmap = new QPixmap(*p);
-    if (!displayLogoPixmap)
-        setPixmap(*p);
 }
 
 QPixmap * AppInfo::getIconPixmap() {

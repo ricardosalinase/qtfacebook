@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QList>
 #include <QTimer>
+#include <QMap>
 
 #include "api/factory.h"
 
@@ -21,6 +22,7 @@ public:
 
 signals:
     void newNotifications(QList<DATA::Notification*> *nList);
+    void newNotifications(QList<DATA::Notification *> *nList, QMap<QString, DATA::AppInfo *> *aMap);
     void sessionExpired();
 
 protected:

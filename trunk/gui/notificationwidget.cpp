@@ -1,11 +1,10 @@
-#include "notifications_widget.h"
+#include "notificationwidget.h"
 #include <QGridLayout>
 #include <QDebug>
 
 namespace GUI {
-namespace Notifications {
 
-    Widget::Widget(GUI::NotificationLabel *n, GUI::AppInfoLabel *a, QWidget *parent) :
+NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLabel *a, QWidget *parent) :
         QWidget(parent)
 {
     n->setParent(this);
@@ -26,7 +25,7 @@ namespace Notifications {
 
 }
 
-Widget::Widget(QString text, QPixmap *p, QWidget *parent) :
+NotificationWidget::NotificationWidget(QString text, QPixmap *p, QWidget *parent) :
     QWidget(parent)
 {
     m_label = new QLabel("<style type=\"text/css\">a { text-decoration: none; }</style>" + text );
@@ -52,12 +51,13 @@ Widget::Widget(QString text, QPixmap *p, QWidget *parent) :
 
 }
 
-Widget::~Widget() {
-
+NotificationWidget::~NotificationWidget() {
+    delete m_label;
+    delete m_icon;
 }
 
 
 
 
-} // namespace Notifications
+
 } // namespace GUI

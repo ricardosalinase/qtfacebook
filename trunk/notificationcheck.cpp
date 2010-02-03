@@ -46,7 +46,6 @@ void NotificationCheck::checkForNotifiations() {
     qDebug() << "checkForNotifications()";
 
     API::Method *method = m_factory->createMethod("notifications.getList");
-
     bool rc = method->execute();
     if (!rc)
         qDebug() << method->getErrorStr();
@@ -67,7 +66,7 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
     while (!list->empty())
     {
         DATA::Notification *n = list->takeFirst();
-        if (n->getIsRead() == false && n->getIsHidden() == false)
+        if (n->getIsHidden() == false)
             nList->prepend(n);
         else
             delete n;
@@ -77,8 +76,8 @@ void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *met
 
     // We could get pixmaps here, with the caveat that some might never be used
 
+    emit newNotifications(nList, method->getAppInfoMap());
     emit newNotifications(nList);
-
     delete method;
 
 }
