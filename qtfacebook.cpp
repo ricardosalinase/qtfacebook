@@ -176,13 +176,7 @@ void QtFacebook::fbWizardComplete() {
     connect(m_trayAnimationTimer, SIGNAL(timeout()),
             this, SLOT(nextTrayIcon()));
 
-    NotificationCheck *nc = new NotificationCheck(m_userInfo,1);
 
-    connect(nc, SIGNAL(newNotifications(QList<DATA::Notification*>*)),
-            this, SLOT(notificationCheck(QList<DATA::Notification*>*)),
-            Qt::QueuedConnection);
-
-    nc->start();
 }
 
 
@@ -207,7 +201,7 @@ void QtFacebook::notificationCheck(QList<DATA::Notification *> *nList) {
     m_notificationList = nList;
 
     if (m_notificationList->size() != 0) {
-        showNotifications();
+        showNotifications(m_notificationList->size() );
         if (!m_trayAnimationTimer->isActive())
             m_trayAnimationTimer->start(250);
     }
@@ -223,17 +217,15 @@ void QtFacebook::notificationCheck(QList<DATA::Notification *> *nList) {
 
 }
 
-void QtFacebook::showNotifications()
+void QtFacebook::showNotifications(int numNew)
 {
-    int nNotifications = 0;
-    if (m_notificationList)
-        nNotifications = m_notificationList->size();
-    QString s = "You have "  + QString::number(nNotifications)  + " new notificaions!";
+
+    QString s = "You have "  + QString::number(numNew)  + " new notificaions!";
     m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);
     m_trayIcon->setToolTip(s);
     m_ackNotificationsMenuAction->setEnabled(true);
     m_notificationCountMenuAction->setText("View "
-                                           + QString::number(nNotifications)
+                                           + QString::number(numNew)
                                            + " new notifications)");
     m_notificationCountMenuAction->setEnabled(true);
 }
@@ -275,6 +267,30 @@ void QtFacebook::testQueryConsole() {
 }
 
 /************** Notifications ************************/
+void QtFacebook::receivedNewNotifications(int numNew) {
+
+    if (numNew != 0) {
+        showNotifications(numNew);
+        if (!m_trayAnimationTimer->isActive())
+            m_trayAnimationTimer->start(250);
+    }
+    else
+    {
+        m_trayAnimationTimer->stop();
+        m_trayIcon->setIcon(*m_trayIcons[0]);
+        m_ackNotificationsMenuAction->setEnabled(false);
+        m_notificationCountMenuAction->setText("You have 0 new notifications");
+        m_notificationCountMenuAction->setEnabled(false);
+        m_trayIcon->setToolTip("You have 0 new notifications");
+
+    }
+
+
+
+}
+
+
+
 void QtFacebook::ackNewNotifications() {
 
     API::Factory *factory = new API::Factory(m_userInfo);
