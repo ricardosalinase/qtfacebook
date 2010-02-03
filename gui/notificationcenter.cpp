@@ -115,7 +115,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
     while (!nList->empty())
     {
         GUI::NotificationLabel *n = new GUI::NotificationLabel(nList->takeFirst());
-        GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(aMap->value(n->getNotification()->getAppId()));
+        GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(new AppInfo(*(aMap->value(n->getNotification()->getAppId()))));
         getPixmap(ai);
         nWidget = new GUI::NotificationWidget(n, ai);
         connect(nWidget, SIGNAL(linkActivated(QString)),
@@ -124,6 +124,21 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
 
     }
 
+
+    AppInfo *tmp;
+    QMap<QString, AppInfo *>::iterator i = aMap->begin();
+     while (i != aMap->end()) {
+             tmp = i.value();
+             ++i;
+             delete tmp;
+     }
+
+     delete nList;
+     delete aMap;
+
+    // If there's not enough to cause scrollbars, this will bunch them
+    // at the top.
+    ((QVBoxLayout *)m_nContainer->layout())->addStretch();
 
 }
 

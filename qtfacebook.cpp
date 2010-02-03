@@ -27,7 +27,8 @@ QtFacebook::QtFacebook(QObject *parent) :
     m_traySingleClicked(false),
     m_balloonMessageClicked(false),
     m_trayIconIndex(0),
-    m_animatingTrayIcon(false)
+    m_animatingTrayIcon(false),
+    m_numNew(0)
 
 {
 
