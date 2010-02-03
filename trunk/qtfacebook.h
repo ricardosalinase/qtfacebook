@@ -60,6 +60,7 @@ private:
     QAction *m_notificationCountMenuAction;
     QAction *m_viewAllNotificationsMenuAction;
     QByteArray m_geometry;
+    int m_numNew;
 };
 
 #endif // QTFACEBOOK_H

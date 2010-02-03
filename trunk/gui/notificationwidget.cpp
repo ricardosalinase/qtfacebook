@@ -52,8 +52,8 @@ NotificationWidget::NotificationWidget(QString text, QPixmap *p, QWidget *parent
 }
 
 NotificationWidget::~NotificationWidget() {
-    delete m_label;
-    delete m_icon;
+    //delete m_label;
+    //delete m_icon;
 }
 
 
