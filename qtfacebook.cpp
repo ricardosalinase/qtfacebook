@@ -195,28 +195,6 @@ void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 
-void QtFacebook::notificationCheck(QList<DATA::Notification *> *nList) {
-
-    delete m_notificationList;
-    m_notificationList = nList;
-
-    if (m_notificationList->size() != 0) {
-        showNotifications(m_notificationList->size() );
-        if (!m_trayAnimationTimer->isActive())
-            m_trayAnimationTimer->start(250);
-    }
-    else
-    {
-        m_trayAnimationTimer->stop();
-        m_trayIcon->setIcon(*m_trayIcons[0]);
-        m_ackNotificationsMenuAction->setEnabled(false);
-        m_notificationCountMenuAction->setText("You have 0 new notifications");
-        m_notificationCountMenuAction->setEnabled(false);
-
-    }
-
-}
-
 void QtFacebook::showNotifications(int numNew)
 {
 
