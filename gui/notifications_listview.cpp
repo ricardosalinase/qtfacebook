@@ -7,7 +7,7 @@
 #include <QNetworkDiskCache>
 #include <QScrollBar>
 #include "notifications_listview.h"
-
+#include <time.h>
 
 
 namespace GUI {
