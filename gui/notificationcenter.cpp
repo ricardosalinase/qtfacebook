@@ -124,7 +124,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
 
 void NotificationCenter::getPixmap(GUI::AppInfoLabel *ai) {
 
-    if (m_pixmapCache.contains(ai->getAppInfo()->getAppId()))
+    if (m_iconPixmapCache.contains(ai->getAppInfo()->getAppId()))
         ai->myIconPixmap(m_iconPixmapCache[ai->getAppInfo()->getAppId()], true);
     else {
         QNetworkAccessManager *m_nam = new QNetworkAccessManager();
@@ -150,7 +150,7 @@ void NotificationCenter::receiveIconPixmap(QNetworkReply *reply) {
         QPixmap *p = new QPixmap();
         p->loadFromData(reply->readAll());
         a->myIconPixmap(p, true);
-        m_pixmapCache.insert(a->getAppInfo()->getAppId(), p);
+        m_iconPixmapCache.insert(a->getAppInfo()->getAppId(), p);
 
     } else {
         qDebug() << reply->errorString();

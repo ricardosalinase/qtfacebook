@@ -126,7 +126,7 @@ void QtFacebook::fbWizardComplete() {
         delete tmp;
     }
 
-    m_notificationCenter = new GUI::NotificationCenter(m_userInfo);
+
 
     m_trayIcon = new QSystemTrayIcon(*m_trayIcons[0]);
 
@@ -158,11 +158,16 @@ void QtFacebook::fbWizardComplete() {
     connect(act, SIGNAL(triggered()),
             this, SLOT(viewRecentNotifications()));
 
-    connect(ncr, SIGNAL(triggered()),
-            m_notificationCenter, SLOT(showYourself()));
+
 
     m_trayIcon->setContextMenu(menu);
     m_trayIcon->show();
+
+    m_notificationCenter = new GUI::NotificationCenter(m_userInfo);
+    connect(ncr, SIGNAL(triggered()),
+            m_notificationCenter, SLOT(showYourself()));
+    connect(m_notificationCenter, SIGNAL(receivedNewNotifications(int)),
+            this, SLOT(receivedNewNotifications(int)));
 
     if (!QSystemTrayIcon::supportsMessages())
         qDebug() << "Awwww ... bummer. It doesn't support messages";

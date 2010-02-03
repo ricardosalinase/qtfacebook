@@ -52,7 +52,6 @@ private:
     NotificationCheck *m_notificationCheck;
     UserInfo *m_userInfo;
     bool m_showHidden;
-    QMap<QString, QPixmap *> m_pixmapCache;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;
 
