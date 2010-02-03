@@ -106,7 +106,9 @@ void TestQueryConsole::sendQuery() {
     QStringList tmp(origArgs.split('&'));
     for (int i = 0; i < tmp.size(); i++) {
         QStringList tmp2(tmp.at(i).split('='));
-        keyValuePairs.insert(tmp2.at(0), tmp2.at(1));
+        QString key = tmp2.takeFirst();
+        QString value = tmp2.join("=");
+        keyValuePairs.insert(key, value);
     }
 
 

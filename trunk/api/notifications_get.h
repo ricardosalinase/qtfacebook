@@ -16,7 +16,6 @@ public:
                     const QString &qName);
     QString getMethodName();
 
-
 };
 
 } // namespace Notifications
