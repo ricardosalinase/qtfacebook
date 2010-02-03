@@ -29,7 +29,6 @@ public slots:
     void updateIcon();
 
 private slots:
-    void notificationCheck(QList<DATA::Notification *> *nList);
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void nextTrayIcon();
     void ackNewNotifications();
