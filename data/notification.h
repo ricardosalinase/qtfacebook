@@ -1,26 +1,23 @@
 #ifndef NOTIFICATION_H
 #define NOTIFICATION_H
 
-#include <QWidget>
-#include <QLabel>
-#include <QPixmap>
+#include <QString>
 
 namespace DATA {
 /*!
  * The Notification class encapsulates individual notificaitons returned by the Facebook API call "notifications.getList"
- * It Inherits from QLabel and will display the <title_html> returned from the API call (see: setTitleHtml()).
  */
-class Notification : public QLabel
+class Notification
 {
-Q_OBJECT
+
 public:
 
     /*!
      * Constructs an empty Notification object
      */
-    explicit Notification(QWidget *parent = 0);
+    explicit Notification();
     virtual ~Notification() {};
-    //Notification(const Notification &orig)();
+
 
     void setNotificationId(QString nid);
     /*!
@@ -36,7 +33,7 @@ public:
     QString getSenderId();
     void setRecipientId(QString rid);
     /*!
-     * Returns the <recipient_id>) returned by Facebook for this notification. This is the Facebook
+     * Returns the <recipient_id> returned by Facebook for this notification. This is the Facebook
      * uid for the person who originally posted the item being commented on.
      */
     QString getRecipientId();
@@ -104,12 +101,6 @@ public:
      */
     bool getIsHidden();
 
-signals:
-
-
-public slots:
-
-
 
 private:
     QString m_notificationId;
@@ -125,9 +116,7 @@ private:
     QString m_appId;
     bool m_isRead;
     bool m_isHidden;
-    bool m_displayHtml;
-    QLabel *m_icon;
-    QLabel *m_label;
+
 
 };
 

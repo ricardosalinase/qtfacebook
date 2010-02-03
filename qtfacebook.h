@@ -11,6 +11,8 @@
 #include "testqueryconsole.h"
 #include "api/notifications_markread.h"
 #include "gui/notifications_listview.h"
+#include "gui/notificationcenter.h"
+
 
 class QtFacebook : public QObject
 {
@@ -45,6 +47,7 @@ private:
     UserInfo *m_userInfo;
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
+    GUI::NotificationCenter *m_notificationCenter;
     QSystemTrayIcon *m_trayIcon;
     GUI::Notifications::ListView *m_notificationListView;
     QList<DATA::Notification *> *m_notificationList;

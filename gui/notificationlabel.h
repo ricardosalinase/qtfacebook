@@ -12,10 +12,11 @@ class NotificationLabel : public QLabel
 Q_OBJECT
 public:
     NotificationLabel(DATA::Notification *n, QWidget *parent = 0);
-    //DATA::Notification * getNotification();
+    DATA::Notification * getNotification();
+    ~NotificationLabel();
     //void setNotification(DATA::Notification *n);
 private:
-    //DATA::Notification *m_notification;
+    DATA::Notification *m_notification;
 
 };
 
