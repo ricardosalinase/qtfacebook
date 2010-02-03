@@ -31,7 +31,7 @@ public slots:
 private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void nextTrayIcon();
-    void ackNewNotifications();
+    //void ackNewNotifications();
     void viewAllNotifications();
     void viewRecentNotifications();
     void viewNewNotifications();
@@ -58,7 +58,6 @@ private:
     bool m_animatingTrayIcon;
     QTimer *m_trayAnimationTimer;
     QAction *m_notificationCountMenuAction;
-    QAction *m_ackNotificationsMenuAction;
     QAction *m_viewAllNotificationsMenuAction;
     QByteArray m_geometry;
 };

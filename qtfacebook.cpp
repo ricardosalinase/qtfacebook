@@ -139,8 +139,7 @@ void QtFacebook::fbWizardComplete() {
     menu->addSeparator();
     m_notificationCountMenuAction = menu->addAction("You have 0 new notifications");
     m_notificationCountMenuAction->setDisabled(true);
-    m_ackNotificationsMenuAction = menu->addAction("Mark as read");
-    m_ackNotificationsMenuAction->setDisabled(true);
+
     QAction *act = menu->addAction("View Recent");
     m_viewAllNotificationsMenuAction = menu->addAction("View all");
     menu->addSeparator();
@@ -151,8 +150,7 @@ void QtFacebook::fbWizardComplete() {
 
     connect(exit, SIGNAL(triggered()),
             this, SLOT(exitMenuAction()));
-    connect(m_ackNotificationsMenuAction, SIGNAL(triggered()),
-            this, SLOT(ackNewNotifications()));
+
     connect(m_viewAllNotificationsMenuAction, SIGNAL(triggered()),
             this, SLOT(viewAllNotifications()));
     connect(act, SIGNAL(triggered()),
@@ -206,7 +204,6 @@ void QtFacebook::showNotifications(int numNew)
     QString s = "You have "  + QString::number(numNew)  + " new notificaions!";
     m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);
     m_trayIcon->setToolTip(s);
-    m_ackNotificationsMenuAction->setEnabled(true);
     m_notificationCountMenuAction->setText("View "
                                            + QString::number(numNew)
                                            + " new notifications)");
@@ -261,7 +258,6 @@ void QtFacebook::receivedNewNotifications(int numNew) {
     {
         m_trayAnimationTimer->stop();
         m_trayIcon->setIcon(*m_trayIcons[0]);
-        m_ackNotificationsMenuAction->setEnabled(false);
         m_notificationCountMenuAction->setText("You have 0 new notifications");
         m_notificationCountMenuAction->setEnabled(false);
         m_trayIcon->setToolTip("You have 0 new notifications");
@@ -273,8 +269,10 @@ void QtFacebook::receivedNewNotifications(int numNew) {
 }
 
 
-
+/*
 void QtFacebook::ackNewNotifications() {
+
+
 
     API::Factory *factory = new API::Factory(m_userInfo);
     API::Method *method = factory->createMethod("notifications.markRead");
@@ -296,6 +294,7 @@ void QtFacebook::ackNewNotifications() {
     m_notificationCountMenuAction->setText("You have 0 new notifications");
     m_notificationCountMenuAction->setEnabled(false);
 }
+*/
 
 void QtFacebook::apiNotificationsMarkRead(API::Notifications::MarkRead *method) {
 
