@@ -43,17 +43,26 @@ void Method::setArgument(QString arg, QString value) {
     m_argMap.insert(arg, value);
 }
 
+void Method::setArgument(QString arg, QStringList value) {
+    m_argMap.insert(arg, value);
+}
+
 
 bool Method::execute() {
-
-    if (!validate())
-        return false;
 
     if (!prepare())
         return false;
 
+    if (!validate())
+        return false;
+
+
     // THese are always constant with API requests
-    m_argMap.insert("method", getMethodName());
+    if (getMethodName().startsWith("fql.query",Qt::CaseInsensitive))
+        m_argMap.insert("method","fql.query");
+    else
+        m_argMap.insert("method", getMethodName());
+
     m_argMap.insert("api_key", m_userInfo->getApiKey());
     m_argMap.insert("v","1.0");
     m_argMap.insert("session_key",m_userInfo->getSessionKey());

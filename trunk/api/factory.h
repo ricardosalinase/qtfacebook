@@ -12,6 +12,8 @@
 #include "notifications_getlist.h"
 #include "users_getloggedinuser.h"
 #include "notifications_markread.h"
+#include "fql_GetNewNotifications.h"
+#include "fql_GetAppInfo.h"
 
 
 // Simple factory
@@ -73,7 +75,14 @@ signals:
     * This signal is emitted whenever a API::Users::getLoggedInUser method has completed
     */
     void apiUsersGetLoggedInUser(API::Users::GetLoggedInUser *method);
-
+    /*!
+    * This signal is emitted whenever a API::FQL::GetNewNotifications method has completed
+    */
+    void apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method);
+    /*!
+    * This signal is emitted whenever a API::FQL::GetAppInfo method has completed
+    */
+    void apiFqlGetAppInfo(API::FQL::GetAppInfo *method);
 
 public slots:
     void dispatch(API::Method *);

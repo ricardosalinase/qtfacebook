@@ -2,8 +2,10 @@
 #include "api/factory.h"
 
 #include <QDebug>
+#include <QDateTime>
 
-NotificationCheck::NotificationCheck(UserInfo *userInfo, int interval)
+NotificationCheck::NotificationCheck(UserInfo *userInfo, int interval) :
+        m_lastNotificationCheck(0)
 {
     m_userInfo = userInfo;
     m_checkInterval = interval;
@@ -11,8 +13,11 @@ NotificationCheck::NotificationCheck(UserInfo *userInfo, int interval)
     // Init the factory
     m_factory = new API::Factory(m_userInfo);
 
-    connect(m_factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
-                this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
+    connect(m_factory, SIGNAL(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)),
+            this, SLOT(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)));
+    connect(m_factory, SIGNAL(apiFqlGetAppInfo(API::FQL::GetAppInfo*)),
+            this, SLOT(apiFqlGetAppInfo(API::FQL::GetAppInfo*)));
+
 
 }
 
@@ -45,40 +50,71 @@ void NotificationCheck::checkForNotifiations() {
 
     qDebug() << "checkForNotifications()";
 
-    API::Method *method = m_factory->createMethod("notifications.getList");
+    API::Method *method = m_factory->createMethod("fql.query.getNewNotifications");
+
+    if (m_lastNotificationCheck == 0)
+        m_lastNotificationCheck = (QDateTime::currentDateTime().toUTC().toTime_t() - (60*60));
+
+    method->setArgument("start_time", QString::number(m_lastNotificationCheck));
+
     bool rc = method->execute();
     if (!rc)
         qDebug() << method->getErrorStr();
 
+     m_lastNotificationCheck = QDateTime::currentDateTime().toUTC().toTime_t();
+
 }
 
-void NotificationCheck::apiNotificationsGetList(API::Notifications::GetList *method) {
+void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
 
-    qDebug() << "apiNotificationsGetList()";
+    qDebug() << "apiFqlGetNewNotificaitons()";
 
 
     QList<DATA::Notification*> *list = method->getNotificationList();
 
     qDebug() << "list.size(): " << list->size();
 
-    QList<DATA::Notification*> *nList = new QList<DATA::Notification*>;
+    if (list->size() > 0) {
 
-    while (!list->empty())
-    {
-        DATA::Notification *n = list->takeFirst();
-        if (n->getIsHidden() == false)
-            nList->prepend(n);
-        else
-            delete n;
+        m_notificationList = new QList<DATA::Notification*>;
+        QStringList appIds;
+
+
+        while (!list->empty())
+        {
+            DATA::Notification *n = list->takeFirst();
+            if (n->getIsHidden() == false) {
+                m_notificationList->prepend(n);
+                appIds.append(n->getAppId());
+            }
+            else
+                delete n;
+        }
+
+        qDebug() << "m_motificationList->size(): " << m_notificationList->size();
+
+        // Now get the App Icons
+        API::Method *method2 = m_factory->createMethod("fql.query.getAppInfo");
+        method2->setArgument("app_ids", appIds);
+        bool rc = method2->execute();
+        if (!rc)
+            qDebug() << method2->getErrorStr();
+
     }
 
-    qDebug() << "nList->size(): " << nList->size();
-
-    // We could get pixmaps here, with the caveat that some might never be used
-
-    emit newNotifications(nList, method->getAppInfoMap());
+    delete list;
     delete method;
 
+    //emit newNotifications(nList, method->getAppInfoMap());
+
+
+}
+
+void NotificationCheck::apiFqlGetAppInfo(API::FQL::GetAppInfo *method) {
+    qDebug() << "apiFqlGetAppInfo()";
+
+    emit newNotifications(m_notificationList, method->getAppInfoMap());
+    delete method;
 }
 
 void NotificationCheck::setCheckInterval(int minutes) {
