@@ -30,13 +30,17 @@ protected:
 
 private slots:
     void checkForNotifiations();
-    void apiNotificationsGetList(API::Notifications::GetList*);
+    void apiFqlGetNewNotifications(API::FQL::GetNewNotifications*);
+    void apiFqlGetAppInfo(API::FQL::GetAppInfo*);
 
 private:
     UserInfo *m_userInfo;
     int m_checkInterval;
     API::Factory *m_factory;
     QTimer *m_timer;
+    QList<DATA::Notification*> *m_notificationList;
+
+    uint m_lastNotificationCheck;
 
 };
 

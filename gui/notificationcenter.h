@@ -55,6 +55,7 @@ private:
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;
 
+
     // UI componenets
     QScrollArea *m_scrollArea;
     QWidget *m_nContainer;

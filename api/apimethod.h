@@ -72,6 +72,10 @@ namespace API
          */
         void setArgument(QString arg, int value);
         /*!
+         * @overload
+         */
+        void setArgument(QString arg, QStringList value);
+        /*!
          * Overridden method from QXmlDefaultHandler. The XML parser uses this to place parsed data into m_currentText
          */
         bool characters(const QString &str);
@@ -97,11 +101,7 @@ namespace API
          * ( "notifications.getList" as an example ). This is required in derived classes.
          */
         virtual QString getMethodName() = 0;
-        /*!
-         * Method used in FQL queries to prepare the FQL statement. Is it called in exec() prior to making the
-         * POST to the Facebook API. The default implementation does nothing.
-         */
-        virtual bool prepare();
+
 
     public slots:
         /*!
@@ -132,6 +132,11 @@ namespace API
 
 
     protected:
+        /*!
+         * Method used in FQL queries to prepare the FQL statement. Is it called in exec() prior to making the
+         * POST to the Facebook API. The default implementation does nothing.
+         */
+        virtual bool prepare();
         /*!
          * The UserInfo object
          */
