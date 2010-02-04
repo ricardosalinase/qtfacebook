@@ -11,8 +11,8 @@ Get::Get(QObject *parent) : Method(parent)
 
 // m_currentText is defined in the base API::Method class, as is the method that
 // fills it during the XML parsing
-bool Get::startElement(const QString &namespaceURI, const QString &localName,
-                       const QString &qName, const QXmlAttributes &attributes) {
+bool Get::startElement(const QString & /*namespaceURI*/, const QString &/*localName*/,
+                       const QString &/*qName*/, const QXmlAttributes &/*attributes*/) {
 
 
 
@@ -28,7 +28,7 @@ QString Get::getMethodName() {
 // m_currentText is defined in the base API::Method class, as is the method that
 // fills it during the XML parsing
 
-bool Get::endElement(const QString &namespaceURI, const QString &localName,
+bool Get::endElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
                      const QString &qName) {
 
     if (qName == "uid")

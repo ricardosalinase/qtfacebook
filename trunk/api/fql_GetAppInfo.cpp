@@ -29,7 +29,7 @@ bool GetAppInfo::prepare() {
 bool GetAppInfo::startElement(const QString & /* namespaceURI */,
                            const QString & /* localName */,
                            const QString &qName,
-                           const QXmlAttributes &attributes) {
+                           const QXmlAttributes &/*attributes*/) {
     qDebug() << "Start: " << qName;
     if (qName == "app_info")
         m_currentAppInfo = new AppInfo();
@@ -38,8 +38,8 @@ bool GetAppInfo::startElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool GetAppInfo::endElement(const QString &namespaceURI,
-                         const QString &localName,
+bool GetAppInfo::endElement(const QString &/*namespaceURI*/,
+                         const QString &/*localName*/,
                          const QString &qName) {
 
     if (m_currentAppInfo) {

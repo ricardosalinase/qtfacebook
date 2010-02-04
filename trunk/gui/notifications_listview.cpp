@@ -153,7 +153,6 @@ void ListView::getPixmaps() {
     QNetworkReply *reply;
 
     bool sentRequest = false;
-    QPixmap *pixmap = 0;
 
     QMap<QString,DATA::AppInfo* >::const_iterator i = m_appInfoMap->constBegin();
     while (i != m_appInfoMap->constEnd()) {

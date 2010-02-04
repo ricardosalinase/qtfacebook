@@ -74,6 +74,8 @@ void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications 
 
     qDebug() << "list.size(): " << list->size();
 
+
+    // If there's no new notifications ... we're done
     if (list->size() > 0) {
 
         m_notificationList = new QList<DATA::Notification*>;
