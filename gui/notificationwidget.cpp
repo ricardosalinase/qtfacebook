@@ -24,7 +24,7 @@ NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLa
     connect(m_label, SIGNAL(linkActivated(QString)),
             this, SIGNAL(linkActivated(QString)));
 
-    timeLine = new QTimeLine(3333, this);
+    timeLine = new QTimeLine(2000, this);
     timeLine->setFrameRange(1000, 0);
     connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
     connect(timeLine,SIGNAL(finished()), this, SLOT(reverseTimeline()));
@@ -53,7 +53,7 @@ NotificationWidget::NotificationWidget(QString text, QPixmap *p, QWidget *parent
     connect(m_label, SIGNAL(linkActivated(QString)),
             this, SIGNAL(linkActivated(QString)));
 
-    timeLine = new QTimeLine(3333, this);
+    timeLine = new QTimeLine(2000, this);
     timeLine->setFrameRange(1000, 0);
     connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
     connect(timeLine, SIGNAL(finished()),
@@ -83,7 +83,7 @@ void NotificationWidget::reverseTimeline() {
 
 void NotificationWidget::paintEvent(QPaintEvent *) {
 
-    qDebug() << timeLine->currentFrame();
+
 
     QPainter painter(this);
     qreal frame = timeLine->currentFrame();

@@ -52,10 +52,11 @@ void NotificationCheck::checkForNotifiations() {
 
     API::Method *method = m_factory->createMethod("fql.query.getNewNotifications");
 
-    if (m_lastNotificationCheck == 0)
-        m_lastNotificationCheck = (QDateTime::currentDateTime().toUTC().toTime_t() - (60*60));
+
 
     method->setArgument("start_time", QString::number(m_lastNotificationCheck));
+    method->setArgument("only_unread",1);
+
 
     bool rc = method->execute();
     if (!rc)
