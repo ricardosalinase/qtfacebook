@@ -73,7 +73,7 @@ void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications 
 
     QList<DATA::Notification*> *list = method->getNotificationList();
 
-    qDebug() << "list.size(): " << list->size();
+    qDebug() << "list->size(): " << list->size();
 
 
     // If there's no new notifications ... we're done
@@ -86,13 +86,8 @@ void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications 
         while (!list->empty())
         {
             DATA::Notification *n = list->takeFirst();
-            if (n->getIsHidden() == false) {
-                m_notificationList->prepend(n);
-                appIds.append(n->getAppId());
-
-            }
-            else
-                delete n;
+            m_notificationList->prepend(n);
+            appIds.append(n->getAppId());
         }
 
         // This syncs us with facebook's time rather than ours.

@@ -6,7 +6,8 @@
 namespace GUI {
 
 NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLabel *a, QWidget *parent) :
-        QWidget(parent)
+        QWidget(parent),
+        isStopping(false)
 {
     n->setParent(this);
     m_label = n;
@@ -25,9 +26,10 @@ NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLa
             this, SIGNAL(linkActivated(QString)));
 
     timeLine = new QTimeLine(2000, this);
-    timeLine->setFrameRange(1000, 0);
+    timeLine->setFrameRange(2000, 0);
+    timeLine->setLoopCount(0);
     connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
-    connect(timeLine,SIGNAL(finished()), this, SLOT(reverseTimeline()));
+    //connect(timeLine,SIGNAL(finished()), this, SLOT(reverseTimeline()));
 }
 
 NotificationWidget::NotificationWidget(QString text, QPixmap *p, QWidget *parent) :
@@ -54,10 +56,11 @@ NotificationWidget::NotificationWidget(QString text, QPixmap *p, QWidget *parent
             this, SIGNAL(linkActivated(QString)));
 
     timeLine = new QTimeLine(2000, this);
-    timeLine->setFrameRange(1000, 0);
+    timeLine->setFrameRange(2000, 0);
+    timeLine->setLoopCount(0);
     connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
-    connect(timeLine, SIGNAL(finished()),
-            this, SLOT(reverseTimeline()));
+    //connect(timeLine, SIGNAL(finished()),
+      //      this, SLOT(reverseTimeline()));
 }
 
 NotificationWidget::~NotificationWidget() {
@@ -71,15 +74,14 @@ void NotificationWidget::start()
 
 }
 
-void NotificationWidget::reverseTimeline() {
-    if (timeLine->direction() == QTimeLine::Forward)
-        timeLine->setDirection(QTimeLine::Backward);
-    else
-        timeLine->setDirection(QTimeLine::Forward);
-
-     timeLine->start();
-
+void NotificationWidget::stopAfter(int lc) {
+    if (timeLine->state() == QTimeLine::Running && !isStopping) {
+        timeLine->setLoopCount(lc);
+        isStopping = true;
+    }
 }
+
+
 
 void NotificationWidget::paintEvent(QPaintEvent *) {
 
@@ -87,7 +89,11 @@ void NotificationWidget::paintEvent(QPaintEvent *) {
 
     QPainter painter(this);
     qreal frame = timeLine->currentFrame();
-    painter.setOpacity(frame / 1000.);
+    if (frame <= 1000)
+        painter.setOpacity(frame / 1000.);
+    else
+        painter.setOpacity( (1000 - (frame - 1000)) / 1000);
+
     //painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
     painter.setWindow(QRect(0, 0, 10, 10));
     painter.setRenderHint(QPainter::Antialiasing);

@@ -7,11 +7,12 @@
 #include <QList>
 #include <QMap>
 #include <QUrl>
+#include <QEvent>
 
 
 #include "userinfo.h"
 #include "api/factory.h"
-#include "notifications_widget.h"
+#include "notificationwidget.h"
 #include "notificationcheck.h"
 
 
@@ -43,6 +44,7 @@ private slots:
 
 protected:
     void closeEvent ( QCloseEvent * event );
+    void enterEvent(QEvent *event);
 
 private:
     void navigate(QUrl url);
@@ -51,10 +53,10 @@ private:
 
     NotificationCheck *m_notificationCheck;
     UserInfo *m_userInfo;
-    bool m_showHidden;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;
-
+    QList<NotificationWidget *> m_newNotifications;
+    bool m_showHiddenNotifications;
 
     // UI componenets
     QScrollArea *m_scrollArea;

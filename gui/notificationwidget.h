@@ -22,6 +22,7 @@ public:
     ~NotificationWidget();
 
     void start();
+    void stopAfter(int loopCount);
 
 signals:
     void linkActivated(QString url);
@@ -30,12 +31,12 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private slots:
-    void reverseTimeline();
 
 private:
     QLabel *m_icon;
     QLabel *m_label;
     QTimeLine *timeLine;
+    bool isStopping;
 };
 
 
