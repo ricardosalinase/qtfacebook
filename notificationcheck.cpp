@@ -61,7 +61,7 @@ void NotificationCheck::checkForNotifiations() {
     if (!rc)
         qDebug() << method->getErrorStr();
 
-     m_lastNotificationCheck = QDateTime::currentDateTime().toUTC().toTime_t();
+     //m_lastNotificationCheck = QDateTime::currentDateTime().toUTC().toTime_t();
 
 }
 
@@ -88,10 +88,16 @@ void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications 
             if (n->getIsHidden() == false) {
                 m_notificationList->prepend(n);
                 appIds.append(n->getAppId());
+
             }
             else
                 delete n;
         }
+
+        // This syncs us with facebook's time rather than ours.
+        // Solves some timing issues I was seeing
+        m_lastNotificationCheck = m_notificationList->last()->getCreatedTime().toUInt();
+
 
         qDebug() << "m_motificationList->size(): " << m_notificationList->size();
 

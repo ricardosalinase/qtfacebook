@@ -102,13 +102,13 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
     // return
     //else
     // Display new Notifications
-    m_nContainer = new QWidget();
+    /*m_nContainer = new QWidget();
     m_nContainer->resize(200,600);
     m_nContainer->setStyleSheet("background: white");
     QVBoxLayout *vbl = new QVBoxLayout();
     m_nContainer->setLayout(vbl);
 
-    m_scrollArea->setWidget(m_nContainer);
+    m_scrollArea->setWidget(m_nContainer);*/
 
     GUI::NotificationWidget *nWidget;
 
@@ -120,7 +120,8 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
         nWidget = new GUI::NotificationWidget(n, ai);
         connect(nWidget, SIGNAL(linkActivated(QString)),
                 this, SLOT(linkActivated(QString)));
-        m_nContainer->layout()->addWidget(nWidget);
+        ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
+        nWidget->start();
 
     }
 

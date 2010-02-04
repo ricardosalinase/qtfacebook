@@ -201,12 +201,13 @@ void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 
 void QtFacebook::showNotifications(int numNew)
 {
+    m_numNew += numNew;
 
-    QString s = "You have "  + QString::number(numNew)  + " new notificaions!";
+    QString s = "You have "  + QString::number(m_numNew)  + " new notificaions!";
     m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);
     m_trayIcon->setToolTip(s);
     m_notificationCountMenuAction->setText("View "
-                                           + QString::number(numNew)
+                                           + QString::number(m_numNew)
                                            + " new notifications");
     m_notificationCountMenuAction->setEnabled(true);
 }
