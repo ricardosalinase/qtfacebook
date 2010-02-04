@@ -36,6 +36,10 @@ bool MarkRead::successful() {
     return m_succeeded;
 }
 
+QString MarkRead::getNotificationIds() {
+    return m_argMap["notification_ids"].toString();
+}
+
 
 } // namespace Notifications
 } // namespace API

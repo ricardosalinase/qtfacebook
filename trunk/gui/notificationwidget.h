@@ -17,7 +17,6 @@ class NotificationWidget : public QWidget
 {
 Q_OBJECT
 public:
-    NotificationWidget(QString text, QPixmap *p, QWidget *parent = 0);
     NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLabel *a, QWidget *parent = 0);
     ~NotificationWidget();
 
@@ -26,15 +25,17 @@ public:
 
 signals:
     void linkActivated(QString url);
+    void acknowledged(QString notificationId);
 
 protected:
     void paintEvent(QPaintEvent *event);
+    void enterEvent(QEvent *event);
 
 private slots:
 
 private:
-    QLabel *m_icon;
-    QLabel *m_label;
+    AppInfoLabel *m_icon;
+    NotificationLabel *m_label;
     QTimeLine *timeLine;
     bool isStopping;
 };

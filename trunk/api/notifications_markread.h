@@ -17,6 +17,7 @@ public:
                     const QString &qName);
     QString getMethodName();
     bool successful();
+    QString getNotificationIds();
 
 private:
     bool m_succeeded;

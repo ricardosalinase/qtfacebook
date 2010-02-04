@@ -31,18 +31,17 @@ public slots:
 private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void nextTrayIcon();
-    //void ackNewNotifications();
     void viewAllNotifications();
     void viewRecentNotifications();
     void viewNewNotifications();
     void exitMenuAction();
-    void apiNotificationsMarkRead(API::Notifications::MarkRead *method);
     void testQueryConsole();
     void receivedNewNotifications(int numNew);
+    void acknowledgedNotification(QString nid);
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);
-    void showNotifications(int numNew);
+    void showNotifications(bool showBalloonMessage);
     bool loadUserInfo();
     UserInfo *m_userInfo;
     FBConnectWizard *m_wizard;
@@ -60,7 +59,8 @@ private:
     QAction *m_notificationCountMenuAction;
     QAction *m_viewAllNotificationsMenuAction;
     QByteArray m_geometry;
-    int m_numNew;
+    int m_totalNotifications;
+    int m_standardNotifications;
 };
 
 #endif // QTFACEBOOK_H

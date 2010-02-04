@@ -89,44 +89,47 @@ void NotificationCenter::navigate(QUrl url) {
     qDebug() << "Url: " + url.toString();
 }
 
-void NotificationCenter::enterEvent(QEvent *event) {
+//void NotificationCenter::changeEvent(QEvent *event) {
+//    qDebug() << "actionEvent()" << event->type();
+//}
 
-    qDebug() << "changeEvent()" << event->type();
+void NotificationCenter::notificationAcknowledged(QString nId) {
 
-    // stop the pulsing widgets
-    if (event->type() == QEvent::Enter) {
-        while (!m_newNotifications.empty()) {
-            NotificationWidget *nw = m_newNotifications.takeFirst();
-            nw->stopAfter(10);
-        }
-    }
+    // Mark the notification read via the API
+    API::Factory *factory = new API::Factory(m_userInfo);
+    API::Method *method = factory->createMethod("notifications.markRead");
+    connect(factory, SIGNAL(apiNotificationsMarkRead(API::Notifications::MarkRead*)),
+            this, SLOT(notificationsMarkedAsRead(API::Notifications::MarkRead*)));
 
-    // send signal to tray telling it we've read them
+    method->setArgument("notification_ids",nId);
+    method->execute();
+
 
 
 }
 
+void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead *method) {
+
+    QString nId = method->getNotificationIds();
+
+    if (method->successful()) {
+        emit acknowledgedNotification(nId);
+    } else {
+        qDebug() << "notifications.markRead failed, resending.";
+        notificationAcknowledged(nId);
+    }
+
+    delete method;
+
+}
 
 void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QMap<QString, DATA::AppInfo *> *aMap) {
 
     qDebug() << "newNotifications(); nList: " << nList->size();
 
-
-    // If the list is empty and we still think there's new notificaions,
-    // the user viewed them via facebook and they're no longer "unread"
-    //if (nList->size() == 0 && our new list != 0 )
-    // return
-    //else
-    // Display new Notifications
-    /*m_nContainer = new QWidget();
-    m_nContainer->resize(200,600);
-    m_nContainer->setStyleSheet("background: white");
-    QVBoxLayout *vbl = new QVBoxLayout();
-    m_nContainer->setLayout(vbl);
-
-    m_scrollArea->setWidget(m_nContainer);*/
-
     GUI::NotificationWidget *nWidget;
+
+    int numNew = 0;
 
     while (!nList->empty())
     {
@@ -135,21 +138,21 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
             delete n;
             continue;
         }
-
+        numNew++;
         GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
         GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(new AppInfo(*(aMap->value(nl->getNotification()->getAppId()))));
         getPixmap(ai);
         nWidget = new GUI::NotificationWidget(nl, ai);
         connect(nWidget, SIGNAL(linkActivated(QString)),
                 this, SLOT(linkActivated(QString)));
+        connect(nWidget, SIGNAL(acknowledged(QString)),
+                this, SLOT(notificationAcknowledged(QString)));
         ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
         nWidget->start();
-        m_newNotifications.prepend(nWidget);
-
     }
 
     // Notify Tray Icon
-    emit receivedNewNotifications(m_newNotifications.size());
+    emit receivedNewNotifications(numNew);
 
     AppInfo *tmp;
     QMap<QString, AppInfo *>::iterator i = aMap->begin();

@@ -33,18 +33,22 @@ public:
 
 signals:
     void receivedNewNotifications(int numNew);
+    void acknowledgedNotification(QString nId);
 
 public slots:
     void showYourself();
     void newNotifications(QList<DATA::Notification*> *nList, QMap<QString, DATA::AppInfo *> *aMap);
     void linkActivated(QString url);
-
+    void notificationAcknowledged(QString nId);
+    void notificationsMarkedAsRead(API::Notifications::MarkRead*);
 private slots:
     void receiveIconPixmap(QNetworkReply *reply);
+    //void notificationAcknowledged(QString nId);
+    //void notificationsMarkedAsRead(API::Notifications::MarkRead*);
 
 protected:
     void closeEvent ( QCloseEvent * event );
-    void enterEvent(QEvent *event);
+    //void changeEvent(QEvent *event);
 
 private:
     void navigate(QUrl url);
@@ -55,7 +59,6 @@ private:
     UserInfo *m_userInfo;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;
-    QList<NotificationWidget *> m_newNotifications;
     bool m_showHiddenNotifications;
 
     // UI componenets
