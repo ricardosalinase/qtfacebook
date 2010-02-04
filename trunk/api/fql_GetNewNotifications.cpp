@@ -25,6 +25,11 @@ bool GetNewNotifications::prepare() {
     fql.append(" AND created_time > ");
     fql.append(m_argMap.take("start_time").toString());
 
+    if (m_argMap.contains("only_unread")) {
+        m_argMap.take("only_unread");
+        fql.append(" AND is_unread = 1");
+    }
+
     m_argMap.insert("query", fql);
 
     //&query=SELECT notification_id, created_time, title_html, app_id, is_unread, is_hidden  FROM notification WHERE recipient_id=1082239928 AND created_time > 1265157482
