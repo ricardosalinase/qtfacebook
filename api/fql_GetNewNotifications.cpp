@@ -37,7 +37,7 @@ bool GetNewNotifications::prepare() {
 bool GetNewNotifications::startElement(const QString & /* namespaceURI */,
                            const QString & /* localName */,
                            const QString &qName,
-                           const QXmlAttributes &attributes) {
+                           const QXmlAttributes &/*attributes*/) {
     qDebug() << "Start: " << qName;
     if (qName == "notification")
         m_currentNotification = new Notification();
@@ -47,8 +47,8 @@ bool GetNewNotifications::startElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool GetNewNotifications::endElement(const QString &namespaceURI,
-                         const QString &localName,
+bool GetNewNotifications::endElement(const QString &/*namespaceURI*/,
+                         const QString &/*localName*/,
                          const QString &qName) {
 
 

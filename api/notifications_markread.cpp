@@ -10,15 +10,15 @@ MarkRead::MarkRead(QObject *parent) :
 {
     requires("notification_ids");
 }
-bool MarkRead::startElement(const QString &namespaceURI, const QString &localName,
-                            const QString &qName, const QXmlAttributes &attributes) {
+bool MarkRead::startElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
+                            const QString &qName, const QXmlAttributes &/*attributes*/) {
 
     qDebug() << "Start: " << qName;
     m_currentText.clear();
     return true;
 }
 
-bool MarkRead::endElement(const QString &namespaceURI, const QString &localName,
+bool MarkRead::endElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
                           const QString &qName) {
 
     if (qName == "notifications_markRead_response")

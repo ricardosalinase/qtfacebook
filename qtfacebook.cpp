@@ -207,7 +207,7 @@ void QtFacebook::showNotifications(int numNew)
     m_trayIcon->setToolTip(s);
     m_notificationCountMenuAction->setText("View "
                                            + QString::number(numNew)
-                                           + " new notifications)");
+                                           + " new notifications");
     m_notificationCountMenuAction->setEnabled(true);
 }
 

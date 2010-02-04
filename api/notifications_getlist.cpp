@@ -16,7 +16,7 @@ GetList::GetList(QObject *parent) : Method(parent),
 bool GetList::startElement(const QString & /* namespaceURI */,
                            const QString & /* localName */,
                            const QString &qName,
-                           const QXmlAttributes &attributes) {
+                           const QXmlAttributes & /*attributes*/) {
     qDebug() << "Start: " << qName;
     if (qName == "notification")
         m_currentNotification = new Notification();
@@ -27,8 +27,8 @@ bool GetList::startElement(const QString & /* namespaceURI */,
     return true;
 }
 
-bool GetList::endElement(const QString &namespaceURI,
-                         const QString &localName,
+bool GetList::endElement(const QString &/*namespaceURI*/,
+                         const QString &/*localName*/,
                          const QString &qName) {
 
 
