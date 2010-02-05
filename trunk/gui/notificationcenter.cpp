@@ -143,7 +143,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
     GUI::NotificationWidget *nWidget;
 
     int numNew = 0;
-    m_showHiddenNotifications = true;
+    //m_showHiddenNotifications = true;
     while (!nList->empty())
     {
         DATA::Notification *n = nList->takeFirst();
