@@ -30,14 +30,13 @@ NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLa
     timeLine->setCurveShape(QTimeLine::LinearCurve);
     timeLine->setLoopCount(0);
     connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
-    //connect(timeLine,SIGNAL(finished()), this, SLOT(reverseTimeline()));
+
 }
 
 
 
 NotificationWidget::~NotificationWidget() {
-    //delete m_label;
-    //delete m_icon;
+
 }
 
 void NotificationWidget::start()
