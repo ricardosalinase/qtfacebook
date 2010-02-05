@@ -1,4 +1,6 @@
 #include "notificationlabel.h"
+#include <QPalette>
+
 
 namespace GUI {
 
@@ -9,6 +11,7 @@ NotificationLabel::NotificationLabel(DATA::Notification *n, QWidget *parent) :
     setText("<style type=\"text/css\">a { text-decoration: none; }</style>" + n->getTitleHtml());
     setStyleSheet("QLabel { font-size : 12px; text-decoration : none;  }");
     setWordWrap(true);
+
 }
 
 NotificationLabel::~NotificationLabel() {

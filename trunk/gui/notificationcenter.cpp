@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QNetworkReply>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "notificationcenter.h"
 #include "appinfolabel.h"
@@ -49,19 +51,25 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
 
 void NotificationCenter::showYourself() {
 
-    if (!isVisible())
-    {
+
+    // The window flags thing is ... a hack. In theory you're
+    // not supposed to be able to force a window to the front of the desktop.
+    // This will.
+
+    if (!isVisible()) {
         restoreWindow();
+        show();
+    } else {
+        setWindowFlags(windowFlags() & Qt::WindowStaysOnTopHint);
+
+
+        if (isMinimized())
+            showNormal();
+        else
+            show();
+
+        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
     }
-
-    if (isMinimized())
-        showNormal();
-    else
-        activateWindow();
-
-
-    show();
-    raise();
 
 
 }
@@ -73,6 +81,10 @@ void NotificationCenter::restoreWindow() {
     QByteArray g = settings.value("NotificationCenter").toByteArray();
     settings.endGroup();
 
+    QDesktopWidget *dw = QApplication::desktop();
+    QRect r = dw->screenGeometry();
+
+
     if (g.size() != 0)
     {
         restoreGeometry(g);
@@ -80,7 +92,7 @@ void NotificationCenter::restoreWindow() {
     else
     {
         resize(200,600);
-        move(QCursor::pos());
+        move(r.width() - 240, 40);
     }
 
 }
@@ -130,15 +142,13 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
     GUI::NotificationWidget *nWidget;
 
     int numNew = 0;
-
     while (!nList->empty())
     {
         DATA::Notification *n = nList->takeFirst();
-        if(n->getIsHidden() && !m_showHiddenNotifications) {
-            delete n;
-            continue;
-        }
-        numNew++;
+//        if(n->getIsHidden() && !m_showHiddenNotifications) {
+//            delete n;
+//            continue;
+//        }
         GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
         GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(new AppInfo(*(aMap->value(nl->getNotification()->getAppId()))));
         getPixmap(ai);
@@ -148,7 +158,13 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
         connect(nWidget, SIGNAL(acknowledged(QString)),
                 this, SLOT(notificationAcknowledged(QString)));
         ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
-        nWidget->start();
+
+        if (n->getIsHidden() && !m_showHiddenNotifications)
+            nWidget->hide();
+        else {
+            numNew++;
+            nWidget->start();
+        }
     }
 
     // Notify Tray Icon

@@ -20,7 +20,7 @@ bool GetNewNotifications::prepare() {
 
     // This is called prior to validate() so you're able to set up the query
 
-    QString fql("SELECT notification_id, created_time, title_html, app_id, is_unread, is_hidden  FROM notification WHERE recipient_id=");
+    QString fql("SELECT notification_id, created_time, title_html, title_text, app_id, is_unread, is_hidden  FROM notification WHERE recipient_id=");
     fql.append(m_userInfo->getUID());
     fql.append(" AND created_time > ");
     fql.append(m_argMap.take("start_time").toString());
@@ -74,8 +74,8 @@ bool GetNewNotifications::endElement(const QString &/*namespaceURI*/,
             fixHtml(&m_currentText);
             m_currentNotification->setTitleHtml(m_currentText);
         }
-        //else if (qName == "title_text")
-            //m_currentNotification->setTitleText(m_currentText);
+        else if (qName == "title_text")
+            m_currentNotification->setTitleText(m_currentText);
         //else if (qName == "body_html")
             //m_currentNotification->setBodyHtml(m_currentText);
         //else if (qName == "body_text")
