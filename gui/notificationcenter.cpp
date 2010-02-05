@@ -30,6 +30,7 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     m_nContainer->setLayout(vbl);
     m_scrollArea->setWidget(m_nContainer);
     m_scrollArea->setStyleSheet("background: #e5e5e5");
+    m_scrollArea->setAutoFillBackground(true);
     QVBoxLayout *mainLayout = new QVBoxLayout();
     QVBoxLayout *bottomLayout = new QVBoxLayout();
     bottomLayout->addWidget(m_scrollArea);
@@ -142,6 +143,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
     GUI::NotificationWidget *nWidget;
 
     int numNew = 0;
+    m_showHiddenNotifications = true;
     while (!nList->empty())
     {
         DATA::Notification *n = nList->takeFirst();
