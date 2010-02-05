@@ -55,7 +55,7 @@ void NotificationCheck::checkForNotifiations() {
 
 
     method->setArgument("start_time", QString::number(m_lastNotificationCheck));
-    method->setArgument("only_unread",1);
+    //method->setArgument("only_unread",1);
 
 
     bool rc = method->execute();

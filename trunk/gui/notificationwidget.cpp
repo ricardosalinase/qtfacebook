@@ -13,6 +13,8 @@ NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLa
     m_label = n;
     a->setParent(this);
     m_icon = a;
+    setBackgroundRole(QPalette::Window);
+
     QGridLayout *gl = new QGridLayout();
     gl->setHorizontalSpacing(10);
     gl->addWidget(m_icon,0,0,Qt::AlignTop | Qt::AlignLeft);
@@ -77,18 +79,25 @@ void NotificationWidget::paintEvent(QPaintEvent *) {
     //qDebug() << timeLine->currentFrame();
 
     QPainter painter(this);
-    qreal frame = timeLine->currentFrame();
-    if (frame <= 1000)
-        painter.setOpacity(frame / 1000.);
-    else
-        painter.setOpacity( (1000 - (frame - 1000)) / 1000);
 
-    //painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
     painter.setWindow(QRect(0, 0, 10, 10));
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(Qt::blue);
-    painter.drawRect(0, 0, 10, 10);
 
+
+    if (timeLine->state() == QTimeLine::Running) {
+        qreal frame = timeLine->currentFrame();
+        if (frame <= 1000)
+            painter.setOpacity(frame / 1000.);
+        else
+            painter.setOpacity( (1000 - (frame - 1000)) / 1000);
+        painter.setPen(Qt::blue);
+        painter.drawRect(0, 0, 10, 10);
+
+    } else {
+        painter.setPen(Qt::gray);
+        painter.drawLine(0,10,10,10);
+
+    }
 
 
 }

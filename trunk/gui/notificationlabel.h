@@ -2,6 +2,7 @@
 #define NOTIFICATIONLABEL_H
 
 #include <QLabel>
+#include <QTimer>
 
 #include "data/notification.h"
 
@@ -15,9 +16,13 @@ public:
     DATA::Notification * getNotification();
     ~NotificationLabel();
     //void setNotification(DATA::Notification *n);
+private slots:
+    void createDisplayText();
+
 private:
     DATA::Notification *m_notification;
 
+    QTimer *m_timer;
 };
 
 } // namespace GUI
