@@ -12,7 +12,7 @@
 
 #include "userinfo.h"
 #include "api/factory.h"
-#include "notificationwidget.h"
+#include "notificationcenterwidget.h"
 #include "notificationcheck.h"
 
 

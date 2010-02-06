@@ -10,7 +10,7 @@
 #include "notificationcenter.h"
 #include "appinfolabel.h"
 #include "notificationlabel.h"
-#include "notificationwidget.h"
+#include "notificationcenterwidget.h"
 
 
 namespace GUI {
@@ -140,7 +140,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
 
     qDebug() << "newNotifications(); nList: " << nList->size();
 
-    GUI::NotificationWidget *nWidget;
+    GUI::NotificationCenterWidget *nWidget;
 
     int numNew = 0;
     //m_showHiddenNotifications = true;
@@ -154,7 +154,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
         GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
         GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(new AppInfo(*(aMap->value(nl->getNotification()->getAppId()))));
         getPixmap(ai);
-        nWidget = new GUI::NotificationWidget(nl, ai);
+        nWidget = new GUI::NotificationCenterWidget(nl, ai);
         connect(nWidget, SIGNAL(linkActivated(QString)),
                 this, SLOT(linkActivated(QString)));
         connect(nWidget, SIGNAL(acknowledged(QString)),

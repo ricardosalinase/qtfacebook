@@ -1,5 +1,5 @@
-#ifndef NOTIFICATIONSWIDGET_H
-#define NOTIFICATIONSWIDGET_H
+#ifndef NOTIFICATIONCENTERWIDGET_H
+#define NOTIFICATIONCENTERWIDGET_H
 
 #include <QWidget>
 #include <QLabel>
@@ -8,17 +8,17 @@
 #include <QPaintEvent>
 
 #include "gui/appinfolabel.h"
-#include "gui/notificationlabel.h"
+#include "gui/notificationcenterlabel.h"
 
 namespace GUI {
 
 
-class NotificationWidget : public QWidget
+class NotificationCenterWidget : public QWidget
 {
 Q_OBJECT
 public:
-    NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLabel *a, QWidget *parent = 0);
-    ~NotificationWidget();
+    NotificationCenterWidget(GUI::NotificationCenterLabel *n, GUI::AppInfoLabel *a, QWidget *parent = 0);
+    ~NotificationCenterWidget();
 
     void start();
     void stopAfter(int loopCount);
@@ -35,7 +35,7 @@ private slots:
 
 private:
     AppInfoLabel *m_icon;
-    NotificationLabel *m_label;
+    NotificationCenterLabel *m_label;
     QTimeLine *timeLine;
     bool isStopping;
 };
@@ -43,4 +43,4 @@ private:
 
 } // namespace GUI
 
-#endif // NOTIFICATIONSWIDGET_H
+#endif // NOTIFICATIONCENTERWIDGET_H
