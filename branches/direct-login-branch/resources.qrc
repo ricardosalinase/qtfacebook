@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>uiImages/signGuy.jpg</file>
+        <file>uiImages/thumbsDown3.jpg</file>
+        <file>uiImages/thumbsUp3.jpg</file>
+        <file alias="facebookIcon">uiImages/facebook-small-logo-thumb-360x360-75537-thumb-300x300-78195.png</file>
+    </qresource>
+</RCC>

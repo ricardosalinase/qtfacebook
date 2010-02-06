@@ -1,0 +1,10 @@
+cookiejar.cpp
+cookiejar.h
+facebookconnector.cpp
+facebookconnector.h
+fbconnectwizard.cpp
+fbconnectwizard.h
+main.cpp
+qtFaceBook.pro
+webview.cpp
+webview.h
