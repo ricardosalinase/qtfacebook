@@ -5,7 +5,7 @@
 namespace GUI {
 
 NotificationLabel::NotificationLabel(DATA::Notification *n, QWidget *parent) :
-        QLabel(parent),
+        NotificationCenterLabel(parent),
         m_notification(n)
 {
     createDisplayText();
@@ -52,10 +52,14 @@ void NotificationLabel::createDisplayText() {
     setStyleSheet("QLabel { font-size : 12px; text-decoration : none;  }");
     setWordWrap(true);
 
-
-
-
 }
 
+QString NotificationLabel::getNotificationId() {
+    return m_notification->getNotificationId();
+}
+
+QString NotificationLabel::getToolTipText() {
+    return m_notification->getBodyText();
+}
 
 } // namespace GUI

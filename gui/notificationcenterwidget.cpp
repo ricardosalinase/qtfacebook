@@ -1,11 +1,11 @@
-#include "notificationwidget.h"
+#include "notificationcenterwidget.h"
 #include <QGridLayout>
 #include <QDebug>
 #include <QPainter>
 
 namespace GUI {
 
-NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLabel *a, QWidget *parent) :
+NotificationCenterWidget::NotificationCenterWidget(GUI::NotificationCenterLabel *n, GUI::AppInfoLabel *a, QWidget *parent) :
         QWidget(parent),
         isStopping(false)
 {
@@ -37,17 +37,17 @@ NotificationWidget::NotificationWidget(GUI::NotificationLabel *n, GUI::AppInfoLa
 
 
 
-NotificationWidget::~NotificationWidget() {
+NotificationCenterWidget::~NotificationCenterWidget() {
 
 }
 
-void NotificationWidget::start()
+void NotificationCenterWidget::start()
 {
    timeLine->start();
 
 }
 
-void NotificationWidget::enterEvent(QEvent *event) {
+void NotificationCenterWidget::enterEvent(QEvent *event) {
 
     qDebug() << "changeEvent()" << event->type();
 
@@ -55,12 +55,12 @@ void NotificationWidget::enterEvent(QEvent *event) {
     if (event->type() == QEvent::Enter) {
         if (timeLine->state() == QTimeLine::Running && !isStopping) {
             stopAfter(5);
-            emit acknowledged(m_label->getNotification()->getNotificationId());
+            emit acknowledged(m_label->getNotificationId());
         }
     }
 }
 
-void NotificationWidget::stopAfter(int lc) {
+void NotificationCenterWidget::stopAfter(int lc) {
     if (timeLine->state() == QTimeLine::Running && !isStopping) {
         qDebug() << "Stopping...";
         timeLine->stop();
@@ -74,7 +74,7 @@ void NotificationWidget::stopAfter(int lc) {
 
 
 
-void NotificationWidget::paintEvent(QPaintEvent *) {
+void NotificationCenterWidget::paintEvent(QPaintEvent *) {
 
     //qDebug() << timeLine->currentFrame();
 

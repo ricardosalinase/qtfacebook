@@ -5,17 +5,21 @@
 #include <QTimer>
 
 #include "data/notification.h"
+#include "notificationcenterlabel.h"
 
 namespace GUI {
 
-class NotificationLabel : public QLabel
+class NotificationLabel : public NotificationCenterLabel
 {
 Q_OBJECT
 public:
     NotificationLabel(DATA::Notification *n, QWidget *parent = 0);
     DATA::Notification * getNotification();
     ~NotificationLabel();
-    //void setNotification(DATA::Notification *n);
+
+    virtual QString getNotificationId();
+    virtual QString getToolTipText();
+
 private slots:
     void createDisplayText();
 
