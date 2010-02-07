@@ -66,8 +66,9 @@ private:
     QByteArray m_geometry;
     int m_totalNotifications;
     int m_standardNotifications;
-    GUI::FacebookLoginDialog *m_loginDialog;
     QDialog *m_invalidLogin;
+    GUI::FacebookLoginDialog *m_loginDialog;
+
 };
 
 #endif // QTFACEBOOK_H

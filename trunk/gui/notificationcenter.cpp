@@ -40,12 +40,17 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     setLayout(mainLayout);
     setStyleSheet("background: #526ea6");
 
+    m_cometConnector = new CometConnector(m_userInfo);
+    m_cometConnector->start();
+
     m_notificationCheck = new NotificationCheck(m_userInfo,1);
     connect(m_notificationCheck, SIGNAL(newNotifications(QList<DATA::Notification*>*,QMap<QString,DATA::AppInfo*>*)),
             this, SLOT(newNotifications(QList<DATA::Notification*>*,QMap<QString,DATA::AppInfo*>*)),
             Qt::QueuedConnection);
 
     m_notificationCheck->start();
+
+
 
 
 }

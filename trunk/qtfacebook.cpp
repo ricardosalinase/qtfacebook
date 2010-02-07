@@ -38,6 +38,11 @@ QtFacebook::QtFacebook(QObject *parent) :
 
     QApplication::setQuitOnLastWindowClosed(false);
     m_userInfo = new UserInfo(API_KEY);
+    m_loginDialog = new GUI::FacebookLoginDialog(m_userInfo);
+    connect(m_loginDialog, SIGNAL(loginEntered()),
+            this, SLOT(gotLoginInfo()) );
+    connect(m_loginDialog, SIGNAL(loginCanceled()),
+              this, SLOT(loginCanceled()));
 
     // load session_key, uid, and secret, email, pass, etc
     if (loadUserInfo()) {
@@ -45,12 +50,6 @@ QtFacebook::QtFacebook(QObject *parent) :
         // TODO: Check to see if session is still valid via API
 
         if (m_userInfo->getPass().compare("") == 0) {
-
-            m_loginDialog = new GUI::FacebookLoginDialog(m_userInfo);
-            connect(m_loginDialog, SIGNAL(loginEntered()),
-                    this, SLOT(gotLoginInfo()) );
-            connect(m_loginDialog, SIGNAL(loginCanceled()),
-                      this, SLOT(loginCanceled()));
 
             m_loginDialog->show();
 
@@ -99,6 +98,7 @@ void QtFacebook::gotLoginResults(bool success) {
     if (success) {
 
         saveUserInfo();
+        m_userInfo->getCookieJar()->save();
         fbWizardComplete();
 
     } else {

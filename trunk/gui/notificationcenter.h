@@ -14,6 +14,7 @@
 #include "api/factory.h"
 #include "notificationcenterwidget.h"
 #include "notificationcheck.h"
+#include "cometconnector.h"
 
 
 namespace GUI {
@@ -56,6 +57,7 @@ private:
     void getPixmap(GUI::AppInfoLabel *ai);
 
     NotificationCheck *m_notificationCheck;
+    CometConnector *m_cometConnector;
     UserInfo *m_userInfo;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;

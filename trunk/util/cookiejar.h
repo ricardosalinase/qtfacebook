@@ -3,6 +3,7 @@
 #define COOKIEJAR_H
 
 #include <QtNetwork/QNetworkCookieJar>
+#include <QMetaType>
 
 namespace UTIL {
 
@@ -20,6 +21,8 @@ public:
     ~CookieJar();
 
     bool setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url);
+    void save();
+    void load();
 
 
 public slots:
@@ -31,6 +34,5 @@ private:
 };
 
 } // end namespace UTIL
-
 #endif // COOKIEJAR_H
 

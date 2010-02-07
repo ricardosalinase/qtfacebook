@@ -48,7 +48,7 @@ void NotificationCheck::run() {
 
 void NotificationCheck::checkForNotifiations() {
 
-    qDebug() << "checkForNotifications()";
+    //qDebug() << "checkForNotifications()";
 
     API::Method *method = m_factory->createMethod("fql.query.getNewNotifications");
 
@@ -68,12 +68,12 @@ void NotificationCheck::checkForNotifiations() {
 
 void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
 
-    qDebug() << "apiFqlGetNewNotificaitons()";
+    //qDebug() << "apiFqlGetNewNotificaitons()";
 
 
     QList<DATA::Notification*> *list = method->getNotificationList();
 
-    qDebug() << "list->size(): " << list->size();
+    //qDebug() << "list->size(): " << list->size();
 
 
     // If there's no new notifications ... we're done
@@ -95,7 +95,7 @@ void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications 
         m_lastNotificationCheck = m_notificationList->last()->getCreatedTime().toUInt();
 
 
-        qDebug() << "m_motificationList->size(): " << m_notificationList->size();
+        //qDebug() << "m_motificationList->size(): " << m_notificationList->size();
 
         // Now get the App Icons
         API::Method *method2 = m_factory->createMethod("fql.query.getAppInfo");
@@ -115,7 +115,7 @@ void NotificationCheck::apiFqlGetNewNotifications(API::FQL::GetNewNotifications 
 }
 
 void NotificationCheck::apiFqlGetAppInfo(API::FQL::GetAppInfo *method) {
-    qDebug() << "apiFqlGetAppInfo()";
+    //qDebug() << "apiFqlGetAppInfo()";
 
     emit newNotifications(m_notificationList, method->getAppInfoMap());
     delete method;

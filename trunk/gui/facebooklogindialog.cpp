@@ -9,7 +9,7 @@ FacebookLoginDialog::FacebookLoginDialog(UserInfo *userInfo, QWidget *parent) :
     m_userInfo(userInfo)
 {
 
-    resize(400,200);
+    resize(400,160);
 
     m_emailEdit = new QLineEdit();
     m_emailEdit->setText(m_userInfo->getEmailAddy());
