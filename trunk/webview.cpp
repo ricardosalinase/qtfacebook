@@ -17,6 +17,10 @@ WebView::WebView(QWidget *parent) :
 
 void WebView::loadFinished() {
 
+    //qDebug() << page()->currentFrame()->toHtml();
+
+
+
     if (page()->findText("Success"))
     {
         QString str = url().toString();

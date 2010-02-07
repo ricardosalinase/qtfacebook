@@ -14,12 +14,14 @@
 #include "testqueryconsole.h"
 #include "api/factory.h"
 #include "notificationcheck.h"
+#include "util/facebooklogin.h"
+#include "gui/facebooklogindialog.h"
+#include "gui/loginfaileddialog.h"
 
 #define API_KEY "61cecf6f7ee5528d294e1d6bf675f424"
 
 QtFacebook::QtFacebook(QObject *parent) :
     QObject(parent),
-    m_userInfo(0),
     m_wizard(0),
     m_testConsole(0),
     m_notificationListView(0),
@@ -29,20 +31,42 @@ QtFacebook::QtFacebook(QObject *parent) :
     m_trayIconIndex(0),
     m_animatingTrayIcon(false),
     m_totalNotifications(0),
-    m_standardNotifications(0)
+    m_standardNotifications(0),
+    m_invalidLogin(0),
+    m_loginDialog(0)
 {
 
     QApplication::setQuitOnLastWindowClosed(false);
+    m_userInfo = new UserInfo(API_KEY);
 
-    // load session_key, uid, and secret
-    bool hasInfo = loadUserInfo();
+    // load session_key, uid, and secret, email, pass, etc
+    if (loadUserInfo()) {
 
-    if (!hasInfo) {
-        // If we don't have those, launch the connector
-        m_wizard = new FBConnectWizard(API_KEY, "qtFacebook");
+        // TODO: Check to see if session is still valid via API
 
-        connect(m_wizard, SIGNAL(userHasAuthenticated(UserInfo*)),
-                this, SLOT(saveUserInfo(UserInfo*)));
+        if (m_userInfo->getPass().compare("") == 0) {
+
+            m_loginDialog = new GUI::FacebookLoginDialog(m_userInfo);
+            connect(m_loginDialog, SIGNAL(loginEntered()),
+                    this, SLOT(gotLoginInfo()) );
+            connect(m_loginDialog, SIGNAL(loginCanceled()),
+                      this, SLOT(loginCanceled()));
+
+            m_loginDialog->show();
+
+        } else {
+
+           gotLoginInfo();
+
+        }
+
+
+    } else {
+
+        m_wizard = new FBConnectWizard(m_userInfo, "qtFacebook");
+
+        connect(m_wizard, SIGNAL(userHasAuthenticated()),
+                this, SLOT(saveUserInfo()));
 
         connect(m_wizard, SIGNAL(accepted()),
                 this, SLOT(fbWizardComplete()));
@@ -51,24 +75,63 @@ QtFacebook::QtFacebook(QObject *parent) :
 
         m_wizard->show();
 
-    } else {
-        fbWizardComplete();
     }
 
 }
 
-void QtFacebook::saveUserInfo(UserInfo *info) {
-    m_userInfo = info;
+void QtFacebook::gotLoginInfo() {
 
-    qDebug() << "Session Key: " << info->getSessionKey() <<
-            "Secret: " << info->getSecret() <<
-            "UID" << info->getUID();
+    if (m_loginDialog != 0)
+        m_loginDialog->close();
+
+    UTIL::FacebookLogin *fbl = new UTIL::FacebookLogin(m_userInfo, this);
+    connect(fbl, SIGNAL(loginResults(bool)),
+            this, SLOT(gotLoginResults(bool)));
+    fbl->logIn();
+}
+
+void QtFacebook::loginCanceled() {
+    exit(0);
+}
+
+void QtFacebook::gotLoginResults(bool success) {
+
+    if (success) {
+
+        saveUserInfo();
+        fbWizardComplete();
+
+    } else {
+
+        if (m_invalidLogin == 0) {
+            m_invalidLogin = new GUI::LoginFailedDialog();
+            connect(m_invalidLogin, SIGNAL(accepted()),
+                    this, SLOT(loginFailedDialogClosed()));
+        }
+        m_invalidLogin->exec();
+    }
+
+}
+
+void QtFacebook::loginFailedDialogClosed() {
+    m_loginDialog->show();
+}
+
+void QtFacebook::saveUserInfo() {
+
+
+    qDebug() << "Session Key: " << m_userInfo->getSessionKey() <<
+            "Secret: " << m_userInfo->getSecret() <<
+            "UID" << m_userInfo->getUID();
 
     QSettings settings("qtFacebook","qtFacebook");
     settings.beginGroup("userInfo");
-    settings.setValue("SessionKey",info->getSessionKey());
-    settings.setValue("UID", info->getUID());
-    settings.setValue("Secret", info->getSecret());
+    settings.setValue("SessionKey",m_userInfo->getSessionKey());
+    settings.setValue("UID", m_userInfo->getUID());
+    settings.setValue("Secret", m_userInfo->getSecret());
+    settings.setValue("Email", m_userInfo->getEmailAddy());
+    settings.setValue("Pass", m_userInfo->getPass());
+    settings.setValue("PostFormId", m_userInfo->getPostFormId());
     settings.endGroup();
 
 
@@ -88,22 +151,24 @@ bool QtFacebook::loadUserInfo() {
     QString sKey(settings.value("SessionKey","").toString());
     QString uid(settings.value("UID","").toString());
     QString secret(settings.value("Secret","").toString());
+    QString email(settings.value("Email","").toString());
+    QString pass(settings.value("Pass","").toString());
+    QString pfi(settings.value("PostFormId","").toString());
     settings.endGroup();
 
     if (sKey.compare("") == 0 ||
             uid.compare("") == 0 ||
-            secret.compare("") == 0)
+            secret.compare("") == 0 ||
+            email.compare("") == 0)
         return false;
 
-    if (m_userInfo != 0)
-        delete m_userInfo;
 
-    m_userInfo = new UserInfo(sKey, secret, uid, API_KEY);
-
-    qDebug() << "Session Key: " << m_userInfo->getSessionKey() <<
-            "Secret: " << m_userInfo->getSecret() <<
-            "UID" << m_userInfo->getUID();
-
+    m_userInfo->setSessionKey(sKey);
+    m_userInfo->setUID(uid);
+    m_userInfo->setSecret(secret);
+    m_userInfo->setEmailAddy(email);
+    m_userInfo->setPass(pass);
+    m_userInfo->setPostFormId(pfi);
 
     return true;
 

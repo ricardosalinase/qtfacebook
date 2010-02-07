@@ -4,7 +4,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QDebug>
 
-
+namespace UTIL {
 
 CookieJar::CookieJar(QObject *parent)
     : QNetworkCookieJar(parent)
@@ -28,5 +28,5 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
     return true;
 }
 
-
+} // end namespace UTIL
 
