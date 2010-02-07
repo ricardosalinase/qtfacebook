@@ -46,13 +46,13 @@ void CometConnection::go() {
 
     // The cookiejar can't live in another thread, and you can't
     // copy QObject derived classes ...
-    //UTIL::CookieJar *cj = new UTIL::CookieJar();
-    //cj->load();
+    UTIL::CookieJar *cj = new UTIL::CookieJar();
+    cj->createJarFromRaw(m_userInfo->getCookieJar()->getRawCookies());
 
-    m_cometNam->setCookieJar(m_userInfo->getCookieJar());
-    //m_userInfo->getCookieJar()->setParent(0);
-    m_nam->setCookieJar(m_userInfo->getCookieJar());
-    //m_userInfo->getCookieJar()->setParent(0);
+    m_cometNam->setCookieJar(cj);
+    cj->setParent(0);
+    m_nam->setCookieJar(cj);
+
 
 
     connect(m_cometNam, SIGNAL(finished(QNetworkReply*)),
@@ -78,7 +78,6 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
     else
     {
         result = reply->readAll();
-
         qDebug() << result;
 
         // remove 'for (;;);' from the beginning

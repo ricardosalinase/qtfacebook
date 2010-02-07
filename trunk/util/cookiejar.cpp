@@ -5,7 +5,7 @@
 #include <QtCore/QDebug>
 #include <QSettings>
 
-
+/*
 QT_BEGIN_NAMESPACE
 QDataStream &operator<<(QDataStream &stream, const QList<QNetworkCookie> &list)
 {
@@ -37,7 +37,7 @@ QDataStream &operator>>(QDataStream &stream, QList<QNetworkCookie> &list)
     }
     return stream;
 }
-QT_END_NAMESPACE
+QT_END_NAMESPACE */
 
 namespace UTIL {
 
@@ -67,18 +67,26 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
     return true;
 }
 
-// Total hack to get a copy of the cookie jar into another thread.
-void CookieJar::save() {
-    qRegisterMetaTypeStreamOperators<QList<QNetworkCookie> >("QList<QNetworkCookie>");
+
+QList<QByteArray> CookieJar::getRawCookies() {
+
+    QList<QByteArray> rc;
     QList<QNetworkCookie> cookies = allCookies();
-    QSettings settings("qtFacebook","qtFacebook");
-    settings.setValue("Cookies",qVariantFromValue<QList<QNetworkCookie> >(cookies) );
+    foreach(QNetworkCookie cookie, cookies) {
+        rc += cookie.toRawForm();
+    }
+    return rc;
 }
 
-void CookieJar::load() {
-    qRegisterMetaTypeStreamOperators<QList<QNetworkCookie> >("QList<QNetworkCookie>");
-    QSettings settings("qtFacebook","qtFacebook");
-    setAllCookies(qvariant_cast<QList<QNetworkCookie> >(settings.value("cookies")));
+void CookieJar::createJarFromRaw(QList<QByteArray> rc) {
+
+    QList<QNetworkCookie> cookies = allCookies();
+    foreach(QByteArray rawCookie, rc) {
+        QList<QNetworkCookie> nc = QNetworkCookie::parseCookies(rawCookie);
+        cookies += nc.takeFirst();
+    }
+    setAllCookies(cookies);
+
 }
 
 } // end namespace UTIL
