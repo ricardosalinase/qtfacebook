@@ -117,7 +117,7 @@ bool Method::execute() {
     QByteArray include;
     postArgs = postArgs.toPercentEncoding(exclude,include,'%');
 
-    qDebug() << postArgs;
+    // qDebug() << postArgs;
 
     QUrl url("http://api.facebook.com/restserver.php");
 
@@ -226,7 +226,7 @@ bool Method::fatalError(const QXmlParseException &exception)
 
 void Method::gotReply(QNetworkReply *reply) {
 
-    qDebug() << "Got reply!";
+    // qDebug() << "Got reply!";
 
     QXmlInputSource is;
     is.setData(reply->readAll());
@@ -235,7 +235,7 @@ void Method::gotReply(QNetworkReply *reply) {
     reader.setErrorHandler(this);
     reader.parse(is);
 
-    qDebug() << "Sending Second signal";
+    // qDebug() << "Sending Second signal";
 
     emit methodComplete((API::Method*)this);
 

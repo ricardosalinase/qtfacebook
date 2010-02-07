@@ -1,6 +1,9 @@
 QT += webkit \
     network \
     xml
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib \
+    -lqjson
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
@@ -30,7 +33,8 @@ SOURCES += main.cpp \
     util/facebooklogin.cpp \
     util/cookiejar.cpp \
     gui/facebooklogindialog.cpp \
-    gui/loginfaileddialog.cpp
+    gui/loginfaileddialog.cpp \
+    cometconnector.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -60,7 +64,8 @@ HEADERS += fbconnectwizard.h \
     util/facebooklogin.h \
     util/cookiejar.h \
     gui/facebooklogindialog.h \
-    gui/loginfaileddialog.h
+    gui/loginfaileddialog.h \
+    cometconnector.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
