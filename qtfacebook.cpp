@@ -98,7 +98,6 @@ void QtFacebook::gotLoginResults(bool success) {
     if (success) {
 
         saveUserInfo();
-        m_userInfo->getCookieJar()->save();
         fbWizardComplete();
 
     } else {

@@ -21,8 +21,9 @@ public:
     ~CookieJar();
 
     bool setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const QUrl &url);
-    void save();
-    void load();
+
+    QList<QByteArray> getRawCookies();
+    void createJarFromRaw(QList<QByteArray>);
 
 
 public slots:
