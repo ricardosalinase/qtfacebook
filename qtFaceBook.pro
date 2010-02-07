@@ -4,7 +4,6 @@ QT += webkit \
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
-    cookiejar.cpp \
     qtfacebook.cpp \
     userinfo.cpp \
     testqueryconsole.cpp \
@@ -27,10 +26,13 @@ SOURCES += main.cpp \
     api/fql_GetNewNotifications.cpp \
     api/fql_GetAppInfo.cpp \
     gui/notificationcenterlabel.cpp \
-    gui/notificationcenterwidget.cpp
+    gui/notificationcenterwidget.cpp \
+    util/facebooklogin.cpp \
+    util/cookiejar.cpp \
+    gui/facebooklogindialog.cpp \
+    gui/loginfaileddialog.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
-    cookiejar.h \
     qtfacebook.h \
     userinfo.h \
     testqueryconsole.h \
@@ -54,7 +56,11 @@ HEADERS += fbconnectwizard.h \
     api/fql_GetNewNotifications.h \
     api/fql_GetAppInfo.h \
     gui/notificationcenterlabel.h \
-    gui/notificationcenterwidget.h
+    gui/notificationcenterwidget.h \
+    util/facebooklogin.h \
+    util/cookiejar.h \
+    gui/facebooklogindialog.h \
+    gui/loginfaileddialog.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

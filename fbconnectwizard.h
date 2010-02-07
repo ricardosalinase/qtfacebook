@@ -2,7 +2,11 @@
 #define FBCONNECTWIZARD_H
 
 #include <QWizard>
+#include <QNetworkReply>
+#include <QLineEdit>
+#include <QLabel>
 #include "userinfo.h"
+#include "util/cookiejar.h"
 
 class WebView;
 
@@ -12,14 +16,14 @@ class FBConnectWizard : public QWizard
 
 
 public:
-    FBConnectWizard(QString apiKey, QString appName, bool firstTime = true);
+    FBConnectWizard(UserInfo *userInfo, QString appName, bool firstTime = true);
     enum { Page_Intro, Page_Connect, Page_Conclusion, Page_Error };
 
 
 public slots:
 
 signals:
-    void userHasAuthenticated(UserInfo *info);
+    void userHasAuthenticated();
 
 private:
 
@@ -30,11 +34,41 @@ private:
 
 
 
-    QString m_apiKey;
     QString m_appName;
     bool m_firstTime;
     WebView *m_view;
+    UserInfo *m_userInfo;
 
+
+};
+
+class IntroPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    IntroPage(UserInfo *userInfo, QString appName, QWidget *parent = 0);
+    bool isComplete() const;
+    // Overrides parent method
+    int nextId();
+
+
+signals:
+
+
+public slots:
+    void loginClicked();
+    void gotLoginResults(bool success);
+
+
+private:
+    bool m_gotLoggedIn;
+    QLineEdit *m_emailEdit;
+    QLineEdit *m_pwEdit;
+    QPushButton *m_login;
+    QNetworkAccessManager *m_nam;
+    UserInfo *m_userInfo;
+    QLabel *m_loginResult;
 
 };
 
@@ -43,7 +77,8 @@ class ConnectPage : public QWizardPage
     Q_OBJECT
 
 public:
-    ConnectPage(QString apKey, QWidget *parent = 0);
+    explicit ConnectPage(UserInfo *userInfo, QWidget *parent = 0);
+
     void initializePage();
     bool isComplete() const;
     bool hasCompletedAuth();
@@ -51,7 +86,7 @@ public:
     int nextId() const;
 
 signals:
-    void userAuthenticated(UserInfo *info);
+    void userAuthenticated();
 
 public slots:
     void gotAuth();
@@ -59,10 +94,10 @@ public slots:
 
 private:
     WebView *m_view;
-    QString m_apiKey;
     bool m_isComplete;
     bool m_gotAuth;
     QString m_facebookUrl;
+    UserInfo *m_userInfo;
 
 };
 

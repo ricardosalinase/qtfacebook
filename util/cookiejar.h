@@ -4,6 +4,8 @@
 
 #include <QtNetwork/QNetworkCookieJar>
 
+namespace UTIL {
+
 class CookieJar : public QNetworkCookieJar
 {
 
@@ -27,6 +29,8 @@ private slots:
 private:
 
 };
+
+} // end namespace UTIL
 
 #endif // COOKIEJAR_H
 

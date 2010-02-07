@@ -12,6 +12,7 @@
 #include "api/notifications_markread.h"
 #include "gui/notifications_listview.h"
 #include "gui/notificationcenter.h"
+#include "gui/facebooklogindialog.h"
 
 
 class QtFacebook : public QObject
@@ -24,7 +25,7 @@ signals:
 
 public slots:
     void fbWizardComplete();
-    void saveUserInfo(UserInfo *info);
+    void saveUserInfo();
     void fbWizardCanceled();
     void updateIcon();
 
@@ -38,6 +39,10 @@ private slots:
     void testQueryConsole();
     void receivedNewNotifications(int numNew);
     void acknowledgedNotification(QString nid);
+    void gotLoginResults(bool);
+    void gotLoginInfo();
+    void loginCanceled();
+    void loginFailedDialogClosed();
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);
@@ -61,6 +66,8 @@ private:
     QByteArray m_geometry;
     int m_totalNotifications;
     int m_standardNotifications;
+    GUI::FacebookLoginDialog *m_loginDialog;
+    QDialog *m_invalidLogin;
 };
 
 #endif // QTFACEBOOK_H
