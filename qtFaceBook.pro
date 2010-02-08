@@ -1,9 +1,15 @@
 QT += webkit \
     network \
     xml
-INCLUDEPATH += /usr/local/include
-LIBS += -L/usr/local/lib \
-    -lqjson
+unix {
+    INCLUDEPATH += /usr/local/include
+    LIBS += -L/usr/local/lib \
+}
+win32 {
+    INCLUDEPATH +=
+    LIBS +=
+}
+LIBS += -lqjson
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
