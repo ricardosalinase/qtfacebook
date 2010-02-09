@@ -68,6 +68,8 @@ void CometConnection::go() {
 
     connect(m_cometNam, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotCometMessage(QNetworkReply*)));
+    connect(m_nam, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(gotNetworkReply(QNetworkReply*)));
 
     // First thing we do is connect to the comet server and find our sequence number
     QNetworkRequest nr;
@@ -174,9 +176,39 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
 }
 
 void CometConnection::sendChatMessage(DATA::ChatMessage *msg) {
-    qDebug() << "Thread: " << QThread::currentThread() << " Message: " << msg->getMsgId();
+    qDebug() << "Thread: " << QThread::currentThread() << " MessageId: " << msg->getMsgId();
+
+    QByteArray args;
+    args.append("msg_text=" + msg->getText() +
+                "&msg_id=" + msg->getMsgId() +
+                "&client_time=" + msg->getClientTime() +
+                "&to=" + msg->getToId() +
+                "&post_form_id=" + m_userInfo->getPostFormId());
+
+    QByteArray exclude("&=");
+    QByteArray include;
+    args = args.toPercentEncoding(exclude,include,'%');
 
 
+
+    QNetworkRequest nr;
+    QUrl url("http://www.facebook.com/ajax/chat/send.php");
+    nr.setUrl(url);
+    m_nam->post(nr, args);
 
     delete msg;
+}
+
+void CometConnection::gotNetworkReply(QNetworkReply *reply) {
+
+    if (reply->error() > 0) {
+        qDebug() << "Error number = " << reply->errorString();
+    }
+    else
+    {
+        QByteArray result;
+        result = reply->readAll();
+        qDebug() << "Chat Post Result: " << result;
+    }
+
 }

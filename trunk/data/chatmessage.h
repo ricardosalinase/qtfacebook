@@ -26,7 +26,8 @@ public:
     void setToFirstName(QString to);
     QString getText();
     void setText(QString text);
-
+    QString getClientTime();
+    void setClientTime(QString time);
 
 private:
     QString m_msgId;
@@ -37,6 +38,7 @@ private:
     QString m_fromFirstName;
     QString m_toFirstName;
     QString m_text;
+    QString m_clientTime;
 
 
 

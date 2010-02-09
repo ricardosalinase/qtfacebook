@@ -50,6 +50,7 @@ public slots:
 
 private slots:
     void gotCometMessage(QNetworkReply *reply);
+    void gotNetworkReply(QNetworkReply *reply);
 
 private:
     UserInfo *m_userInfo;
