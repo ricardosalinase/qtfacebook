@@ -22,7 +22,7 @@ signals:
     void newNotification(DATA::Notification *, DATA::AppInfo *);
     void notificationAck(QString nid);
     void newChatMessage(DATA::ChatMessage *);
-
+    void sendChatMessage(DATA::ChatMessage *);
 
 
 protected:
@@ -44,6 +44,9 @@ signals:
     void newNotification(DATA::Notification *, DATA::AppInfo *);
     void notificationAck(QString nid);
     void newChatMessage(DATA::ChatMessage *);
+
+public slots:
+    void sendChatMessage(DATA::ChatMessage *);
 
 private slots:
     void gotCometMessage(QNetworkReply *reply);

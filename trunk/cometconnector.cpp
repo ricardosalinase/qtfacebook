@@ -24,7 +24,10 @@ void CometConnector::run() {
             this, SIGNAL(notificationAck(QString)),
             Qt::QueuedConnection);
     connect(cc, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-            this, SIGNAL(newChatMessage(DATA::ChatMessage*)));
+            this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+            Qt::QueuedConnection);
+    connect(this, SIGNAL(sendChatMessage(DATA::ChatMessage*)),
+            cc, SLOT(sendChatMessage(DATA::ChatMessage*)));
     cc->go();
 
 
@@ -168,4 +171,12 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
 
     }
 
+}
+
+void CometConnection::sendChatMessage(DATA::ChatMessage *msg) {
+    qDebug() << "Thread: " << QThread::currentThread() << " Message: " << msg->getMsgId();
+
+
+
+    delete msg;
 }

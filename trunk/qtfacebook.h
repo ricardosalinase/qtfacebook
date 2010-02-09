@@ -22,6 +22,7 @@ public:
     explicit QtFacebook(QObject *parent = 0);
 
 signals:
+    void newChatMessage(DATA::ChatMessage *);
 
 public slots:
     void fbWizardComplete();
