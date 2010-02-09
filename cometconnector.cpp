@@ -93,8 +93,21 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
         {
             // no op
         }
-        else
+        else if (topLevel["t"].toString().compare("msg") == 0)
         {
+            QVariantList ms = topLevel["ms"].toList();
+
+            for (int i = 0; i < ms.size(); i++) {
+
+                QVariantMap msEntry = ms.at(i).toMap();
+
+                if (msEntry["type"].toString().compare("app_msg") == 0) {
+
+                }
+
+
+            }
+
             m_seq++;
         }
 

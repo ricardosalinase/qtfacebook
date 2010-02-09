@@ -9,6 +9,7 @@
 
 #include "userinfo.h"
 #include "data/notification.h"
+#include "data/appinfo.h"
 
 class CometConnector : public QThread
 {
