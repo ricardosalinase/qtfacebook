@@ -23,6 +23,8 @@ void CometConnector::run() {
     connect(cc, SIGNAL(notificationAck(QString)),
             this, SIGNAL(notificationAck(QString)),
             Qt::QueuedConnection);
+    connect(cc, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+            this, SIGNAL(newChatMessage(DATA::ChatMessage*)));
     cc->go();
 
 
@@ -132,6 +134,23 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
                         emit notificationAck(alertId);
                     }
 
+
+                } else if (msEntry["type"].toString().compare("msg") == 0) {
+                    // {"t":"msg","c":"p_100000685644751","ms":[{"type":"msg","msg":{"text":"Hi there","time":1265691489967,"clientTime":1265691489037,"msgID":"1891539413"},"from":1082239928,"to":100000685644751,"from_name":"Brian Roach","to_name":"Doppel Ganger","from_first_name":"Brian","to_first_name":"Doppel"}]}
+                    // {"t":"msg","c":"p_100000685644751","ms":[{"type":"msg","msg":{"text":"howdy","time":1265691618370,"clientTime":1265691616694,"msgID":"2431516226"},"from":100000685644751,"to":1082239928,"from_name":"Doppel Ganger","to_name":"Brian Roach","from_first_name":"Doppel","to_first_name":"Brian"}]}"
+
+
+                    DATA::ChatMessage *c = new DATA::ChatMessage();
+                    c->setMsgId((msEntry["msg"].toMap())["msgID"].toString());
+                    c->setText((msEntry["msg"].toMap())["text"].toString());
+                    c->setFromId(msEntry["from"].toString());
+                    c->setToId(msEntry["to"].toString());
+                    c->setFromName(msEntry["from_name"].toString());
+                    c->setToName(msEntry["to_name"].toString());
+                    c->setFromFirstName(msEntry["from_first_name"].toString());
+                    c->setToFirstName(msEntry["to_first_name"].toString());
+
+                    emit newChatMessage(c);
 
                 }
 

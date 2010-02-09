@@ -10,6 +10,7 @@
 #include "userinfo.h"
 #include "data/notification.h"
 #include "data/appinfo.h"
+#include "data/chatmessage.h"
 
 class CometConnector : public QThread
 {
@@ -20,7 +21,7 @@ public:
 signals:
     void newNotification(DATA::Notification *, DATA::AppInfo *);
     void notificationAck(QString nid);
-    void newChatMessage();
+    void newChatMessage(DATA::ChatMessage *);
 
 
 
@@ -42,7 +43,7 @@ public:
 signals:
     void newNotification(DATA::Notification *, DATA::AppInfo *);
     void notificationAck(QString nid);
-    void newChatMessage();
+    void newChatMessage(DATA::ChatMessage *);
 
 private slots:
     void gotCometMessage(QNetworkReply *reply);
