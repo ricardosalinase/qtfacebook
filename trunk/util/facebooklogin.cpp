@@ -12,7 +12,8 @@ namespace UTIL {
 
 FacebookLogin::FacebookLogin(UserInfo *userInfo, QObject *parent) :
             QObject(parent),
-            m_userInfo(userInfo)
+            m_userInfo(userInfo),
+            m_count(0)
 {
 }
 
@@ -49,7 +50,7 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
     QString result;
 
     if (reply->error() > 0) {
-        qDebug() << "Error number = " << reply->errorString();
+        qDebug() << "FacebookLogin; Error number = " << reply->errorString();
     }
     else {
         result.append( reply->readAll() );
@@ -61,9 +62,9 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
     if (result.contains("Cookies are not enabled on your browser."))
     {
 
-        //qDebug() << "**** Cookies NOT enabled *******";
+        qDebug() << "**** Cookies NOT enabled *******";
 
-        QUrl url("https://login.facebook.com/login.php");
+        QUrl url("https://login.facebook.com/login.php?login_attempt=1");
         QByteArray args;
         args.append("email=" + m_userInfo->getEmailAddy() +
                     "&pass=" + m_userInfo->getPass() +
@@ -82,9 +83,9 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
 
 
     } else if (result.compare("") == 0) {
-        //qDebug() << "Result was empty";
-
-        QUrl url("http://www.facebook.com/home.php?");
+        qDebug() << "Result was empty";
+        qDebug() << reply->rawHeader("Location");
+        QUrl url(reply->rawHeader("Location"));
         QByteArray args;
         args.append("email=" + m_userInfo->getEmailAddy() +
                     "&pass=" + m_userInfo->getPass() +
@@ -101,6 +102,8 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
         reply2 = m_nam->post(nr,args);
 
     } else {
+
+
 
         //qDebug() << result;
         // In theory, we should now be logged in, and have the cookies in our jar
@@ -126,7 +129,7 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
             (m_userInfo->getPostFormId().compare("") == 0))
         {
             // We didn't log in.
-            emit loginResults(false);
+            emit loginResults(true);
         }
         else
         {

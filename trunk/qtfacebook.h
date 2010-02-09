@@ -23,6 +23,7 @@ public:
 
 signals:
     void newChatMessage(DATA::ChatMessage *);
+    void getBuddyList();
 
 public slots:
     void fbWizardComplete();

@@ -199,7 +199,7 @@ void QtFacebook::fbWizardComplete() {
     QMenu *menu = new QMenu();
 
     QAction *tqc = menu->addAction("Test Query Console");
-
+    QAction *gbl = menu->addAction("Get Buddy List");
     menu->addSeparator();
     QAction *ncr = menu->addAction("Notification Center");
     menu->addSeparator();
@@ -248,6 +248,11 @@ void QtFacebook::fbWizardComplete() {
     connect(this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
             m_cometConnector, SIGNAL(sendChatMessage(DATA::ChatMessage*)),
             Qt::QueuedConnection);
+    connect(gbl, SIGNAL(triggered()),
+            m_cometConnector, SIGNAL(getBuddyList()),
+            Qt::QueuedConnection);
+
+
 
     m_cometConnector->start();
 
@@ -263,6 +268,8 @@ void QtFacebook::fbWizardComplete() {
     m_trayAnimationTimer = new QTimer();
     connect(m_trayAnimationTimer, SIGNAL(timeout()),
             this, SLOT(nextTrayIcon()));
+
+
 
     DATA::ChatMessage *cm = new DATA::ChatMessage();
     cm->setMsgId("12345");

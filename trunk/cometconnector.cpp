@@ -28,6 +28,9 @@ void CometConnector::run() {
             Qt::QueuedConnection);
     connect(this, SIGNAL(sendChatMessage(DATA::ChatMessage*)),
             cc, SLOT(sendChatMessage(DATA::ChatMessage*)));
+    connect(this,SIGNAL(getBuddyList()),
+            cc, SLOT(getBuddyList()),
+            Qt::QueuedConnection);
     cc->go();
 
 
@@ -199,6 +202,33 @@ void CometConnection::sendChatMessage(DATA::ChatMessage *msg) {
     delete msg;
 }
 
+void CometConnection::getBuddyList() {
+
+    QByteArray args;
+    args.append("buddy_list=1"
+                "&force_render=true"
+                "&popped_out=true"
+                "&notifications=1"
+                "&__a=1&post_form_id_source=AsyncRequest&fb_dtsg=(null)"
+                //"&post_form_id=" + m_userInfo->getPostFormId() +
+                "&user=" + m_userInfo->getUID());
+
+    QByteArray exclude("&=");
+    QByteArray include;
+    args = args.toPercentEncoding(exclude,include,'%');
+
+    qDebug() << "getting buddy list; " << args;
+
+    QNetworkRequest nr;
+    QUrl url("http://www.facebook.com/ajax/chat/buddy_list.php");
+    nr.setUrl(url);
+    m_nam->post(nr, args);
+
+
+}
+
+
+
 void CometConnection::gotNetworkReply(QNetworkReply *reply) {
 
     if (reply->error() > 0) {
@@ -208,7 +238,7 @@ void CometConnection::gotNetworkReply(QNetworkReply *reply) {
     {
         QByteArray result;
         result = reply->readAll();
-        qDebug() << "Chat Post Result: " << result;
+        qDebug() <<  result;
     }
 
 }
