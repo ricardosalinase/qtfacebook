@@ -27,7 +27,8 @@ void FacebookLogin::logIn() {
     QUrl url("https://login.facebook.com/login.php");
     QByteArray args;
     args.append("email=" + m_userInfo->getEmailAddy() +
-                "&pass=" + m_userInfo->getPass());
+                "&pass=" + m_userInfo->getPass() +
+                "&persistent=1");
 
     QByteArray exclude("&=");
     QByteArray include;
@@ -65,7 +66,8 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
         QUrl url("https://login.facebook.com/login.php");
         QByteArray args;
         args.append("email=" + m_userInfo->getEmailAddy() +
-                    "&pass=" + m_userInfo->getPass());
+                    "&pass=" + m_userInfo->getPass() +
+                    "&persistent=1");
 
         QByteArray exclude("&=");
         QByteArray include;
@@ -85,7 +87,8 @@ void FacebookLogin::gotNetworkReply(QNetworkReply *reply) {
         QUrl url("http://www.facebook.com/home.php?");
         QByteArray args;
         args.append("email=" + m_userInfo->getEmailAddy() +
-                    "&pass=" + m_userInfo->getPass());
+                    "&pass=" + m_userInfo->getPass() +
+                    "&persistent=1");
 
         QByteArray exclude("&=");
         QByteArray include;

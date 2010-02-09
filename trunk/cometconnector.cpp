@@ -17,6 +17,12 @@ CometConnector::CometConnector(UserInfo *userInfo, QObject *parent) :
 void CometConnector::run() {
 
     CometConnection *cc = new CometConnection(m_userInfo);
+    connect(cc, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
+            this, SIGNAL(newNotification(DATA::Notification*, DATA::AppInfo *)),
+            Qt::QueuedConnection);
+    connect(cc, SIGNAL(notificationAck(QString)),
+            this, SIGNAL(notificationAck(QString)),
+            Qt::QueuedConnection);
     cc->go();
 
 
@@ -102,6 +108,30 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
                 QVariantMap msEntry = ms.at(i).toMap();
 
                 if (msEntry["type"].toString().compare("app_msg") == 0) {
+
+                    QVariantMap payload = (msEntry["response"].toMap())["payload"].toMap();
+                    DATA::Notification *n = new DATA::Notification();
+                    n->setTitleHtml(payload["title"].toString());
+                    n->setIsRead(!(payload["alert"].toMap())["unread"].toBool());
+                    n->setNotificationId(payload["alertId"].toString());
+                    n->setCreatedTime((payload["alert"].toMap())["time_sent"].toString());
+                    n->setAppId((payload["alert"].toMap())["app_id"].toString());
+
+                    DATA::AppInfo *a = new DATA::AppInfo();
+                    a->setAppId(n->getAppId());
+                    a->setIconUrl(payload["icon"].toString());
+
+                    emit newNotification(n,a);
+
+                } else if (msEntry["type"].toString().compare("notifications_read") == 0) {
+
+                    // {"t":"msg","c":"p_100000685644751","ms":[{"alert_ids":["314426"],"num_unread":3,"type":"notifications_read"}]}
+                    QVariantList alertIds = msEntry["alert_ids"].toList();
+                    while (!alertIds.empty()) {
+                        QString alertId = alertIds.takeFirst().toString();
+                        emit notificationAck(alertId);
+                    }
+
 
                 }
 

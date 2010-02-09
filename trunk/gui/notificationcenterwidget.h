@@ -19,7 +19,7 @@ Q_OBJECT
 public:
     NotificationCenterWidget(GUI::NotificationCenterLabel *n, GUI::AppInfoLabel *a, QWidget *parent = 0);
     ~NotificationCenterWidget();
-
+    QString getNotificationId();
     void start();
     void stopAfter(int loopCount);
 
