@@ -24,7 +24,7 @@ private slots:
 private:
     UserInfo *m_userInfo;
     QNetworkAccessManager *m_nam;
-
+    int m_count;
 
 
 };

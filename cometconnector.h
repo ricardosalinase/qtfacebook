@@ -23,6 +23,7 @@ signals:
     void notificationAck(QString nid);
     void newChatMessage(DATA::ChatMessage *);
     void sendChatMessage(DATA::ChatMessage *);
+    void getBuddyList();
 
 
 protected:
@@ -47,6 +48,7 @@ signals:
 
 public slots:
     void sendChatMessage(DATA::ChatMessage *);
+    void getBuddyList();
 
 private slots:
     void gotCometMessage(QNetworkReply *reply);
