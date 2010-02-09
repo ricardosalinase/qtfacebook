@@ -6,8 +6,8 @@ unix {
     LIBS += -L/usr/local/lib \
 }
 win32 {
-    INCLUDEPATH +=
-    LIBS +=
+    INCLUDEPATH += "C:\Program Files\qjson\include"
+    LIBS += -L"C:\Program Files\qjson\bin"
 }
 LIBS += -lqjson
 SOURCES += main.cpp \
