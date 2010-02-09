@@ -244,6 +244,9 @@ void QtFacebook::fbWizardComplete() {
     connect(m_cometConnector, SIGNAL(newChatMessage(DATA::ChatMessage*)),
             this, SLOT(newChatMessageReceived(DATA::ChatMessage*)),
             Qt::QueuedConnection);
+    connect(this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+            m_cometConnector, SIGNAL(sendChatMessage(DATA::ChatMessage*)),
+            Qt::QueuedConnection);
 
     m_cometConnector->start();
 
@@ -259,6 +262,10 @@ void QtFacebook::fbWizardComplete() {
     m_trayAnimationTimer = new QTimer();
     connect(m_trayAnimationTimer, SIGNAL(timeout()),
             this, SLOT(nextTrayIcon()));
+
+    DATA::ChatMessage *cm = new DATA::ChatMessage();
+    cm->setMsgId("12345");
+    emit newChatMessage(cm);
 
 
 }
