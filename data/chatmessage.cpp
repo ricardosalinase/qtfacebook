@@ -70,6 +70,13 @@ void ChatMessage::setText(QString text) {
     m_text = text;
 }
 
+QString ChatMessage::getClientTime() {
+    return m_clientTime;
+}
+
+void ChatMessage::setClientTime(QString time) {
+    m_clientTime = time;
+}
 
 
 } // namespace DATA

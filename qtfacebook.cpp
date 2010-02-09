@@ -8,6 +8,7 @@
 #include <QMatrix>
 #include <QMenu>
 #include <QApplication>
+#include <QDateTime>
 
 #include "qtfacebook.h"
 #include "fbconnectwizard.h"
@@ -265,6 +266,11 @@ void QtFacebook::fbWizardComplete() {
 
     DATA::ChatMessage *cm = new DATA::ChatMessage();
     cm->setMsgId("12345");
+    QDateTime qd = QDateTime::currentDateTime().toUTC();
+    cm->setClientTime(QString::number(qd.toTime_t()) + QString::number(qd.time().msec()));
+    cm->setToId("1082239928");
+    cm->setText("Hey there Brian!");
+
     emit newChatMessage(cm);
 
 
