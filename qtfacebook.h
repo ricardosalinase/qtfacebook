@@ -43,6 +43,7 @@ private slots:
     void gotLoginInfo();
     void loginCanceled();
     void loginFailedDialogClosed();
+    void newChatMessageReceived(DATA::ChatMessage *c);
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);
@@ -52,6 +53,7 @@ private:
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
     GUI::NotificationCenter *m_notificationCenter;
+    CometConnector *m_cometConnector;
     QSystemTrayIcon *m_trayIcon;
     GUI::Notifications::ListView *m_notificationListView;
     QList<DATA::Notification *> *m_notificationList;

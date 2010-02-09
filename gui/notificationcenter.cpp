@@ -41,17 +41,6 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     setLayout(mainLayout);
     setStyleSheet("background: #526ea6");
 
-    m_cometConnector = new CometConnector(m_userInfo);
-    connect(m_cometConnector, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
-            this, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
-            Qt::QueuedConnection);
-    connect(m_cometConnector, SIGNAL(notificationAck(QString)),
-            this, SLOT(deactivateNotification(QString)),
-            Qt::QueuedConnection);
-
-
-    m_cometConnector->start();
-
     m_notificationCheck = new NotificationCheck(m_userInfo,1);
     connect(m_notificationCheck, SIGNAL(newNotifications(QList<DATA::Notification*>*,QMap<QString,DATA::AppInfo*>*)),
             this, SLOT(newNotifications(QList<DATA::Notification*>*,QMap<QString,DATA::AppInfo*>*)),

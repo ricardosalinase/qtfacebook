@@ -1,7 +1,7 @@
 QT += webkit \
     network \
     xml
-unix {
+unix { 
     INCLUDEPATH += /usr/local/include
     LIBS += -L/usr/local/lib \
 }
@@ -79,3 +79,5 @@ OTHER_FILES += uiImages/thumbsUp3.jpg \
     Doxyfile
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
+HEADERS += data/chatmessage.h
+SOURCES += data/chatmessage.cpp

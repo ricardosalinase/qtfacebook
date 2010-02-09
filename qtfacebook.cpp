@@ -234,6 +234,20 @@ void QtFacebook::fbWizardComplete() {
     connect(m_notificationCenter, SIGNAL(acknowledgedNotification(QString)),
             this, SLOT(acknowledgedNotification(QString)));
 
+    m_cometConnector = new CometConnector(m_userInfo);
+    connect(m_cometConnector, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
+            m_notificationCenter, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
+            Qt::QueuedConnection);
+    connect(m_cometConnector, SIGNAL(notificationAck(QString)),
+            m_notificationCenter, SLOT(deactivateNotification(QString)),
+            Qt::QueuedConnection);
+    connect(m_cometConnector, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+            this, SLOT(newChatMessageReceived(DATA::ChatMessage*)),
+            Qt::QueuedConnection);
+
+    m_cometConnector->start();
+
+
     if (!QSystemTrayIcon::supportsMessages())
         qDebug() << "Awwww ... bummer. It doesn't support messages";
 
@@ -373,4 +387,8 @@ void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
 
     m_notificationListView->show();
     m_notificationListView->raise();
+}
+
+void QtFacebook::newChatMessageReceived(DATA::ChatMessage *c) {
+    qDebug() << "From: " << c->getFromName() << " Msg: " << c->getText();
 }
