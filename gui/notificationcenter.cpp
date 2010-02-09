@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QObject>
 
 #include "notificationcenter.h"
 #include "appinfolabel.h"
@@ -41,6 +42,14 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     setStyleSheet("background: #526ea6");
 
     m_cometConnector = new CometConnector(m_userInfo);
+    connect(m_cometConnector, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
+            this, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
+            Qt::QueuedConnection);
+    connect(m_cometConnector, SIGNAL(notificationAck(QString)),
+            this, SLOT(deactivateNotification(QString)),
+            Qt::QueuedConnection);
+
+
     m_cometConnector->start();
 
     m_notificationCheck = new NotificationCheck(m_userInfo,1);
@@ -131,7 +140,8 @@ void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead 
     QString nId = method->getNotificationIds();
 
     if (method->successful()) {
-        emit acknowledgedNotification(nId);
+        //emit acknowledgedNotification(nId);
+        // no op - it'll come back via the comet connection
     } else {
         qDebug() << "notifications.markRead failed, resending.";
         notificationAcknowledged(nId);
@@ -141,41 +151,29 @@ void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead 
 
 }
 
-void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QMap<QString, DATA::AppInfo *> *aMap) {
+void NotificationCenter::deactivateNotification(QString nid) {
 
-    qDebug() << "newNotifications(); nList: " << nList->size();
-
-    GUI::NotificationCenterWidget *nWidget;
-
-    int numNew = 0;
-    //m_showHiddenNotifications = true;
-    while (!nList->empty())
-    {
-        DATA::Notification *n = nList->takeFirst();
-//        if(n->getIsHidden() && !m_showHiddenNotifications) {
-//            delete n;
-//            continue;
-//        }
-        GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
-        GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(new AppInfo(*(aMap->value(nl->getNotification()->getAppId()))));
-        getPixmap(ai);
-        nWidget = new GUI::NotificationCenterWidget(nl, ai);
-        connect(nWidget, SIGNAL(linkActivated(QString)),
-                this, SLOT(linkActivated(QString)));
-        connect(nWidget, SIGNAL(acknowledged(QString)),
-                this, SLOT(notificationAcknowledged(QString)));
-        ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
-
-        if (n->getIsHidden() && !m_showHiddenNotifications)
-            nWidget->hide();
-        else {
-            numNew++;
-            nWidget->start();
+    for (int i = 0; i < m_newNotifications.size(); i++) {
+        if (m_newNotifications.at(i)->getNotificationId().compare(nid) == 0) {
+            m_newNotifications.at(i)->stopAfter(5);
+            m_newNotifications.takeAt(i);
+            break;
         }
     }
 
-    // Notify Tray Icon
-    emit receivedNewNotifications(numNew);
+    emit acknowledgedNotification(nid);
+
+}
+
+void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QMap<QString, DATA::AppInfo *> *aMap) {
+
+    qDebug() << "newNotifications(); nList: " << nList->size();
+    while (!nList->empty())
+    {
+        DATA::Notification *n = nList->takeFirst();
+        DATA::AppInfo *a = new DATA::AppInfo(*(aMap->value(n->getAppId())));
+        newNotification(n,a);
+    }
 
     AppInfo *tmp;
     QMap<QString, AppInfo *>::iterator i = aMap->begin();
@@ -188,11 +186,38 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
      delete nList;
      delete aMap;
 
+}
+
+void NotificationCenter::newNotification(DATA::Notification *n, DATA::AppInfo *a) {
+
+    GUI::NotificationCenterWidget *nWidget;
+
+    int numNew = 0;
+    GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
+    GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(a);
+    getPixmap(ai);
+    nWidget = new GUI::NotificationCenterWidget(nl, ai);
+    connect(nWidget, SIGNAL(linkActivated(QString)),
+            this, SLOT(linkActivated(QString)));
+    connect(nWidget, SIGNAL(acknowledged(QString)),
+            this, SLOT(notificationAcknowledged(QString)));
+    ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
+    m_newNotifications.append(nWidget);
+
+    if (n->getIsHidden() && !m_showHiddenNotifications)
+        nWidget->hide();
+    else {
+        numNew++;
+        nWidget->start();
+    }
+
+    emit receivedNewNotifications(numNew);
+
     // If there's not enough to cause scrollbars, this will bunch them
     // at the top.
     ((QVBoxLayout *)m_nContainer->layout())->addStretch();
-
 }
+
 
 void NotificationCenter::getPixmap(GUI::AppInfoLabel *ai) {
 

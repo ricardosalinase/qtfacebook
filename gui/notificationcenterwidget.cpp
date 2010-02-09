@@ -102,5 +102,9 @@ void NotificationCenterWidget::paintEvent(QPaintEvent *) {
 
 }
 
+QString NotificationCenterWidget::getNotificationId() {
+    return m_label->getNotificationId();
+}
+
 
 } // namespace GUI

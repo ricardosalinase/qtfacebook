@@ -18,7 +18,8 @@ public:
     explicit CometConnector(UserInfo *userInfo, QObject *parent = 0);
 
 signals:
-    void newNotification(DATA::Notification *);
+    void newNotification(DATA::Notification *, DATA::AppInfo *);
+    void notificationAck(QString nid);
     void newChatMessage();
 
 
@@ -39,7 +40,8 @@ public:
     void go();
 
 signals:
-    void newNotification(DATA::Notification *);
+    void newNotification(DATA::Notification *, DATA::AppInfo *);
+    void notificationAck(QString nid);
     void newChatMessage();
 
 private slots:

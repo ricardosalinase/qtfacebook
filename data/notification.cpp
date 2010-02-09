@@ -4,7 +4,10 @@
 
 namespace DATA {
 
-Notification::Notification() {
+    Notification::Notification() :
+    m_isHidden(false),
+    m_isRead(false)
+{
 
 }
 

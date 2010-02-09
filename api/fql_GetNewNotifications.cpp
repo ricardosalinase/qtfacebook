@@ -97,7 +97,7 @@ bool GetNewNotifications::endElement(const QString &/*namespaceURI*/,
 
     }
 
-    //qDebug() << "End: " << qName << " " <<  m_currentText;
+    qDebug() << "End: " << qName << " " <<  m_currentText;
 
 
     return true;

@@ -36,10 +36,10 @@ void NotificationCheck::run() {
 
     QTimer::singleShot(400, this, SLOT(checkForNotifiations()));
 
-    m_timer = new QTimer();
-    connect(m_timer, SIGNAL(timeout()),
-            this, SLOT(checkForNotifiations()));
-    m_timer->start(m_checkInterval * 60000);
+    //m_timer = new QTimer();
+    //connect(m_timer, SIGNAL(timeout()),
+    //        this, SLOT(checkForNotifiations()));
+    //m_timer->start(m_checkInterval * 60000);
 
 
     exec();

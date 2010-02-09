@@ -39,11 +39,13 @@ signals:
 public slots:
     void showYourself();
     void newNotifications(QList<DATA::Notification*> *nList, QMap<QString, DATA::AppInfo *> *aMap);
+    void newNotification(DATA::Notification *n, DATA::AppInfo *a);
     void linkActivated(QString url);
     void notificationAcknowledged(QString nId);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
 private slots:
     void receiveIconPixmap(QNetworkReply *reply);
+    void deactivateNotification(QString nid);
     //void notificationAcknowledged(QString nId);
     //void notificationsMarkedAsRead(API::Notifications::MarkRead*);
 
@@ -66,6 +68,7 @@ private:
     // UI componenets
     QScrollArea *m_scrollArea;
     QWidget *m_nContainer;
+    QList<GUI::NotificationCenterWidget *> m_newNotifications;
 
 };
 
