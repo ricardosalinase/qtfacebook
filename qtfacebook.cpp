@@ -251,7 +251,9 @@ void QtFacebook::fbWizardComplete() {
     connect(gbl, SIGNAL(triggered()),
             m_cometConnector, SIGNAL(getBuddyList()),
             Qt::QueuedConnection);
-
+    connect(m_cometConnector, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+            this, SLOT(gotBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+            Qt::QueuedConnection);
 
 
     m_cometConnector->start();
@@ -411,4 +413,13 @@ void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
 
 void QtFacebook::newChatMessageReceived(DATA::ChatMessage *c) {
     qDebug() << "From: " << c->getFromName() << " Msg: " << c->getText();
+}
+
+void QtFacebook::gotBuddyList(QList<DATA::Buddy*> *bList,QMap<QString,QString> *listInfo) {
+    qDebug() << "Buddy List:";
+
+    for (int i = 0; i < bList->size(); i++) {
+        qDebug() << bList->at(i)->getFullName();
+    }
+
 }

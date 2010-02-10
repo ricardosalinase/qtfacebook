@@ -4,6 +4,8 @@
 #include <QThread>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QMap>
+#include <QList>
 
 #include <qjson/parser.h>
 
@@ -11,6 +13,7 @@
 #include "data/notification.h"
 #include "data/appinfo.h"
 #include "data/chatmessage.h"
+#include "data/buddy.h"
 
 class CometConnector : public QThread
 {
@@ -24,7 +27,7 @@ signals:
     void newChatMessage(DATA::ChatMessage *);
     void sendChatMessage(DATA::ChatMessage *);
     void getBuddyList();
-
+    void newBuddyList(QList<DATA::Buddy*> *buddies, QMap<QString, QString> *listInfo);
 
 protected:
     void run();
@@ -38,6 +41,8 @@ class CometConnection : public QObject
 {
     Q_OBJECT
 public:
+
+
     explicit CometConnection(UserInfo *userInfo, QObject *parent = 0);
     void go();
 
@@ -45,6 +50,7 @@ signals:
     void newNotification(DATA::Notification *, DATA::AppInfo *);
     void notificationAck(QString nid);
     void newChatMessage(DATA::ChatMessage *);
+    void newBuddyList(QList<DATA::Buddy*> *, QMap<QString, QString> *);
 
 public slots:
     void sendChatMessage(DATA::ChatMessage *);
