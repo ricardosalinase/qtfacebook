@@ -31,6 +31,9 @@ void CometConnector::run() {
     connect(this,SIGNAL(getBuddyList()),
             cc, SLOT(getBuddyList()),
             Qt::QueuedConnection);
+    connect(cc, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+            this, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+            Qt::QueuedConnection);
     cc->go();
 
 
@@ -231,14 +234,56 @@ void CometConnection::getBuddyList() {
 
 void CometConnection::gotNetworkReply(QNetworkReply *reply) {
 
+    QByteArray result;
+
     if (reply->error() > 0) {
         qDebug() << "Error number = " << reply->errorString();
     }
     else
     {
-        QByteArray result;
         result = reply->readAll();
         qDebug() <<  result;
     }
+
+    if (result.size() == 0) {
+        // no op - chat message sent
+    } else {
+
+        // remove 'for (;;);' from the beginning
+        result.remove(0,9);
+
+        QVariantMap buddyList = ((m_parser->parse(result).toMap())["payload"].toMap())["buddy_list"].toMap();
+
+        QVariantMap buddyInfo = buddyList["userInfos"].toMap();
+        QVariantMap nowAvailable = buddyList["nowAvailableList"].toMap();
+        QVariantMap friendsLists = buddyList["flData"].toMap();
+
+        QList<DATA::Buddy *> *bList = new QList<DATA::Buddy *>;
+
+        QStringList uids = nowAvailable.keys();
+        for (int i = 0; i < uids.size(); i++) {
+            DATA::Buddy *b = new DATA::Buddy();
+            b->setUID(uids.at(i));
+            b->isIdle( (nowAvailable[uids.at(i)].toMap())["i"].toBool() );
+            b->addtoList((nowAvailable[uids.at(i)].toMap())["fl"].toStringList());
+            bList->append(b);
+        }
+
+        for (int i = 0; i < bList->size(); i++) {
+            bList->at(i)->setFirstName( (buddyInfo[bList->at(i)->getUID()].toMap())["firstName"].toString());
+            bList->at(i)->setFullName( (buddyInfo[bList->at(i)->getUID()].toMap())["name"].toString());
+            bList->at(i)->setThumbUrl((buddyInfo[bList->at(i)->getUID()].toMap())["thumbSrc"].toString());
+        }
+
+        QMap<QString, QString> *listInfo = new QMap<QString, QString>;
+        QStringList listIds = friendsLists.keys();
+        for (int i = 0; i < listIds.size(); i++) {
+            listInfo->insert(listIds.at(i), (friendsLists[listIds.at(i)].toMap())["n"].toString());
+        }
+
+        emit newBuddyList(bList, listInfo);
+
+    }
+
 
 }

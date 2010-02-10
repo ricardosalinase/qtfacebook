@@ -46,6 +46,7 @@ private slots:
     void loginCanceled();
     void loginFailedDialogClosed();
     void newChatMessageReceived(DATA::ChatMessage *c);
+    void gotBuddyList(QList<DATA::Buddy*> *bList,QMap<QString,QString> *listInfo);
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);

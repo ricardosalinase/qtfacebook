@@ -5,7 +5,7 @@ unix {
     INCLUDEPATH += /usr/local/include
     LIBS += -L/usr/local/lib \
 }
-win32 {
+ win32 {
     INCLUDEPATH += "C:\Program Files\qjson\include"
     LIBS += -L"C:\Program Files\qjson\bin"
 }
@@ -81,3 +81,5 @@ FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
 HEADERS += data/chatmessage.h
 SOURCES += data/chatmessage.cpp
+HEADERS += data/buddy.h
+SOURCES += data/buddy.cpp
