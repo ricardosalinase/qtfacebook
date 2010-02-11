@@ -49,7 +49,7 @@ void NotificationCenterWidget::start()
 
 void NotificationCenterWidget::enterEvent(QEvent *event) {
 
-    qDebug() << "changeEvent()" << event->type();
+    //qDebug() << "changeEvent()" << event->type();
 
     // stop the pulsing widgets
     if (event->type() == QEvent::Enter) {
