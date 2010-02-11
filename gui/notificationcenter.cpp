@@ -8,6 +8,7 @@
 #include <QDesktopWidget>
 #include <QObject>
 
+#include "api/factory.h"
 #include "notificationcenter.h"
 #include "appinfolabel.h"
 #include "notificationlabel.h"
@@ -18,8 +19,9 @@ namespace GUI {
 
 NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     QWidget(parent),
+    m_startup(true),
     m_userInfo(userInfo),
-    m_showHiddenNotifications(false)
+    m_notificationList(0)
 {
     m_scrollArea = new QScrollArea();
     m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
@@ -41,17 +43,83 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     setLayout(mainLayout);
     setStyleSheet("background: #526ea6");
 
-    m_notificationCheck = new NotificationCheck(m_userInfo,1);
-    connect(m_notificationCheck, SIGNAL(newNotifications(QList<DATA::Notification*>*,QMap<QString,DATA::AppInfo*>*)),
-            this, SLOT(newNotifications(QList<DATA::Notification*>*,QMap<QString,DATA::AppInfo*>*)),
-            Qt::QueuedConnection);
+    m_factory = new API::Factory(m_userInfo);
+    connect(m_factory, SIGNAL(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)),
+            this, SLOT(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)));
+    connect(m_factory, SIGNAL(apiFqlGetAppInfo(API::FQL::GetAppInfo*)),
+            this, SLOT(apiFqlGetAppInfo(API::FQL::GetAppInfo*)));
 
-    m_notificationCheck->start();
-
-
-
+    getInitialNotifications();
 
 }
+
+void NotificationCenter::getInitialNotifications() {
+
+    API::Method *method = m_factory->createMethod("fql.query.getNewNotifications");
+    method->setArgument("start_time", 0);
+    method->setArgument("only_unread",1);
+
+    bool rc = method->execute();
+    if (!rc)
+        qDebug() << method->getErrorStr();
+
+}
+
+void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
+
+    QList<DATA::Notification*> *list = method->getNotificationList();
+
+    if (m_notificationList == 0)
+        m_notificationList = new QList<DATA::Notification*>;
+
+    if (list->size() > 0) {
+
+        QStringList appIds;
+
+        while (!list->empty())
+        {
+            DATA::Notification *n = list->takeFirst();
+            m_notificationList->prepend(n);
+            appIds.append(n->getAppId());
+        }
+
+        // Now get the App Icons
+        API::Method *method2 = m_factory->createMethod("fql.query.getAppInfo");
+        method2->setArgument("app_ids", appIds);
+        bool rc = method2->execute();
+        if (!rc)
+            qDebug() << method2->getErrorStr();
+
+    }
+
+    if (m_notificationList->size() < 10 && m_startup == true)
+    {
+        // I think we want to pre-fill the window so it's not empty
+        // The downside is that it's only notifications with no feed
+        // posts. m_startup is a safeguard against the user having
+        // < 10 notifications total available.
+        m_startup = false;
+        API::Method *method2 = m_factory->createMethod("fql.query.getNewNotifications");
+        method2->setArgument("start_time", 0);
+        method2->setArgument("limit", QString::number(10 - m_notificationList->size()));
+
+        bool rc = method2->execute();
+        if (!rc)
+            qDebug() << method2->getErrorStr();
+
+    }
+
+    delete list;
+    delete method;
+
+}
+
+void NotificationCenter::apiFqlGetAppInfo(API::FQL::GetAppInfo *method) {
+
+    newNotifications(m_notificationList, method->getAppInfoMap());
+    delete method;
+}
+
 
 void NotificationCenter::showYourself() {
 
@@ -178,6 +246,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
      delete nList;
      delete aMap;
 
+
 }
 
 void NotificationCenter::newNotification(DATA::Notification *n, DATA::AppInfo *a) {
@@ -198,12 +267,13 @@ void NotificationCenter::newNotification(DATA::Notification *n, DATA::AppInfo *a
 
     if (n->getIsHidden() && !m_showHiddenNotifications)
         nWidget->hide();
-    else {
+    else if (!n->getIsRead()){
         numNew++;
         nWidget->start();
     }
 
-    emit receivedNewNotifications(numNew);
+    if (numNew != 0)
+        emit receivedNewNotifications(numNew);
 
     // If there's not enough to cause scrollbars, this will bunch them
     // at the top.

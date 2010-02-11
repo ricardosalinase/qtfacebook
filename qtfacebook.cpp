@@ -14,7 +14,6 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/factory.h"
-#include "notificationcheck.h"
 #include "util/facebooklogin.h"
 #include "gui/facebooklogindialog.h"
 #include "gui/loginfaileddialog.h"
@@ -428,7 +427,7 @@ void QtFacebook::newChatMessageReceived(DATA::ChatMessage *c) {
     qDebug() << "From: " << c->getFromName() << " Msg: " << c->getText();
 }
 
-void QtFacebook::gotBuddyList(QList<DATA::Buddy*> *bList,QMap<QString,QString> *listInfo) {
+void QtFacebook::gotBuddyList(QList<DATA::Buddy*> *bList,QMap<QString,QString> * /* listInfo */) {
     qDebug() << "Buddy List:";
 
     for (int i = 0; i < bList->size(); i++) {

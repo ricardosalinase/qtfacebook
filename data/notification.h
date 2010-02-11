@@ -114,9 +114,8 @@ private:
     QString m_bodyText;
     QString m_href;
     QString m_appId;
-    bool m_isRead;
     bool m_isHidden;
-
+    bool m_isRead;
 
 };
 

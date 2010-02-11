@@ -5,7 +5,7 @@ unix {
     INCLUDEPATH += /usr/local/include
     LIBS += -L/usr/local/lib \
 }
- win32 {
+win32 {
     INCLUDEPATH += "C:\Program Files\qjson\include"
     LIBS += -L"C:\Program Files\qjson\bin"
 }
@@ -23,7 +23,6 @@ SOURCES += main.cpp \
     api/notifications_get.cpp \
     api/notifications_getlist.cpp \
     api/users_getloggedinuser.cpp \
-    notificationcheck.cpp \
     api/notifications_markread.cpp \
     gui/notifications_listview.cpp \
     gui/notifications_widget.cpp \
@@ -54,7 +53,6 @@ HEADERS += fbconnectwizard.h \
     api/notifications_get.h \
     api/notifications_getlist.h \
     api/users_getloggedinuser.h \
-    notificationcheck.h \
     api/notifications_markread.h \
     gui/notifications_listview.h \
     gui/notifications_widget.h \
@@ -83,3 +81,4 @@ HEADERS += data/chatmessage.h
 SOURCES += data/chatmessage.cpp
 HEADERS += data/buddy.h
 SOURCES += data/buddy.cpp
+
