@@ -13,7 +13,6 @@
 #include "userinfo.h"
 #include "api/factory.h"
 #include "notificationcenterwidget.h"
-#include "notificationcheck.h"
 #include "cometconnector.h"
 
 
@@ -43,27 +42,30 @@ public slots:
     void linkActivated(QString url);
     void notificationAcknowledged(QString nId);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
+
 private slots:
     void receiveIconPixmap(QNetworkReply *reply);
     void deactivateNotification(QString nid);
-    //void notificationAcknowledged(QString nId);
-    //void notificationsMarkedAsRead(API::Notifications::MarkRead*);
+    void apiFqlGetNewNotifications(API::FQL::GetNewNotifications*);
+    void apiFqlGetAppInfo(API::FQL::GetAppInfo*);
 
 protected:
     void closeEvent ( QCloseEvent * event );
-    //void changeEvent(QEvent *event);
 
 private:
     void navigate(QUrl url);
     void restoreWindow();
     void getPixmap(GUI::AppInfoLabel *ai);
+    void getInitialNotifications();
 
-    NotificationCheck *m_notificationCheck;
+    bool m_startup;
     CometConnector *m_cometConnector;
     UserInfo *m_userInfo;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;
     bool m_showHiddenNotifications;
+    API::Factory *m_factory;
+    QList<DATA::Notification*> *m_notificationList;
 
     // UI componenets
     QScrollArea *m_scrollArea;

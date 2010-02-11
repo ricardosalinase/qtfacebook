@@ -30,6 +30,16 @@ bool GetNewNotifications::prepare() {
         fql.append(" AND is_unread = 1");
     }
 
+    if (m_argMap.contains("get_hidden"))
+        m_argMap.take("get_hidden");
+    else
+        fql.append(" AND is_hidden = 0");
+
+    if (m_argMap.contains("limit")) {
+        QString limit = m_argMap.take("limit").toString();
+        fql.append(" LIMIT " + limit);
+    }
+
     m_argMap.insert("query", fql);
 
     //&query=SELECT notification_id, created_time, title_html, app_id, is_unread, is_hidden  FROM notification WHERE recipient_id=1082239928 AND created_time > 1265157482
@@ -97,7 +107,7 @@ bool GetNewNotifications::endElement(const QString &/*namespaceURI*/,
 
     }
 
-    qDebug() << "End: " << qName << " " <<  m_currentText;
+    //qDebug() << "End: " << qName << " " <<  m_currentText;
 
 
     return true;
