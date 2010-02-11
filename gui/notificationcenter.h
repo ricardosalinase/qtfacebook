@@ -13,7 +13,7 @@
 #include "userinfo.h"
 #include "api/factory.h"
 #include "notificationcenterwidget.h"
-#include "cometconnector.h"
+#include "cometconnection.h"
 
 
 namespace GUI {
@@ -59,7 +59,6 @@ private:
     void getInitialNotifications();
 
     bool m_startup;
-    CometConnector *m_cometConnector;
     UserInfo *m_userInfo;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;

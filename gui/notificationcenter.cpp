@@ -212,10 +212,16 @@ void NotificationCenter::deactivateNotification(QString nid) {
         // the notificationID from the CometConnector.
         if (nid.compare("-1") == 0 || m_newNotifications.at(i)->getNotificationId().compare(nid) == 0) {
             m_newNotifications.at(i)->stopAfter(5);
-            m_newNotifications.takeAt(i);
-            break;
+
+            if (nid.compare("-1") != 0) {
+                m_newNotifications.takeAt(i);
+                break;
+            }
         }
     }
+
+    if (nid.compare("-1") == 0)
+        m_newNotifications.clear();
 
     emit acknowledgedNotification(nid);
 

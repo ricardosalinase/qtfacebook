@@ -39,7 +39,9 @@ SOURCES += main.cpp \
     util/cookiejar.cpp \
     gui/facebooklogindialog.cpp \
     gui/loginfaileddialog.cpp \
-    cometconnector.cpp
+    data/chatmessage.cpp \
+    data/buddy.cpp \
+    cometconnection.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -69,7 +71,9 @@ HEADERS += fbconnectwizard.h \
     util/cookiejar.h \
     gui/facebooklogindialog.h \
     gui/loginfaileddialog.h \
-    cometconnector.h
+    data/chatmessage.h \
+    data/buddy.h \
+    cometconnection.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
@@ -77,8 +81,3 @@ OTHER_FILES += uiImages/thumbsUp3.jpg \
     Doxyfile
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
-HEADERS += data/chatmessage.h
-SOURCES += data/chatmessage.cpp
-HEADERS += data/buddy.h
-SOURCES += data/buddy.cpp
-
