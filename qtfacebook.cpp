@@ -373,10 +373,23 @@ void QtFacebook::receivedNewNotifications(int numNew) {
 
 }
 
-void QtFacebook::acknowledgedNotification(QString /*nId*/) {
+void QtFacebook::acknowledgedNotification(QString nid) {
 
-    m_totalNotifications--;
-    m_standardNotifications--;
+    // there's a case where the user has read all notifications via
+    // the facebook web interface. We signify this by sending a "-1"
+    // as the notificationID from the CometConnector
+    if (nid.compare("-1") == 0)
+    {
+        m_totalNotifications -= m_standardNotifications;
+        m_standardNotifications = 0;
+
+    } else {
+
+        m_totalNotifications--;
+        m_standardNotifications--;
+
+    }
+
     showNotifications(false);
 
 }
