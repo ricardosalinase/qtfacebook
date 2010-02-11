@@ -1,46 +1,11 @@
+#include "cometconnection.h"
+
 #include <QNetworkRequest>
 #include <QVariantMap>
 #include <QVariantList>
 #include <QDebug>
-
-#include "cometconnector.h"
 #include "util/cookiejar.h"
 
-
-
-CometConnector::CometConnector(UserInfo *userInfo, QObject *parent) :
-    QThread(parent)
-{
-    m_userInfo = userInfo;
-}
-
-void CometConnector::run() {
-
-    CometConnection *cc = new CometConnection(m_userInfo);
-    connect(cc, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
-            this, SIGNAL(newNotification(DATA::Notification*, DATA::AppInfo *)),
-            Qt::QueuedConnection);
-    connect(cc, SIGNAL(notificationAck(QString)),
-            this, SIGNAL(notificationAck(QString)),
-            Qt::QueuedConnection);
-    connect(cc, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-            this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-            Qt::QueuedConnection);
-    connect(this, SIGNAL(sendChatMessage(DATA::ChatMessage*)),
-            cc, SLOT(sendChatMessage(DATA::ChatMessage*)));
-    connect(this,SIGNAL(getBuddyList()),
-            cc, SLOT(getBuddyList()),
-            Qt::QueuedConnection);
-    connect(cc, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
-            this, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
-            Qt::QueuedConnection);
-    cc->go();
-
-
-
-
-    exec();
-}
 
 CometConnection::CometConnection(UserInfo *userInfo, QObject *parent) :
         QObject(parent),
@@ -58,12 +23,12 @@ void CometConnection::go() {
 
     m_parser = new QJson::Parser();
 
-    m_cometNam = new QNetworkAccessManager();
-    m_nam = new QNetworkAccessManager();
+    m_cometNam = new QNetworkAccessManager(this);
+    m_nam = new QNetworkAccessManager(this);
 
     // The cookiejar can't live in another thread, and you can't
     // copy QObject derived classes ...
-    UTIL::CookieJar *cj = new UTIL::CookieJar();
+    UTIL::CookieJar *cj = new UTIL::CookieJar(this);
     cj->createJarFromRaw(m_userInfo->getCookieJar()->getRawCookies());
 
     m_cometNam->setCookieJar(cj);
@@ -90,6 +55,8 @@ void CometConnection::go() {
 void CometConnection::gotCometMessage(QNetworkReply *reply) {
 
     QByteArray result;
+
+    qDebug() << "CometConnection::gotCometMessage; thread: " << QThread::currentThread();
 
     if (reply->error() > 0) {
         qDebug() << "Error number = " << reply->errorString();
@@ -123,18 +90,22 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
                 if (msEntry["type"].toString().compare("app_msg") == 0) {
 
                     QVariantMap payload = (msEntry["response"].toMap())["payload"].toMap();
-                    DATA::Notification *n = new DATA::Notification();
-                    n->setTitleHtml(payload["title"].toString());
-                    n->setIsRead(!(payload["alert"].toMap())["unread"].toBool());
-                    n->setNotificationId(payload["alertId"].toString());
-                    n->setCreatedTime((payload["alert"].toMap())["time_sent"].toString());
-                    n->setAppId((payload["alert"].toMap())["app_id"].toString());
 
-                    DATA::AppInfo *a = new DATA::AppInfo();
-                    a->setAppId(n->getAppId());
-                    a->setIconUrl(payload["icon"].toString());
+                    if (payload.contains("alert")) {
 
-                    emit newNotification(n,a);
+                        DATA::Notification *n = new DATA::Notification();
+                        n->setTitleHtml(payload["title"].toString());
+                        n->setIsRead(!(payload["alert"].toMap())["unread"].toBool());
+                        n->setNotificationId(payload["alertId"].toString());
+                        n->setCreatedTime((payload["alert"].toMap())["time_sent"].toString());
+                        n->setAppId((payload["alert"].toMap())["app_id"].toString());
+
+                        DATA::AppInfo *a = new DATA::AppInfo();
+                        a->setAppId(n->getAppId());
+                        a->setIconUrl(payload["icon"].toString());
+
+                        emit newNotification(n,a);
+                    }
 
                 } else if (msEntry["type"].toString().compare("notifications_read") == 0) {
                     // {"t":"msg","c":"p_1082239928","ms":[{"alert_ids":null,"num_unread":0,"type":"notifications_read"}]}

@@ -234,28 +234,32 @@ void QtFacebook::fbWizardComplete() {
     connect(m_notificationCenter, SIGNAL(acknowledgedNotification(QString)),
             this, SLOT(acknowledgedNotification(QString)));
 
-    m_cometConnector = new CometConnector(m_userInfo);
-    connect(m_cometConnector, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
+    m_cometThread = new QThread();
+    m_cometConnection = new CometConnection(m_userInfo);
+
+    connect(m_cometConnection, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
             m_notificationCenter, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
             Qt::QueuedConnection);
-    connect(m_cometConnector, SIGNAL(notificationAck(QString)),
+    connect(m_cometConnection, SIGNAL(notificationAck(QString)),
             m_notificationCenter, SLOT(deactivateNotification(QString)),
             Qt::QueuedConnection);
-    connect(m_cometConnector, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+    connect(m_cometConnection, SIGNAL(newChatMessage(DATA::ChatMessage*)),
             this, SLOT(newChatMessageReceived(DATA::ChatMessage*)),
             Qt::QueuedConnection);
     connect(this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-            m_cometConnector, SIGNAL(sendChatMessage(DATA::ChatMessage*)),
+            m_cometConnection, SLOT(sendChatMessage(DATA::ChatMessage*)),
             Qt::QueuedConnection);
     connect(gbl, SIGNAL(triggered()),
-            m_cometConnector, SIGNAL(getBuddyList()),
+            m_cometConnection, SLOT(getBuddyList()),
             Qt::QueuedConnection);
-    connect(m_cometConnector, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+    connect(m_cometConnection, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
             this, SLOT(gotBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
             Qt::QueuedConnection);
 
+    m_cometConnection->go();
+    m_cometConnection->moveToThread(m_cometThread);
 
-    m_cometConnector->start();
+    m_cometThread->start();
 
 
     if (!QSystemTrayIcon::supportsMessages())

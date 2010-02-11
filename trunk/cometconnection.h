@@ -1,5 +1,5 @@
-#ifndef COMETCONNECTOR_H
-#define COMETCONNECTOR_H
+#ifndef COMETCONNECTION_H
+#define COMETCONNECTION_H
 
 #include <QThread>
 #include <QNetworkAccessManager>
@@ -14,28 +14,6 @@
 #include "data/appinfo.h"
 #include "data/chatmessage.h"
 #include "data/buddy.h"
-
-class CometConnector : public QThread
-{
-Q_OBJECT
-public:
-    explicit CometConnector(UserInfo *userInfo, QObject *parent = 0);
-
-signals:
-    void newNotification(DATA::Notification *, DATA::AppInfo *);
-    void notificationAck(QString nid);
-    void newChatMessage(DATA::ChatMessage *);
-    void sendChatMessage(DATA::ChatMessage *);
-    void getBuddyList();
-    void newBuddyList(QList<DATA::Buddy*> *buddies, QMap<QString, QString> *listInfo);
-
-protected:
-    void run();
-
-private:
-    UserInfo *m_userInfo;
-
-};
 
 class CometConnection : public QObject
 {
@@ -72,4 +50,5 @@ private:
 
 };
 
-#endif // COMETCONNECTOR_H
+
+#endif // COMETCONNECTION_H

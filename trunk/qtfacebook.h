@@ -56,7 +56,7 @@ private:
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
     GUI::NotificationCenter *m_notificationCenter;
-    CometConnector *m_cometConnector;
+    CometConnection *m_cometConnection;
     QSystemTrayIcon *m_trayIcon;
     GUI::Notifications::ListView *m_notificationListView;
     QList<DATA::Notification *> *m_notificationList;
@@ -73,7 +73,7 @@ private:
     int m_standardNotifications;
     QDialog *m_invalidLogin;
     GUI::FacebookLoginDialog *m_loginDialog;
-
+    QThread *m_cometThread;
 };
 
 #endif // QTFACEBOOK_H
