@@ -137,14 +137,23 @@ void CometConnection::gotCometMessage(QNetworkReply *reply) {
                     emit newNotification(n,a);
 
                 } else if (msEntry["type"].toString().compare("notifications_read") == 0) {
-
+                    // {"t":"msg","c":"p_1082239928","ms":[{"alert_ids":null,"num_unread":0,"type":"notifications_read"}]}
                     // {"t":"msg","c":"p_100000685644751","ms":[{"alert_ids":["314426"],"num_unread":3,"type":"notifications_read"}]}
+
                     QVariantList alertIds = msEntry["alert_ids"].toList();
-                    while (!alertIds.empty()) {
-                        QString alertId = alertIds.takeFirst().toString();
+                    if (!alertIds.empty()) {
+                        while (!alertIds.empty()) {
+                            QString alertId = alertIds.takeFirst().toString();
+                            emit notificationAck(alertId);
+                        }
+                    }
+                    else
+                    {
+                        // Sometimes facebook just sends you a null list with 0 unread when you read them all
+                        // we'll send out "-1" and have the displays deal with it
+                        QString alertId = "-1";
                         emit notificationAck(alertId);
                     }
-
 
                 } else if (msEntry["type"].toString().compare("msg") == 0) {
                     // {"t":"msg","c":"p_100000685644751","ms":[{"type":"msg","msg":{"text":"Hi there","time":1265691489967,"clientTime":1265691489037,"msgID":"1891539413"},"from":1082239928,"to":100000685644751,"from_name":"Brian Roach","to_name":"Doppel Ganger","from_first_name":"Brian","to_first_name":"Doppel"}]}

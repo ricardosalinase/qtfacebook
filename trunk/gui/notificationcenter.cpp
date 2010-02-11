@@ -143,7 +143,10 @@ void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead 
 void NotificationCenter::deactivateNotification(QString nid) {
 
     for (int i = 0; i < m_newNotifications.size(); i++) {
-        if (m_newNotifications.at(i)->getNotificationId().compare(nid) == 0) {
+        // There's a case where facebooks sends out a null list of ids,
+        // meaning they've all been read. We signify this by sending "-1" as
+        // the notificationID from the CometConnector.
+        if (nid.compare("-1") == 0 || m_newNotifications.at(i)->getNotificationId().compare(nid) == 0) {
             m_newNotifications.at(i)->stopAfter(5);
             m_newNotifications.takeAt(i);
             break;
