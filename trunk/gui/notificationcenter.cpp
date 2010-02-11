@@ -173,10 +173,6 @@ void NotificationCenter::navigate(QUrl url) {
     qDebug() << "Url: " + url.toString();
 }
 
-//void NotificationCenter::changeEvent(QEvent *event) {
-//    qDebug() << "actionEvent()" << event->type();
-//}
-
 void NotificationCenter::notificationAcknowledged(QString nId) {
 
     // Mark the notification read via the API
@@ -211,7 +207,7 @@ void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead 
 void NotificationCenter::deactivateNotification(QString nid) {
 
     for (int i = 0; i < m_newNotifications.size(); i++) {
-        // There's a case where facebooks sends out a null list of ids,
+        // There's a case where facebook sends out a null list of ids,
         // meaning they've all been read. We signify this by sending "-1" as
         // the notificationID from the CometConnector.
         if (nid.compare("-1") == 0 || m_newNotifications.at(i)->getNotificationId().compare(nid) == 0) {
@@ -263,12 +259,12 @@ void NotificationCenter::newNotification(DATA::Notification *n, DATA::AppInfo *a
     connect(nWidget, SIGNAL(acknowledged(QString)),
             this, SLOT(notificationAcknowledged(QString)));
     ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
-    m_newNotifications.append(nWidget);
 
     if (n->getIsHidden() && !m_showHiddenNotifications)
         nWidget->hide();
     else if (!n->getIsRead()){
         numNew++;
+        m_newNotifications.append(nWidget);
         nWidget->start();
     }
 
