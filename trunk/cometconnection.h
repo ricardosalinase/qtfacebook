@@ -14,15 +14,14 @@
 #include "data/appinfo.h"
 #include "data/chatmessage.h"
 #include "data/buddy.h"
+#include "util/worker.h"
 
-class CometConnection : public QObject
+class CometConnection : public UTIL::Worker
 {
     Q_OBJECT
 public:
-
-
     explicit CometConnection(UserInfo *userInfo, QObject *parent = 0);
-    void go();
+    void init();
 
 signals:
     void newNotification(DATA::Notification *, DATA::AppInfo *);
