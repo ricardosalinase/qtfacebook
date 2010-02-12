@@ -234,7 +234,7 @@ void QtFacebook::fbWizardComplete() {
     connect(m_notificationCenter, SIGNAL(acknowledgedNotification(QString)),
             this, SLOT(acknowledgedNotification(QString)));
 
-    m_cometThread = new QThread();
+
     m_cometConnection = new CometConnection(m_userInfo);
 
     connect(m_cometConnection, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
@@ -256,9 +256,7 @@ void QtFacebook::fbWizardComplete() {
             this, SLOT(gotBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
             Qt::QueuedConnection);
 
-    m_cometConnection->go();
-    m_cometConnection->moveToThread(m_cometThread);
-
+    m_cometThread = new UTIL::WorkerThread(m_cometConnection);
     m_cometThread->start();
 
 

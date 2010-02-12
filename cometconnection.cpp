@@ -8,14 +8,16 @@
 
 
 CometConnection::CometConnection(UserInfo *userInfo, QObject *parent) :
-        QObject(parent),
+        Worker(parent),
         m_userInfo(userInfo)
 {
 
 }
 
 
-void CometConnection::go() {
+void CometConnection::init() {
+
+    qDebug() << "Thread: " << QThread::currentThread();
 
     m_cometString = "http://0.channel" + m_userInfo->getChannel() +
                  ".facebook.com/x/0/false/p_" + m_userInfo->getUID() +

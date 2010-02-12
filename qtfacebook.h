@@ -13,6 +13,7 @@
 #include "gui/notifications_listview.h"
 #include "gui/notificationcenter.h"
 #include "gui/facebooklogindialog.h"
+#include "util/workerthread.h"
 
 
 class QtFacebook : public QObject
@@ -73,7 +74,7 @@ private:
     int m_standardNotifications;
     QDialog *m_invalidLogin;
     GUI::FacebookLoginDialog *m_loginDialog;
-    QThread *m_cometThread;
+    UTIL::WorkerThread *m_cometThread;
 };
 
 #endif // QTFACEBOOK_H
