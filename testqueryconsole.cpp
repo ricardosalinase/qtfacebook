@@ -66,7 +66,7 @@ void TestQueryConsole::sendQuery() {
 
     // Build the post args from the input box
     QString origArgs = ui->encodedPostArgs->toPlainText();
-    ui->encodedPostArgs->clear();
+    //ui->encodedPostArgs->clear();
     if (origArgs.endsWith("&"))
         origArgs.chop(1);
 
