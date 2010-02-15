@@ -2,8 +2,17 @@
 
 namespace DATA {
 
-StreamComment::StreamComment() {
+StreamComment::StreamComment()
+{
 
+}
+
+void StreamComment::setPostId(QString id) {
+    m_postId = id;
+}
+
+QString StreamComment::getPostId() {
+    return m_postId;
 }
 
 void StreamComment::setCommentId(QString id) {
@@ -38,6 +47,19 @@ QString StreamComment::getText() {
     return m_text;
 }
 
+QString StreamComment::getUserName() {
+    return m_fbUserInfo.getName();
+}
+
+QUrl StreamComment::getUserPicSquare() {
+    return m_fbUserInfo.getPicSquare();
+}
+
+void StreamComment::setUserInfo(FbUserInfo *userInfo) {
+    m_fbUserInfo = *userInfo;
+}
+
+
 StreamCommentList::StreamCommentList() :
         m_canRemove(false),
         m_canPost(false)
@@ -59,5 +81,7 @@ bool StreamCommentList::canPost() {
 void StreamCommentList::canPost(bool cp) {
     m_canPost = cp;
 }
+
+
 
 } // namespace DATA

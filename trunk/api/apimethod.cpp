@@ -60,6 +60,8 @@ bool Method::execute() {
     // THese are always constant with API requests
     if (getMethodName().startsWith("fql.query",Qt::CaseInsensitive))
         m_argMap.insert("method","fql.query");
+    else if (getMethodName().startsWith("fql.multiquery",Qt::CaseInsensitive))
+        m_argMap.insert("method","fql.multiquery");
     else
         m_argMap.insert("method", getMethodName());
 

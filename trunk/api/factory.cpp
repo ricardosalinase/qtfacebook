@@ -38,6 +38,8 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new FQL::GetNewNotifications());
     else if (method.compare("fql.query.getAppInfo", Qt::CaseInsensitive) == 0)
         return prepareMethod(new FQL::GetAppInfo());
+    else if (method.compare("fql.multiquery.getStreamPosts",Qt::CaseInsensitive) == 0)
+        return prepareMethod(new FQL::GetStreamPosts());
     else
         return 0;
 }
@@ -69,6 +71,8 @@ void Factory::dispatch(API::Method *method) {
         emit apiFqlGetNewNotifications((API::FQL::GetNewNotifications*)method);
     else if (method->getMethodName().compare("fql.query.getAppInfo", Qt::CaseInsensitive) == 0 )
         emit apiFqlGetAppInfo((API::FQL::GetAppInfo*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getStreamposts", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetStreamPosts((API::FQL::GetStreamPosts*)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {

@@ -45,6 +45,8 @@ bool GetNewNotifications::prepare() {
     //&query=SELECT notification_id, created_time, title_html, app_id, is_unread, is_hidden  FROM notification WHERE recipient_id=1082239928 AND created_time > 1265157482
     // uint time1 = QDateTime::currentDateTime().toUTC().toTime_t()
 
+    //qDebug() << "Query: " << fql;
+
     return true;
 
 }
