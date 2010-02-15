@@ -7,12 +7,14 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QObject>
+#include <QRegExp>
 
 #include "api/factory.h"
 #include "notificationcenter.h"
 #include "appinfolabel.h"
 #include "notificationlabel.h"
 #include "notificationcenterwidget.h"
+#include "streampostwidget.h"
 
 
 namespace GUI {
@@ -48,7 +50,8 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
             this, SLOT(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)));
     connect(m_factory, SIGNAL(apiFqlGetAppInfo(API::FQL::GetAppInfo*)),
             this, SLOT(apiFqlGetAppInfo(API::FQL::GetAppInfo*)));
-
+    connect(m_factory, SIGNAL(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)),
+            this, SLOT(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)));
     getInitialNotifications();
 
 }
@@ -61,13 +64,14 @@ void NotificationCenter::getInitialNotifications() {
 
     bool rc = method->execute();
     if (!rc)
-        qDebug() << method->getErrorStr();
+        qDebug() << "getInitialNotifications; Method Error: " << method->getErrorStr();
 
 }
 
 void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
 
     QList<DATA::Notification*> *list = method->getNotificationList();
+    qDebug() << "apiFqlGetNewNotifications(); nList: " << list->size();
 
     if (m_notificationList == 0)
         m_notificationList = new QList<DATA::Notification*>;
@@ -88,7 +92,7 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
         method2->setArgument("app_ids", appIds);
         bool rc = method2->execute();
         if (!rc)
-            qDebug() << method2->getErrorStr();
+            qDebug() << "Method error for fql.query.getAppInfo" << method2->getErrorStr();
 
     }
 
@@ -105,7 +109,7 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
 
         bool rc = method2->execute();
         if (!rc)
-            qDebug() << method2->getErrorStr();
+            qDebug() << "Method error for fql.query.getNewNotifications" << method2->getErrorStr();
 
     }
 
@@ -170,8 +174,24 @@ void NotificationCenter::restoreWindow() {
 }
 
 void NotificationCenter::navigate(QUrl url) {
-    qDebug() << "Url: " + url.toString();
+
+
+
+
 }
+
+void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) {
+
+    QList<DATA::StreamPost *> *list = method->getStreamPosts();
+
+    StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0));
+    spw->show();
+
+    delete list;
+    method->deleteLater();
+
+}
+
 
 void NotificationCenter::notificationAcknowledged(QString nId) {
 
@@ -321,7 +341,21 @@ void NotificationCenter::receiveIconPixmap(QNetworkReply *reply) {
 }
 
 void NotificationCenter::linkActivated(QString url) {
-    qDebug() << url;
+
+    qDebug() << "Notification Center; Url: " + url;
+
+    QString postId;
+    QRegExp rx("v=feed&story_fbid=(\\d+)&id=(\\d+)");
+    if (rx.indexIn(url) != -1)
+    {
+        postId = rx.cap(2) + "_" + rx.cap(1);
+        qDebug() << postId;
+        API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
+        method->setArgument("post_id", postId);
+        bool rc = method->execute();
+        if (!rc)
+            qDebug() << "Method fql.multiquery.getStreamPosts error: " << method->getErrorStr();
+    }
 }
 
 void NotificationCenter::closeEvent(QCloseEvent *event) {

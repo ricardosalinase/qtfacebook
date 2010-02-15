@@ -14,6 +14,7 @@
 #include "notifications_markread.h"
 #include "fql_GetNewNotifications.h"
 #include "fql_GetAppInfo.h"
+#include "fql_GetStreamPosts.h"
 
 
 // Simple factory
@@ -83,6 +84,10 @@ signals:
     * This signal is emitted whenever a API::FQL::GetAppInfo method has completed
     */
     void apiFqlGetAppInfo(API::FQL::GetAppInfo *method);
+    /*!
+     * This signal is emitted whenever a API::FQL::GetSteamPosts method has completed
+     */
+    void apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method);
 
 public slots:
     void dispatch(API::Method *);

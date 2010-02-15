@@ -1,5 +1,6 @@
 #include "notificationlabel.h"
 #include <QDateTime>
+#include "util/agestring.h"
 
 
 namespace GUI {
@@ -26,28 +27,11 @@ DATA::Notification * NotificationLabel::getNotification() {
 
 void NotificationLabel::createDisplayText() {
 
-    uint createTime = m_notification->getCreatedTime().toUInt();
-    uint now = QDateTime::currentDateTime().toUTC().toTime_t();
-    uint diff = (now - createTime);
-
-    QString unit;
-
-    if (diff < 60)
-        unit = "seconds ago";
-    else if (diff < 3600) {
-        diff = diff / 60;
-        diff > 1 ? unit = "minutes ago" : unit = "minute ago";
-    } else if (diff < 86400) {
-        diff = diff / 3600;
-        diff > 1 ? unit = "hours ago" : unit = "hour ago";
-    } else {
-        diff = diff / 86400;
-        diff > 1 ? unit = "days ago" : unit = "day ago";
-    }
+    QString age = UTIL::ageString(m_notification->getCreatedTime());
 
     setText("<style type=\"text/css\">a { text-decoration: none; }</style>"
             + m_notification->getTitleHtml()
-            + "<BR><font style=\"font-size : 8px;\"> " + QString::number(diff) + " " + unit);
+            + "<BR><font style=\"font-size : 8px;\"> " + age);
 
     setStyleSheet("QLabel { font-size : 12px; text-decoration : none;  }");
     setWordWrap(true);

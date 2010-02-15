@@ -59,4 +59,21 @@ StreamCommentList * StreamPost::getCommentList() {
     return m_commentList;
 }
 
+void StreamPost::setPoster(FbUserInfo *poster) {
+    m_poster = poster;
+}
+
+FbUserInfo * StreamPost::getPoster() {
+    return m_poster;
+}
+
+void StreamPost::setActorId(QString id) {
+    m_actorId = id;
+}
+
+QString StreamPost::getActorId() {
+    return m_actorId;
+}
+
+
 } // namespace DATA

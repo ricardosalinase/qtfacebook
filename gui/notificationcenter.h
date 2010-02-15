@@ -48,6 +48,7 @@ private slots:
     void deactivateNotification(QString nid);
     void apiFqlGetNewNotifications(API::FQL::GetNewNotifications*);
     void apiFqlGetAppInfo(API::FQL::GetAppInfo*);
+    void apiFqlGetStreamPosts(API::FQL::GetStreamPosts*);
 
 protected:
     void closeEvent ( QCloseEvent * event );
