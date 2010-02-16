@@ -1,6 +1,7 @@
 #include "streampostwidget.h"
 
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPixmap>
@@ -20,8 +21,8 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_post(post)
 {
 
-    QGridLayout *mainLayout = new QGridLayout();
-
+    QHBoxLayout *mainLayout = new QHBoxLayout();
+    QVBoxLayout *contentLayout = new QVBoxLayout();
     this->setWindowTitle(post->getPoster()->getName());
 
 
@@ -29,17 +30,12 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     QLabel *message = new QLabel();
 
     messageHtml.append(post->getMessage());
-    //messageHtml.append("<BR><font style=\"font-size : 8px;\">" +
-    //                   UTIL::ageString(post->getCreatedTime()) +
-    //                   "</font>");
+    messageHtml.append("<BR><BR><font style=\"font-size : 8px;\">" +
+                       UTIL::ageString(post->getCreatedTime()) +
+                       "</font>");
     message->setText(messageHtml);
     message->setWordWrap(true);
-    mainLayout->addWidget(message,0,1,Qt::AlignTop);
-
-    QLabel *postTimeLabel = new QLabel("<font style=\"font-size : 8px;\">" +
-                                       UTIL::ageString(post->getCreatedTime()) +
-                                       "</font>");
-    mainLayout->addWidget(postTimeLabel,1,1,Qt::AlignBottom);
+    contentLayout->addWidget(message,0,Qt::AlignTop);
 
 
     m_commentContainer = new QWidget();
@@ -53,7 +49,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     for (int i = 0; i < cList->size(); i++)
     {
         CommentWidget *cw = new CommentWidget(cList->at(i),this);
-        commentLayout->addWidget(cw);
+        commentLayout->insertWidget(0,cw);
 
     }
 
@@ -63,7 +59,8 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_commentScrollArea->setWidget(m_commentContainer);
     m_commentScrollArea->setWidgetResizable(true);
     m_commentScrollArea->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-    mainLayout->addWidget(m_commentScrollArea,2,1);
+    contentLayout->addWidget(m_commentScrollArea,1);
+    mainLayout->insertLayout(1,contentLayout,1);
     setLayout(mainLayout);
 
     getPosterPixmap();
@@ -93,7 +90,7 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
         p.loadFromData(reply->readAll());
         QLabel *l = new QLabel();
         l->setPixmap(p);
-        ((QGridLayout *)layout())->addWidget(l,0,0,2,1);
+        ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
     }
     else
     {
