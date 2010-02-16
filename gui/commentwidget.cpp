@@ -27,11 +27,10 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, QWidget *parent) :
 
     QLabel *commentLabel = new QLabel(commentHtml);
     commentLabel->setWordWrap(true);
-    commentLabel->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::Minimum);
     QLabel *commentTimeLabel = new QLabel(commentTimeHtml);
     layout->addWidget(commentLabel,0,1,Qt::AlignTop);
     layout->addWidget(commentTimeLabel,1,1,Qt::AlignBottom);
-
+    layout->setColumnStretch(1,1);
     getCommentPic();
 
     setLayout(layout);
