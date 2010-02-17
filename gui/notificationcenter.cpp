@@ -49,8 +49,7 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     m_factory = new API::Factory(m_userInfo);
     connect(m_factory, SIGNAL(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)),
             this, SLOT(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)));
-    connect(m_factory, SIGNAL(apiFqlGetAppInfo(API::FQL::GetAppInfo*)),
-            this, SLOT(apiFqlGetAppInfo(API::FQL::GetAppInfo*)));
+
     connect(m_factory, SIGNAL(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)),
             this, SLOT(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)));
     getInitialNotifications();
@@ -59,7 +58,7 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
 
 void NotificationCenter::getInitialNotifications() {
 
-    API::Method *method = m_factory->createMethod("fql.query.getNewNotifications");
+    API::Method *method = m_factory->createMethod("fql.multiquery.getNewNotifications");
     method->setArgument("start_time", 0);
     method->setArgument("only_unread",1);
 
@@ -71,29 +70,10 @@ void NotificationCenter::getInitialNotifications() {
 
 void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
 
-    QList<DATA::Notification*> *list = method->getNotificationList();
-    qDebug() << "apiFqlGetNewNotifications(); nList: " << list->size();
+    //QList<DATA::Notification*> *list = method->getNotificationList();
 
-
-    if (list->size() > 0) {
-
-        QStringList appIds;
-
-        while (!list->empty())
-        {
-            DATA::Notification *n = list->takeFirst();
-            m_notificationList->prepend(n);
-            appIds.append(n->getAppId());
-        }
-
-        // Now get the App Icons
-        API::Method *method2 = m_factory->createMethod("fql.query.getAppInfo");
-        method2->setArgument("app_ids", appIds);
-        bool rc = method2->execute();
-        if (!rc)
-            qDebug() << "Method error for fql.query.getAppInfo" << method2->getErrorStr();
-
-    }
+    m_notificationList = method->getNotificationList();
+    qDebug() << "apiFqlGetNewNotifications(); m_notificationList: " << m_notificationList->size();
 
     if (m_notificationList->size() < 10 && m_startup == true)
     {
@@ -102,25 +82,23 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
         // posts. m_startup is a safeguard against the user having
         // < 10 notifications total available.
         m_startup = false;
-        API::Method *method2 = m_factory->createMethod("fql.query.getNewNotifications");
+        API::Method *method2 = m_factory->createMethod("fql.multiquery.getNewNotifications");
         method2->setArgument("start_time", 0);
-        method2->setArgument("limit", QString::number(20 - m_notificationList->size()));
+        method2->setArgument("limit", QString::number(10 - m_notificationList->size()));
 
         bool rc = method2->execute();
         if (!rc)
-            qDebug() << "Method error for fql.query.getNewNotifications" << method2->getErrorStr();
+            qDebug() << "Method error for fql.multiquery.getNewNotifications" << method2->getErrorStr();
 
     }
 
-    delete list;
+
+
     delete method;
 
-}
+    newNotifications(m_notificationList);
 
-void NotificationCenter::apiFqlGetAppInfo(API::FQL::GetAppInfo *method) {
 
-    newNotifications(m_notificationList, method->getAppInfoMap());
-    delete method;
 }
 
 
@@ -247,44 +225,30 @@ void NotificationCenter::deactivateNotification(QString nid) {
 
 }
 
-void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QMap<QString, DATA::AppInfo *> *aMap) {
+void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList) {
 
     qDebug() << "newNotifications(); nList: " << nList->size();
     while (!nList->empty())
     {
         DATA::Notification *n = nList->takeFirst();
-        DATA::AppInfo *a = new DATA::AppInfo(*(aMap->value(n->getAppId())));
-        newNotification(n,a);
+        newNotification(n);
     }
-
-    AppInfo *tmp;
-    QMap<QString, AppInfo *>::iterator i = aMap->begin();
-     while (i != aMap->end()) {
-             tmp = i.value();
-             ++i;
-             delete tmp;
-     }
-
-
-     delete aMap;
-
-
 }
 
-void NotificationCenter::newNotification(DATA::Notification *n, DATA::AppInfo *a) {
+void NotificationCenter::newNotification(DATA::Notification *n) {
 
     GUI::NotificationCenterWidget *nWidget;
 
     int numNew = 0;
     GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
-    GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(a);
+    GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(n->getAppInfo());
     getPixmap(ai);
     nWidget = new GUI::NotificationCenterWidget(nl, ai);
     connect(nWidget, SIGNAL(linkActivated(QString)),
             this, SLOT(linkActivated(QString)));
     connect(nWidget, SIGNAL(acknowledged(QString)),
             this, SLOT(notificationAcknowledged(QString)));
-    ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
+    ((QVBoxLayout*)m_nContainer->layout())->addWidget(nWidget);
 
     if (n->getIsHidden() && !m_showHiddenNotifications)
         nWidget->hide();
@@ -305,8 +269,8 @@ void NotificationCenter::newNotification(DATA::Notification *n, DATA::AppInfo *a
 
 void NotificationCenter::getPixmap(GUI::AppInfoLabel *ai) {
 
-    if (m_iconPixmapCache.contains(ai->getAppInfo()->getAppId()))
-        ai->myIconPixmap(m_iconPixmapCache[ai->getAppInfo()->getAppId()], true);
+    if (m_iconPixmapCache.contains(ai->getAppInfo().getAppId()))
+        ai->myIconPixmap(m_iconPixmapCache[ai->getAppInfo().getAppId()], true);
     else {
         QNetworkAccessManager *m_nam = new QNetworkAccessManager();
         QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
@@ -314,7 +278,7 @@ void NotificationCenter::getPixmap(GUI::AppInfoLabel *ai) {
 
         QNetworkReply *reply;
 
-        QUrl url(ai->getAppInfo()->getIconUrl());
+        QUrl url(ai->getAppInfo().getIconUrl());
         reply = m_nam->get(QNetworkRequest(url));
         m_tmpMap.insert(reply, ai);
 
@@ -331,7 +295,7 @@ void NotificationCenter::receiveIconPixmap(QNetworkReply *reply) {
         QPixmap *p = new QPixmap();
         p->loadFromData(reply->readAll());
         a->myIconPixmap(p, true);
-        m_iconPixmapCache.insert(a->getAppInfo()->getAppId(), p);
+        m_iconPixmapCache.insert(a->getAppInfo().getAppId(), p);
 
     } else {
         qDebug() << reply->errorString();

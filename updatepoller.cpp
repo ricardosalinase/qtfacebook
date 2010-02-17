@@ -12,4 +12,5 @@ void UpdatePoller::init() {
     m_factory = new API::Factory(m_userInfo, this);
 
 
+
 }

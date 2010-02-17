@@ -34,7 +34,7 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new Users::GetLoggedInUser());
     else if (method.compare("notifications.markRead", Qt::CaseInsensitive) == 0)
         return prepareMethod(new Notifications::MarkRead());
-    else if (method.compare("fql.query.getNewNotifications", Qt::CaseInsensitive) == 0)
+    else if (method.compare("fql.multiquery.getNewNotifications", Qt::CaseInsensitive) == 0)
         return prepareMethod(new FQL::GetNewNotifications());
     else if (method.compare("fql.query.getAppInfo", Qt::CaseInsensitive) == 0)
         return prepareMethod(new FQL::GetAppInfo());
@@ -67,7 +67,7 @@ void Factory::dispatch(API::Method *method) {
         emit apiUsersGetLoggedInUser((API::Users::GetLoggedInUser*)method);
     else if (method->getMethodName().compare("notifications.markRead", Qt::CaseInsensitive) == 0)
         emit apiNotificationsMarkRead((API::Notifications::MarkRead*)method);
-    else if (method->getMethodName().compare("fql.query.getNewNotifications", Qt::CaseInsensitive) == 0)
+    else if (method->getMethodName().compare("fql.multiquery.getNewNotifications", Qt::CaseInsensitive) == 0)
         emit apiFqlGetNewNotifications((API::FQL::GetNewNotifications*)method);
     else if (method->getMethodName().compare("fql.query.getAppInfo", Qt::CaseInsensitive) == 0 )
         emit apiFqlGetAppInfo((API::FQL::GetAppInfo*)method);

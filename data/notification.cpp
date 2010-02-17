@@ -116,7 +116,13 @@ bool Notification::getIsHidden() {
     return m_isHidden;
 }
 
-// Display Methods
+void Notification::setAppInfo(AppInfo *info) {
+    m_appInfo = *info;
+}
+
+AppInfo & Notification::getAppInfo()  {
+    return m_appInfo;
+}
 
 
 

@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QScrollArea>
+#include <QLabel>
 
 
 #include "data/streampost.h"
@@ -31,6 +32,9 @@ private:
     DATA::StreamPost *m_post;
     QScrollArea *m_commentScrollArea;
     QWidget *m_commentContainer;
+    QLabel *m_userPicLabel;
+    QLabel *m_postLabel;
+
 };
 
 } // namespace GUI
