@@ -12,9 +12,9 @@ class AppInfoLabel : public QLabel
 {
 Q_OBJECT
 public:
-    AppInfoLabel(DATA::AppInfo *ai, QWidget *parent = 0);
+    AppInfoLabel(DATA::AppInfo ai, QWidget *parent = 0);
     ~AppInfoLabel();
-    DATA::AppInfo * getAppInfo();
+    DATA::AppInfo & getAppInfo();
 
 signals:
 
@@ -23,7 +23,7 @@ public slots:
     void myLogoPixmap(QPixmap *p, bool display);
 
 private:
-    DATA::AppInfo *m_appInfo;
+    DATA::AppInfo m_appInfo;
 
 };
 

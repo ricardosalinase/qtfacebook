@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#include "appinfo.h"
+
 namespace DATA {
 /*!
  * The Notification class encapsulates individual notificaitons returned by the Facebook API call "notifications.getList"
@@ -100,7 +102,12 @@ public:
      * see notifications from this person or application.
      */
     bool getIsHidden();
-
+    void setAppInfo(AppInfo *info);
+    /*!
+     * Returns the AppInfo object representing the application
+     * used to post the comment. (see: AppInfo )
+     */
+    AppInfo & getAppInfo();
 
 private:
     QString m_notificationId;
@@ -116,6 +123,7 @@ private:
     QString m_appId;
     bool m_isHidden;
     bool m_isRead;
+    AppInfo m_appInfo;
 
 };
 

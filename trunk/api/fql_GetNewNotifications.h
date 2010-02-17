@@ -3,6 +3,7 @@
 
 #include "apimethod.h"
 #include "data/notification.h"
+#include "data/appinfo.h"
 #include <QStringList>
 
 using namespace DATA;
@@ -25,11 +26,15 @@ public:
     QStringList * getAppIds();
 
 private:
+    enum ParseState { QUERY, NOTIFICATION, APPINFO };
     QList<Notification *> *m_notifications;
+    QMap<QString, Notification *> m_tmpMap;
     QStringList *m_appIds;
     Notification *m_currentNotification;
+    AppInfo *m_currentAppInfo;
     void fixHtml(QString *html);
     bool prepare();
+    ParseState m_parseState;
 };
 
 } // namespace FQL

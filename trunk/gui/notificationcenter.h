@@ -37,8 +37,8 @@ signals:
 
 public slots:
     void showYourself();
-    void newNotifications(QList<DATA::Notification*> *nList, QMap<QString, DATA::AppInfo *> *aMap);
-    void newNotification(DATA::Notification *n, DATA::AppInfo *a);
+    void newNotifications(QList<DATA::Notification*> *nList);
+    void newNotification(DATA::Notification *n);
     void linkActivated(QString url);
     void notificationAcknowledged(QString nId);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
@@ -47,7 +47,6 @@ private slots:
     void receiveIconPixmap(QNetworkReply *reply);
     void deactivateNotification(QString nid);
     void apiFqlGetNewNotifications(API::FQL::GetNewNotifications*);
-    void apiFqlGetAppInfo(API::FQL::GetAppInfo*);
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts*);
 
 protected:

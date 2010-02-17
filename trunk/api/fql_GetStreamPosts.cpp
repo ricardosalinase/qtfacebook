@@ -126,6 +126,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             {
                 cList.at(i)->setUserInfo(m_currentCommentor);
             }
+            delete m_currentCommentor;
             m_currentCommentor = 0;
         }
         else if (qName == "fql_result")
