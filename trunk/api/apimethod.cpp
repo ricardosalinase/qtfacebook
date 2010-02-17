@@ -235,11 +235,11 @@ void Method::gotReply(QNetworkReply *reply) {
     QXmlSimpleReader reader;
     reader.setContentHandler(this);
     reader.setErrorHandler(this);
-    reader.parse(is);
+    bool rc = reader.parse(is);
 
     // qDebug() << "Sending Second signal";
-
-    emit methodComplete((API::Method*)this);
+    if (rc)
+        emit methodComplete((API::Method*)this);
 
     reply->deleteLater();
 

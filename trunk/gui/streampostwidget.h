@@ -17,7 +17,7 @@ class StreamPostWidget : public QWidget
 Q_OBJECT
 public:
     explicit StreamPostWidget(DATA::StreamPost *post, QWidget *parent = 0);
-
+    void scrollToBottom();
 signals:
 
 public slots:
