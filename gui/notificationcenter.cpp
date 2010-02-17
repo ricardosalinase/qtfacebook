@@ -105,7 +105,7 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
         m_startup = false;
         API::Method *method2 = m_factory->createMethod("fql.query.getNewNotifications");
         method2->setArgument("start_time", 0);
-        method2->setArgument("limit", QString::number(10 - m_notificationList->size()));
+        method2->setArgument("limit", QString::number(20 - m_notificationList->size()));
 
         bool rc = method2->execute();
         if (!rc)
@@ -186,6 +186,7 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
 
     StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0));
     spw->show();
+    spw->scrollToBottom();
 
     delete list;
     method->deleteLater();

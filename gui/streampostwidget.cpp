@@ -9,6 +9,7 @@
 #include <QNetworkRequest>
 #include <QDateTime>
 #include <QDebug>
+#include <QScrollBar>
 
 #include "util/agestring.h"
 #include "commentwidget.h"
@@ -46,11 +47,11 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
     DATA::StreamCommentList *cList = post->getCommentList();
 
-    for (int i = 0; i < cList->size(); i++)
+
+    for (int i = cList->size() - 1; i >= 0; i--)
     {
         CommentWidget *cw = new CommentWidget(cList->at(i),this);
         commentLayout->insertWidget(0,cw);
-
     }
 
     commentLayout->addStretch();
@@ -58,13 +59,20 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_commentContainer->setLayout(commentLayout);
     m_commentScrollArea->setWidget(m_commentContainer);
     m_commentScrollArea->setWidgetResizable(true);
-    m_commentScrollArea->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-    contentLayout->addWidget(m_commentScrollArea,1);
+    if (!cList->size())
+        m_commentScrollArea->setVisible(false);
+
+    
+    contentLayout->addWidget(m_commentScrollArea,0);
     mainLayout->insertLayout(1,contentLayout,1);
     setLayout(mainLayout);
 
-    getPosterPixmap();
+    this->setMinimumWidth(640);
 
+
+    
+    
+    getPosterPixmap();
 
 }
 
@@ -103,5 +111,8 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
 
 }
 
+void StreamPostWidget::scrollToBottom() {
+
+}
 
 } // namespace GUI
