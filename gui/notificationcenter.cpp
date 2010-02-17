@@ -22,8 +22,7 @@ namespace GUI {
 NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     QWidget(parent),
     m_startup(true),
-    m_userInfo(userInfo),
-    m_notificationList(0)
+    m_userInfo(userInfo)
 {
     m_scrollArea = new QScrollArea();
     m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
@@ -44,6 +43,8 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     mainLayout->addLayout(bottomLayout);
     setLayout(mainLayout);
     setStyleSheet("background: #526ea6");
+
+    m_notificationList = new QList<DATA::Notification*>;
 
     m_factory = new API::Factory(m_userInfo);
     connect(m_factory, SIGNAL(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)),
@@ -73,8 +74,6 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
     QList<DATA::Notification*> *list = method->getNotificationList();
     qDebug() << "apiFqlGetNewNotifications(); nList: " << list->size();
 
-    if (m_notificationList == 0)
-        m_notificationList = new QList<DATA::Notification*>;
 
     if (list->size() > 0) {
 
@@ -266,7 +265,7 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList, QM
              delete tmp;
      }
 
-     delete nList;
+
      delete aMap;
 
 

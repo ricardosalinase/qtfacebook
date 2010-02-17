@@ -171,7 +171,7 @@ ConnectPage::ConnectPage(UserInfo *userInfo, QWidget *parent) :
              "next=http://www.facebook.com/connect/login_success.html"
              "&cancel_url=http://www.facebook.com/connect/login_failure.html"
              "&fbconnect=true&return_session=true" /* &session_key_only=true" */
-             "&req_perms=read_stream,publish_stream,offline_access,read_mailbox";
+             "&req_perms=read_stream,publish_stream,offline_access,read_mailbox,xmpp_login";
 
     connect(m_view, SIGNAL(authReceived()),
             this, SLOT(gotAuth()));

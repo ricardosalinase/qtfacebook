@@ -238,7 +238,7 @@ void Method::gotReply(QNetworkReply *reply) {
     bool rc = reader.parse(is);
 
     // qDebug() << "Sending Second signal";
-    if (rc)
+    //if (rc)
         emit methodComplete((API::Method*)this);
 
     reply->deleteLater();

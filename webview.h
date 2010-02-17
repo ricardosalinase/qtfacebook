@@ -31,6 +31,7 @@ private:
     bool m_publishPermission;
     bool m_offlineAccessPermission;
     bool m_readMailbox;
+    bool m_xmppLogin;
 };
 
 #endif // WEBVIEW_H

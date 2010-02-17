@@ -7,7 +7,8 @@ WebView::WebView(QWidget *parent) :
     m_readPermission(false),
     m_publishPermission(false),
     m_offlineAccessPermission(false),
-    m_readMailbox(false)
+    m_readMailbox(false),
+    m_xmppLogin(false)
 {
     connect(this, SIGNAL(loadFinished(bool)),
             this, SLOT(loadFinished()));
@@ -70,6 +71,10 @@ void WebView::loadFinished() {
             rx.setPattern("read_mailbox");
             if (rx.indexIn(perms) != -1)
                 m_readMailbox = true;
+
+            rx.setPattern("xmpp_login");
+            if (rx.indexIn(perms) != -1)
+                m_xmppLogin = true;
        }
 
         emit authReceived();
@@ -114,5 +119,6 @@ bool WebView::permissionsGranted() {
     return(m_readPermission &&
            m_offlineAccessPermission &&
            m_publishPermission &&
-           m_readMailbox);
+           m_readMailbox &&
+           m_xmppLogin);
 }
