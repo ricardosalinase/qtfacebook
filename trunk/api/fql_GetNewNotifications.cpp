@@ -33,6 +33,11 @@ bool GetNewNotifications::prepare() {
         fql.append(" AND is_unread = 1");
     }
 
+    if (m_argMap.contains("only_read")) {
+        m_argMap.take("only_read");
+        fql.append(" AND is_unread = 0");
+    }
+
     if (m_argMap.contains("get_hidden"))
         m_argMap.take("get_hidden");
     else
