@@ -102,7 +102,9 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
         m_startup = false;
         API::Method *method2 = m_factory->createMethod("fql.multiquery.getNewNotifications");
         method2->setArgument("start_time", 0);
+        method2->setArgument("only_read", 1); // don't get duplicates from the first pull
         method2->setArgument("limit", QString::number(10 - numNotifications));
+
 
         bool rc = method2->execute();
         if (!rc)

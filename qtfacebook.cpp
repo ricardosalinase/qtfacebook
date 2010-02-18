@@ -135,7 +135,6 @@ void QtFacebook::fbWizardComplete() {
     QMenu *menu = new QMenu();
 
     QAction *tqc = menu->addAction("Test Query Console");
-    QAction *gbl = menu->addAction("Get Buddy List");
     menu->addSeparator();
     QAction *ncr = menu->addAction("Notification Center");
     menu->addSeparator();
