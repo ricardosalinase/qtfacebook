@@ -29,8 +29,6 @@ void Method::setUserInfo(UserInfo *userInfo) {
     m_userInfo = userInfo;
 }
 
-
-
 QString Method::getErrorStr() {
     return m_errStr;
 }
@@ -129,9 +127,9 @@ bool Method::execute() {
 
     QNetworkReply *reply = 0;
 
-    reply = m_manager->post(nr,postArgs);
+    m_reply = m_manager->post(nr,postArgs);
 
-    if (reply != 0) {
+    if (m_reply != 0) {
         connect(m_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotReply(QNetworkReply*)));
         return true;
@@ -228,21 +226,36 @@ bool Method::fatalError(const QXmlParseException &exception)
 
 void Method::gotReply(QNetworkReply *reply) {
 
-    // qDebug() << "Got reply!";
+    // If you're using a single network access manager (in the factory),
+    // you need to make sure you're handling the right request in case there
+    // are multiple in flight
+    if (m_reply == reply)
+    {
+        QXmlInputSource is;
 
-    QXmlInputSource is;
-    is.setData(reply->readAll());
-    QXmlSimpleReader reader;
-    reader.setContentHandler(this);
-    reader.setErrorHandler(this);
-    bool rc = reader.parse(is);
+        qDebug() << reply;
 
-    // qDebug() << "Sending Second signal";
-    //if (rc)
-        emit methodComplete((API::Method*)this);
+        if (reply->error() == QNetworkReply::NoError)
+        {
+            is.setData(reply->readAll());
+            QXmlSimpleReader reader;
+            reader.setContentHandler(this);
+            reader.setErrorHandler(this);
+            bool rc = reader.parse(is);
 
-    reply->deleteLater();
-
+            if (rc)
+                emit methodComplete((API::Method*)this);
+            else
+                emit methodFailed((API::Method*)this);
+        }
+        else
+        {
+            qDebug() << "API::Method::gotReply(); QNetworkReply: " << reply->errorString();
+            qDebug() << reply->error();
+            emit methodFailed((API::Method*)this);
+        }
+        reply->deleteLater();
+    }
 }
 
 

@@ -20,7 +20,7 @@ FBConnectWizard::FBConnectWizard(UserInfo *userInfo, QString appName, bool first
     setWizardStyle ( QWizard::ModernStyle );
     setOption ( QWizard::NoBackButtonOnStartPage, true);
     setMinimumSize(600,490);
-    setPage(Page_Intro, createIntroPage());
+    //setPage(Page_Intro, createIntroPage());
     setPage(Page_Connect, createConnectPage());
     setPage(Page_Error, createErrorPage());
     setPage(Page_Conclusion, createConclusionPage());
