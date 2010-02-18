@@ -125,8 +125,6 @@ bool Method::execute() {
     nr.setUrl(url);
     nr.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    QNetworkReply *reply = 0;
-
     m_reply = m_manager->post(nr,postArgs);
 
     if (m_reply != 0) {
