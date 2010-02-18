@@ -38,29 +38,14 @@ QtFacebook::QtFacebook(QObject *parent) :
 
     QApplication::setQuitOnLastWindowClosed(false);
     m_userInfo = new UserInfo(API_KEY);
-    m_loginDialog = new GUI::FacebookLoginDialog(m_userInfo);
-    connect(m_loginDialog, SIGNAL(loginEntered()),
-            this, SLOT(gotLoginInfo()) );
-    connect(m_loginDialog, SIGNAL(loginCanceled()),
-              this, SLOT(loginCanceled()));
 
-    // load session_key, uid, and secret, email, pass, etc
+    // load session_key, uid, and secret
     if (loadUserInfo()) {
 
         // TODO: Check to see if session is still valid via API
 
-        if (m_userInfo->getPass().compare("") == 0) {
-
-            m_loginDialog->show();
-
-        } else {
-
-           gotLoginInfo();
-
-        }
-
-
-    } else {
+        fbWizardComplete();
+     } else {
 
         m_wizard = new FBConnectWizard(m_userInfo, "qtFacebook");
 
@@ -78,44 +63,6 @@ QtFacebook::QtFacebook(QObject *parent) :
 
 }
 
-void QtFacebook::gotLoginInfo() {
-
-    if (m_loginDialog != 0)
-        m_loginDialog->close();
-
-    UTIL::FacebookLogin *fbl = new UTIL::FacebookLogin(m_userInfo, this);
-    connect(fbl, SIGNAL(loginResults(bool)),
-            this, SLOT(gotLoginResults(bool)));
-    fbl->logIn();
-}
-
-void QtFacebook::loginCanceled() {
-    exit(0);
-}
-
-void QtFacebook::gotLoginResults(bool success) {
-
-    if (success) {
-
-        saveUserInfo();
-        fbWizardComplete();
-
-    } else {
-
-        if (m_invalidLogin == 0) {
-            m_invalidLogin = new GUI::LoginFailedDialog();
-            connect(m_invalidLogin, SIGNAL(accepted()),
-                    this, SLOT(loginFailedDialogClosed()));
-        }
-        m_invalidLogin->exec();
-    }
-
-}
-
-void QtFacebook::loginFailedDialogClosed() {
-    m_loginDialog->show();
-}
-
 void QtFacebook::saveUserInfo() {
 
 
@@ -128,9 +75,6 @@ void QtFacebook::saveUserInfo() {
     settings.setValue("SessionKey",m_userInfo->getSessionKey());
     settings.setValue("UID", m_userInfo->getUID());
     settings.setValue("Secret", m_userInfo->getSecret());
-    settings.setValue("Email", m_userInfo->getEmailAddy());
-    settings.setValue("Pass", m_userInfo->getPass());
-    settings.setValue("PostFormId", m_userInfo->getPostFormId());
     settings.endGroup();
 
 
@@ -150,24 +94,17 @@ bool QtFacebook::loadUserInfo() {
     QString sKey(settings.value("SessionKey","").toString());
     QString uid(settings.value("UID","").toString());
     QString secret(settings.value("Secret","").toString());
-    QString email(settings.value("Email","").toString());
-    QString pass(settings.value("Pass","").toString());
-    QString pfi(settings.value("PostFormId","").toString());
     settings.endGroup();
 
     if (sKey.compare("") == 0 ||
             uid.compare("") == 0 ||
-            secret.compare("") == 0 ||
-            email.compare("") == 0)
+            secret.compare("") == 0)
         return false;
 
 
     m_userInfo->setSessionKey(sKey);
     m_userInfo->setUID(uid);
     m_userInfo->setSecret(secret);
-    m_userInfo->setEmailAddy(email);
-    m_userInfo->setPass(pass);
-    m_userInfo->setPostFormId(pfi);
 
     return true;
 
@@ -235,29 +172,29 @@ void QtFacebook::fbWizardComplete() {
             this, SLOT(acknowledgedNotification(QString)));
 
 
-    m_cometConnection = new CometConnection(m_userInfo);
+//    m_cometConnection = new CometConnection(m_userInfo);
 
-    connect(m_cometConnection, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
-            m_notificationCenter, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
-            Qt::QueuedConnection);
-    connect(m_cometConnection, SIGNAL(notificationAck(QString)),
-            m_notificationCenter, SLOT(deactivateNotification(QString)),
-            Qt::QueuedConnection);
-    connect(m_cometConnection, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-            this, SLOT(newChatMessageReceived(DATA::ChatMessage*)),
-            Qt::QueuedConnection);
-    connect(this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-            m_cometConnection, SLOT(sendChatMessage(DATA::ChatMessage*)),
-            Qt::QueuedConnection);
-    connect(gbl, SIGNAL(triggered()),
-            m_cometConnection, SLOT(getBuddyList()),
-            Qt::QueuedConnection);
-    connect(m_cometConnection, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
-            this, SLOT(gotBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
-            Qt::QueuedConnection);
+    //connect(m_cometConnection, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
+    //        m_notificationCenter, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
+    //        Qt::QueuedConnection);
+//    connect(m_cometConnection, SIGNAL(notificationAck(QString)),
+//            m_notificationCenter, SLOT(deactivateNotification(QString)),
+//            Qt::QueuedConnection);
+//    connect(m_cometConnection, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+//            this, SLOT(newChatMessageReceived(DATA::ChatMessage*)),
+//            Qt::QueuedConnection);
+//    connect(this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
+//            m_cometConnection, SLOT(sendChatMessage(DATA::ChatMessage*)),
+//            Qt::QueuedConnection);
+//    connect(gbl, SIGNAL(triggered()),
+//            m_cometConnection, SLOT(getBuddyList()),
+//            Qt::QueuedConnection);
+//    connect(m_cometConnection, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+//            this, SLOT(gotBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
+//            Qt::QueuedConnection);
 
-    m_cometThread = new UTIL::WorkerThread(m_cometConnection);
-    m_cometThread->start();
+    //m_cometThread = new UTIL::WorkerThread(m_cometConnection);
+    //m_cometThread->start();
 
 
     if (!QSystemTrayIcon::supportsMessages())
@@ -271,18 +208,6 @@ void QtFacebook::fbWizardComplete() {
     m_trayAnimationTimer = new QTimer();
     connect(m_trayAnimationTimer, SIGNAL(timeout()),
             this, SLOT(nextTrayIcon()));
-
-
-
-    DATA::ChatMessage *cm = new DATA::ChatMessage();
-    cm->setMsgId("12345");
-    QDateTime qd = QDateTime::currentDateTime().toUTC();
-    cm->setClientTime(QString::number(qd.toTime_t()) + QString::number(qd.time().msec()));
-    cm->setToId("1082239928");
-    cm->setText("Hey there Brian!");
-
-    emit newChatMessage(cm);
-
 
 }
 
@@ -425,15 +350,4 @@ void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
     m_notificationListView->raise();
 }
 
-void QtFacebook::newChatMessageReceived(DATA::ChatMessage *c) {
-    qDebug() << "From: " << c->getFromName() << " Msg: " << c->getText();
-}
 
-void QtFacebook::gotBuddyList(QList<DATA::Buddy*> *bList,QMap<QString,QString> * /* listInfo */) {
-    qDebug() << "Buddy List:";
-
-    for (int i = 0; i < bList->size(); i++) {
-        qDebug() << bList->at(i)->getFullName();
-    }
-
-}

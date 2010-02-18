@@ -49,9 +49,12 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     m_factory = new API::Factory(m_userInfo);
     connect(m_factory, SIGNAL(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)),
             this, SLOT(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)));
-
+    connect(m_factory, SIGNAL(apiFqlGetNewNotificationsFailed(API::FQL::GetNewNotifications*)),
+            this, SLOT(notificationGetFailed(API::FQL::GetNewNotifications*)));
     connect(m_factory, SIGNAL(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)),
             this, SLOT(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)));
+    connect(m_factory, SIGNAL(apiFqlGetStreamPostsFailed(API::FQL::GetStreamPosts*)),
+            this, SLOT(getStreamPostsFailed(API::FQL::GetStreamPosts *)));
     getInitialNotifications();
 
 }
@@ -68,14 +71,29 @@ void NotificationCenter::getInitialNotifications() {
 
 }
 
-void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
+void NotificationCenter::notificationGetFailed(API::FQL::GetNewNotifications *method) {
 
-    //QList<DATA::Notification*> *list = method->getNotificationList();
+    delete method;
+
+    if (m_startup)
+    {
+        getInitialNotifications();
+    }
+
+}
+
+void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
 
     m_notificationList = method->getNotificationList();
     qDebug() << "apiFqlGetNewNotifications(); m_notificationList: " << m_notificationList->size();
 
-    if (m_notificationList->size() < 10 && m_startup == true)
+    int numNotifications = m_notificationList->size();
+
+    newNotifications(m_notificationList);
+
+    delete method;
+
+    if (m_startup == true && numNotifications < 10)
     {
         // I think we want to pre-fill the window so it's not empty
         // The downside is that it's only notifications with no feed
@@ -84,20 +102,12 @@ void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications
         m_startup = false;
         API::Method *method2 = m_factory->createMethod("fql.multiquery.getNewNotifications");
         method2->setArgument("start_time", 0);
-        method2->setArgument("limit", QString::number(10 - m_notificationList->size()));
+        method2->setArgument("limit", QString::number(10 - numNotifications));
 
         bool rc = method2->execute();
         if (!rc)
             qDebug() << "Method error for fql.multiquery.getNewNotifications" << method2->getErrorStr();
-
     }
-
-
-
-    delete method;
-
-    newNotifications(m_notificationList);
-
 
 }
 
@@ -170,6 +180,10 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
 
 }
 
+
+void NotificationCenter::getStreamPostsFailed(API::FQL::GetStreamPosts *method) {
+    delete method;
+}
 
 void NotificationCenter::notificationAcknowledged(QString nId) {
 

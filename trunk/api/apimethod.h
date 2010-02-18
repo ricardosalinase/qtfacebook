@@ -64,7 +64,7 @@ namespace API
          */
         QString getErrorStr();
         /*!
-         * Used to set the arguments for the POST to the Facebook REST server as specified in the Facebook API
+         * Upon getting a signal from the API::Factory, you need to check this to make sure the API call succeeded
          */
         void setArgument(QString arg, QString value);
         /*!
@@ -116,6 +116,12 @@ namespace API
          * you shouldn't connect to this signal, but rather the ones provided there for each derived class.
          */
         void methodComplete(API::Method *thisMethod);
+        /*!
+         * If there's a network error or XML parsing error, this is sent. Note that this sends the method cast to the base class (API::Method)
+         * and needs to be cast back to the appropriate derived class upon receoption. If using the API::Factory
+         * you shouldn't connect to this signal, but rather the ones provided there for each derived class.
+         */
+        void methodFailed(API::Method *thisMethod);
 
 
     private:
@@ -128,7 +134,7 @@ namespace API
          * that internal objects such as UserInfo are set.
          */
         bool validate();
-
+        QNetworkReply *m_reply;
 
 
     protected:

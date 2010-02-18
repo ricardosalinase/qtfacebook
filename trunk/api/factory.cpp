@@ -51,8 +51,28 @@ Method * Factory::prepareMethod(Method *m) {
 
     connect(m,SIGNAL(methodComplete(API::Method*)),
             this, SLOT(dispatch(API::Method*)));
+
     return m;
 
+}
+
+void Factory::dispatchFailed(API::Method *method) {
+    if (method->getMethodName().compare("friends.get", Qt::CaseInsensitive) == 0)
+        emit apiFriendsGetFailed((API::Friends::Get*)method);
+    else if (method->getMethodName().compare("notifications.getList", Qt::CaseInsensitive) == 0)
+        emit apiNotificationsGetListFailed((API::Notifications::GetList*)method);
+    else if (method->getMethodName().compare("notifications.get", Qt::CaseInsensitive) == 0)
+        emit apiNotificationsGetFailed((API::Notifications::Get*)method);
+    else if (method->getMethodName().compare("users.getLoggedInUser", Qt::CaseInsensitive) == 0)
+        emit apiUsersGetLoggedInUserFailed((API::Users::GetLoggedInUser*)method);
+    else if (method->getMethodName().compare("notifications.markRead", Qt::CaseInsensitive) == 0)
+        emit apiNotificationsMarkReadFailed((API::Notifications::MarkRead*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getNewNotifications", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetNewNotificationsFailed((API::FQL::GetNewNotifications*)method);
+    else if (method->getMethodName().compare("fql.query.getAppInfo", Qt::CaseInsensitive) == 0 )
+        emit apiFqlGetAppInfoFailed((API::FQL::GetAppInfo*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getStreamposts", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetStreamPostsFailed((API::FQL::GetStreamPosts*)method);
 }
 
 void Factory::dispatch(API::Method *method) {

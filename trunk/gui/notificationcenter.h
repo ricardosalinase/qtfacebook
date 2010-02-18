@@ -43,11 +43,14 @@ public slots:
     void notificationAcknowledged(QString nId);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
 
+
 private slots:
     void receiveIconPixmap(QNetworkReply *reply);
     void deactivateNotification(QString nid);
     void apiFqlGetNewNotifications(API::FQL::GetNewNotifications*);
+    void notificationGetFailed(API::FQL::GetNewNotifications *method);
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts*);
+    void getStreamPostsFailed(API::FQL::GetStreamPosts*);
 
 protected:
     void closeEvent ( QCloseEvent * event );

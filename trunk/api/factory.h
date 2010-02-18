@@ -56,41 +56,51 @@ signals:
     * This signal is emitted whenever a API::Friends::Get method has completed
     */
     void apiFriendsGet(API::Friends::Get *method);
+    void apiFriendsGetFailed(API::Friends::Get *method);
     /*!
     * This signal is emitted whenever a API::Comments::Get method has completed
     */
     void apiCommentsGet(API::Comments::Get *method );
+    void apiCommentsGetFailed(API::Comments::Get *method );
     /*!
     * This signal is emitted whenever a API::Notifications::Get method has completed
     */
     void apiNotificationsGet(API::Notifications::Get *method);
+    void apiNotificationsGetFailed(API::Notifications::Get *method);
     /*!
     * This signal is emitted whenever a API::Notifications::GetList method has completed
     */
     void apiNotificationsGetList(API::Notifications::GetList *method);
+    void apiNotificationsGetListFailed(API::Notifications::GetList *method);
     /*!
     * This signal is emitted whenever a API::Notifications::MarkRead method has completed
     */
     void apiNotificationsMarkRead(API::Notifications::MarkRead *method);
+    void apiNotificationsMarkReadFailed(API::Notifications::MarkRead *method);
     /*!
     * This signal is emitted whenever a API::Users::getLoggedInUser method has completed
     */
     void apiUsersGetLoggedInUser(API::Users::GetLoggedInUser *method);
+    void apiUsersGetLoggedInUserFailed(API::Users::GetLoggedInUser *method);
     /*!
     * This signal is emitted whenever a API::FQL::GetNewNotifications method has completed
     */
     void apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method);
+    void apiFqlGetNewNotificationsFailed(API::FQL::GetNewNotifications *method);
     /*!
     * This signal is emitted whenever a API::FQL::GetAppInfo method has completed
     */
     void apiFqlGetAppInfo(API::FQL::GetAppInfo *method);
+    void apiFqlGetAppInfoFailed(API::FQL::GetAppInfo *method);
     /*!
      * This signal is emitted whenever a API::FQL::GetSteamPosts method has completed
      */
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method);
+    void apiFqlGetStreamPostsFailed(API::FQL::GetStreamPosts *method);
 
 public slots:
     void dispatch(API::Method *);
+    void dispatchFailed(API::Method *);
 
 private:
     /**
