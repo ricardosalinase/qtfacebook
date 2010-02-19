@@ -21,7 +21,6 @@ namespace GUI {
 
 NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     QWidget(parent),
-    m_startup(true),
     m_userInfo(userInfo)
 {
     m_scrollArea = new QScrollArea();
@@ -55,61 +54,49 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
             this, SLOT(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)));
     connect(m_factory, SIGNAL(apiFqlGetStreamPostsFailed(API::FQL::GetStreamPosts*)),
             this, SLOT(getStreamPostsFailed(API::FQL::GetStreamPosts *)));
+    connect(m_factory, SIGNAL(apiNotificationsMarkRead(API::Notifications::MarkRead*)),
+            this,SLOT(notificationsMarkedAsRead(API::Notifications::MarkRead*)));
+    connect(m_factory, SIGNAL(apiNotificationsMarkReadFailed(API::Notifications::MarkRead*)),
+            this,SLOT(notificationsMarkedAsReadFailed(API::Notifications::MarkRead*)));
+
     getInitialNotifications();
 
 }
 
 void NotificationCenter::getInitialNotifications() {
 
+    // I think we want to pre-fill the window so it's not empty
+    // The downside is that it's only notifications with no feed
+    // posts.
     API::Method *method = m_factory->createMethod("fql.multiquery.getNewNotifications");
     method->setArgument("start_time", 0);
-    method->setArgument("only_unread",1);
+    method->setArgument("only_read", 1); // don't get duplicate new ones
+    method->setArgument("limit", 10);
+
 
     bool rc = method->execute();
     if (!rc)
-        qDebug() << "getInitialNotifications; Method Error: " << method->getErrorStr();
+        qDebug() << "Method error for fql.multiquery.getNewNotifications" << method->getErrorStr();
 
 }
 
 void NotificationCenter::notificationGetFailed(API::FQL::GetNewNotifications *method) {
 
     delete method;
+    getInitialNotifications();
 
-    if (m_startup)
-    {
-        getInitialNotifications();
-    }
 
 }
 
 void NotificationCenter::apiFqlGetNewNotifications(API::FQL::GetNewNotifications *method) {
 
     m_notificationList = method->getNotificationList();
-    qDebug() << "apiFqlGetNewNotifications(); m_notificationList: " << m_notificationList->size();
 
-    int numNotifications = m_notificationList->size();
+    qDebug() << "apiFqlGetNewNotifications(); m_notificationList: " << m_notificationList->size();
 
     newNotifications(m_notificationList);
 
     delete method;
-
-    if (m_startup == true && numNotifications < 10)
-    {
-        // I think we want to pre-fill the window so it's not empty
-        // The downside is that it's only notifications with no feed
-        // posts. m_startup is a safeguard against the user having
-        // < 10 notifications total available.
-        m_startup = false;
-        API::Method *method2 = m_factory->createMethod("fql.multiquery.getNewNotifications");
-        method2->setArgument("start_time", 0);
-        method2->setArgument("only_read", 1); // don't get duplicates from the first pull
-        method2->setArgument("limit", QString::number(10 - numNotifications));
-
-
-        bool rc = method2->execute();
-        if (!rc)
-            qDebug() << "Method error for fql.multiquery.getNewNotifications" << method2->getErrorStr();
-    }
 
 }
 
@@ -162,12 +149,6 @@ void NotificationCenter::restoreWindow() {
 
 }
 
-void NotificationCenter::navigate(QUrl url) {
-
-
-
-
-}
 
 void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) {
 
@@ -190,10 +171,7 @@ void NotificationCenter::getStreamPostsFailed(API::FQL::GetStreamPosts *method) 
 void NotificationCenter::notificationAcknowledged(QString nId) {
 
     // Mark the notification read via the API
-    API::Factory *factory = new API::Factory(m_userInfo);
-    API::Method *method = factory->createMethod("notifications.markRead");
-    connect(factory, SIGNAL(apiNotificationsMarkRead(API::Notifications::MarkRead*)),
-            this, SLOT(notificationsMarkedAsRead(API::Notifications::MarkRead*)));
+    API::Method *method = m_factory->createMethod("notifications.markRead");
 
     method->setArgument("notification_ids",nId);
     method->execute();
@@ -204,41 +182,17 @@ void NotificationCenter::notificationAcknowledged(QString nId) {
 
 void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead *method) {
 
+
     QString nId = method->getNotificationIds();
-
-    if (method->successful()) {
-        //emit acknowledgedNotification(nId);
-        // no op - it'll come back via the comet connection
-    } else {
-        qDebug() << "notifications.markRead failed, resending.";
-        notificationAcknowledged(nId);
-    }
-
+    emit acknowledgedNotification(nId);
     delete method;
 
 }
-
-void NotificationCenter::deactivateNotification(QString nid) {
-
-    for (int i = 0; i < m_newNotifications.size(); i++) {
-        // There's a case where facebook sends out a null list of ids,
-        // meaning they've all been read. We signify this by sending "-1" as
-        // the notificationID from the CometConnector.
-        if (nid.compare("-1") == 0 || m_newNotifications.at(i)->getNotificationId().compare(nid) == 0) {
-            m_newNotifications.at(i)->stopAfter(5);
-
-            if (nid.compare("-1") != 0) {
-                m_newNotifications.takeAt(i);
-                break;
-            }
-        }
-    }
-
-    if (nid.compare("-1") == 0)
-        m_newNotifications.clear();
-
-    emit acknowledgedNotification(nid);
-
+void NotificationCenter::notificationsMarkedAsReadFailed(API::Notifications::MarkRead *method) {
+    qDebug() << "notifications.markRead failed, resending.";
+    QString nId = method->getNotificationIds();
+    delete method;
+    notificationAcknowledged(nId);
 }
 
 void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList) {
@@ -246,40 +200,48 @@ void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList) {
     qDebug() << "newNotifications(); nList: " << nList->size();
     while (!nList->empty())
     {
-        DATA::Notification *n = nList->takeFirst();
+        DATA::Notification *n = nList->takeLast();
         newNotification(n);
     }
 }
 
 void NotificationCenter::newNotification(DATA::Notification *n) {
 
-    GUI::NotificationCenterWidget *nWidget;
-
     int numNew = 0;
-    GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
-    GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(n->getAppInfo());
-    getPixmap(ai);
-    nWidget = new GUI::NotificationCenterWidget(nl, ai);
-    connect(nWidget, SIGNAL(linkActivated(QString)),
-            this, SLOT(linkActivated(QString)));
-    connect(nWidget, SIGNAL(acknowledged(QString)),
-            this, SLOT(notificationAcknowledged(QString)));
-    ((QVBoxLayout*)m_nContainer->layout())->addWidget(nWidget);
 
-    if (n->getIsHidden() && !m_showHiddenNotifications)
-        nWidget->hide();
-    else if (!n->getIsRead()){
-        numNew++;
-        m_newNotifications.append(nWidget);
-        nWidget->start();
+    if (!m_notifications.contains(n->getNotificationId()))
+    {
+        GUI::NotificationCenterWidget *nWidget;
+
+        GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
+        GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(n->getAppInfo());
+        getPixmap(ai);
+        nWidget = new GUI::NotificationCenterWidget(nl, ai);
+        connect(nWidget, SIGNAL(linkActivated(QString)),
+                this, SLOT(linkActivated(QString)));
+        connect(nWidget, SIGNAL(acknowledged(QString)),
+                this, SLOT(notificationAcknowledged(QString)));
+        ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
+
+        if (n->getIsHidden() && !m_showHiddenNotifications)
+            nWidget->hide();
+        else if (!n->getIsRead()){
+            numNew++;
+            m_notifications.insert(n->getNotificationId(), nWidget);
+            nWidget->start();
+        }
+
+        if (numNew != 0)
+            emit receivedNewNotifications(numNew);
+
+        // If there's not enough to cause scrollbars, this will bunch them
+        // at the top.
+        ((QVBoxLayout *)m_nContainer->layout())->addStretch();
     }
-
-    if (numNew != 0)
-        emit receivedNewNotifications(numNew);
-
-    // If there's not enough to cause scrollbars, this will bunch them
-    // at the top.
-    ((QVBoxLayout *)m_nContainer->layout())->addStretch();
+    else // we already have this one
+    {
+        delete n;
+    }
 }
 
 

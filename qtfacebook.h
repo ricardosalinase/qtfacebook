@@ -14,6 +14,7 @@
 #include "gui/notificationcenter.h"
 #include "gui/facebooklogindialog.h"
 #include "util/workerthread.h"
+#include "updatepoller.h"
 
 
 class QtFacebook : public QObject
@@ -51,7 +52,7 @@ private:
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
     GUI::NotificationCenter *m_notificationCenter;
-    CometConnection *m_cometConnection;
+    UpdatePoller *m_updatePoller;
     QSystemTrayIcon *m_trayIcon;
     GUI::Notifications::ListView *m_notificationListView;
     QList<DATA::Notification *> *m_notificationList;
@@ -68,7 +69,7 @@ private:
     int m_standardNotifications;
     QDialog *m_invalidLogin;
     GUI::FacebookLoginDialog *m_loginDialog;
-    UTIL::WorkerThread *m_cometThread;
+    UTIL::WorkerThread *m_updateThread;
 };
 
 #endif // QTFACEBOOK_H

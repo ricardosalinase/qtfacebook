@@ -25,8 +25,12 @@ bool GetNewNotifications::prepare() {
     QString fql("{\"notifications\":\"SELECT notification_id, created_time, title_html, title_text, app_id, "
                   "is_unread, is_hidden  FROM notification WHERE recipient_id=");
     fql.append(m_userInfo->getUID());
-    fql.append(" AND created_time > ");
-    fql.append(m_argMap.take("start_time").toString());
+
+    if (m_argMap.contains("start_time"))
+    {
+        fql.append(" AND created_time > ");
+        fql.append(m_argMap.take("start_time").toString());
+    }
 
     if (m_argMap.contains("only_unread")) {
         m_argMap.take("only_unread");
