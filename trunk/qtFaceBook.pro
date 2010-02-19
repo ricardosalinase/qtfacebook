@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     data/streamcommentlist.cpp \
     gui/streampostwidget.cpp \
     data/fbuserinfo.cpp \
-    gui/commentwidget.cpp
+    gui/commentwidget.cpp \
+    api/fql_getstreampostinfo.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -84,7 +85,8 @@ HEADERS += fbconnectwizard.h \
     util/workerthread.h \
     util/worker.h \
     util/agestring.h \
-    gui/commentwidget.h
+    gui/commentwidget.h \
+    api/fql_getstreampostinfo.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

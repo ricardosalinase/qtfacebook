@@ -69,7 +69,7 @@ bool GetNewNotifications::startElement(const QString & /* namespaceURI */,
                            const QString & /* localName */,
                            const QString &qName,
                            const QXmlAttributes &/*attributes*/) {
-    qDebug() << "Start: " << qName;
+    //qDebug() << "Start: " << qName;
 
     if (m_parseState != QUERY)
     {
@@ -182,7 +182,7 @@ bool GetNewNotifications::endElement(const QString &/*namespaceURI*/,
         break;
 
     }
-    qDebug() << "End: " << qName << " " <<  m_currentText;
+    //qDebug() << "End: " << qName << " " <<  m_currentText;
 
 
     return true;
