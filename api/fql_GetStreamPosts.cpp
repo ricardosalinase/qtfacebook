@@ -157,7 +157,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         break;
     }
 
-    qDebug() << "End: " << qName << ": " << m_currentText;
+    //qDebug() << "End: " << qName << ": " << m_currentText;
 
     return true;
 }
@@ -178,7 +178,7 @@ bool GetStreamPosts::prepare() {
               "\"commentors\":\"SELECT uid, name, pic_square "
               "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\"}");
 
-   qDebug() << "queries: " << fql;
+   //qDebug() << "queries: " << fql;
     m_argMap.insert("queries", fql);
 
 
