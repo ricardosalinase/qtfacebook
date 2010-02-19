@@ -171,29 +171,13 @@ void QtFacebook::fbWizardComplete() {
             this, SLOT(acknowledgedNotification(QString)));
 
 
-//    m_cometConnection = new CometConnection(m_userInfo);
+    m_updatePoller = new UpdatePoller(m_userInfo);
+    connect(m_updatePoller, SIGNAL(apiFqlGetNewNotifications(QList<DATA::Notification*>*)),
+            m_notificationCenter, SLOT(newNotifications(QList<DATA::Notification*>*)),
+            Qt::QueuedConnection);
 
-    //connect(m_cometConnection, SIGNAL(newNotification(DATA::Notification*,DATA::AppInfo*)),
-    //        m_notificationCenter, SLOT(newNotification(DATA::Notification*,DATA::AppInfo*)),
-    //        Qt::QueuedConnection);
-//    connect(m_cometConnection, SIGNAL(notificationAck(QString)),
-//            m_notificationCenter, SLOT(deactivateNotification(QString)),
-//            Qt::QueuedConnection);
-//    connect(m_cometConnection, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-//            this, SLOT(newChatMessageReceived(DATA::ChatMessage*)),
-//            Qt::QueuedConnection);
-//    connect(this, SIGNAL(newChatMessage(DATA::ChatMessage*)),
-//            m_cometConnection, SLOT(sendChatMessage(DATA::ChatMessage*)),
-//            Qt::QueuedConnection);
-//    connect(gbl, SIGNAL(triggered()),
-//            m_cometConnection, SLOT(getBuddyList()),
-//            Qt::QueuedConnection);
-//    connect(m_cometConnection, SIGNAL(newBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
-//            this, SLOT(gotBuddyList(QList<DATA::Buddy*>*,QMap<QString,QString>*)),
-//            Qt::QueuedConnection);
-
-    //m_cometThread = new UTIL::WorkerThread(m_cometConnection);
-    //m_cometThread->start();
+    m_updateThread = new UTIL::WorkerThread(m_updatePoller);
+    m_updateThread->start();
 
 
     if (!QSystemTrayIcon::supportsMessages())
@@ -300,20 +284,8 @@ void QtFacebook::receivedNewNotifications(int numNew) {
 
 void QtFacebook::acknowledgedNotification(QString nid) {
 
-    // there's a case where the user has read all notifications via
-    // the facebook web interface. We signify this by sending a "-1"
-    // as the notificationID from the CometConnector
-    if (nid.compare("-1") == 0)
-    {
-        m_totalNotifications -= m_standardNotifications;
-        m_standardNotifications = 0;
-
-    } else {
-
-        m_totalNotifications--;
-        m_standardNotifications--;
-
-    }
+    m_totalNotifications--;
+    m_standardNotifications--;
 
     showNotifications(false);
 

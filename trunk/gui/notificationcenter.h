@@ -41,27 +41,26 @@ public slots:
     void newNotification(DATA::Notification *n);
     void linkActivated(QString url);
     void notificationAcknowledged(QString nId);
-    void notificationsMarkedAsRead(API::Notifications::MarkRead*);
+
 
 
 private slots:
     void receiveIconPixmap(QNetworkReply *reply);
-    void deactivateNotification(QString nid);
     void apiFqlGetNewNotifications(API::FQL::GetNewNotifications*);
     void notificationGetFailed(API::FQL::GetNewNotifications *method);
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts*);
     void getStreamPostsFailed(API::FQL::GetStreamPosts*);
+    void notificationsMarkedAsRead(API::Notifications::MarkRead*);
+    void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
 
 protected:
     void closeEvent ( QCloseEvent * event );
 
 private:
-    void navigate(QUrl url);
     void restoreWindow();
     void getPixmap(GUI::AppInfoLabel *ai);
     void getInitialNotifications();
 
-    bool m_startup;
     UserInfo *m_userInfo;
     QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
     QMap<QString, QPixmap *> m_iconPixmapCache;
@@ -72,7 +71,7 @@ private:
     // UI componenets
     QScrollArea *m_scrollArea;
     QWidget *m_nContainer;
-    QList<GUI::NotificationCenterWidget *> m_newNotifications;
+    QMap<QString, GUI::NotificationCenterWidget *> m_notifications;
 
 };
 
