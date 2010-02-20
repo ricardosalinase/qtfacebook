@@ -55,15 +55,23 @@ QString StreamPost::getUpdatedTime() {
     return m_updatedTime;
 }
 
+void StreamPost::isHidden(bool hidden) {
+    m_isHidden = hidden;
+}
+
+bool StreamPost::isHidden() {
+    return m_isHidden;
+}
+
 StreamCommentList * StreamPost::getCommentList() {
     return m_commentList;
 }
 
 void StreamPost::setPoster(FbUserInfo *poster) {
-    m_poster = poster;
+    m_poster = *poster;
 }
 
-FbUserInfo * StreamPost::getPoster() {
+FbUserInfo & StreamPost::getPoster() {
     return m_poster;
 }
 
@@ -73,6 +81,20 @@ void StreamPost::setActorId(QString id) {
 
 QString StreamPost::getActorId() {
     return m_actorId;
+}
+
+// NotificationCenterItem Interface
+QString StreamPost::getNavigationHtml() {
+
+    QString html("There is a <a href=\"streamPost:");
+    html.append(m_postId + "\">");
+    html.append("new post</a> from " + m_poster.getName()
+                 + " on your page.");
+    return html;
+}
+
+QString StreamPost::getNotificationCenterId() {
+    return m_postId;
 }
 
 

@@ -12,15 +12,15 @@ public:
     FbUserInfo();
 
     void setUID(QString id);
-    QString getUID();
+    QString& getUID();
     void setName(QString name);
-    QString getName();
+    QString& getName();
     void setPic(QString pic);
-    QUrl getPic();
+    QUrl& getPic();
     void setPicSquare(QString ps);
-    QUrl getPicSquare();
+    QUrl& getPicSquare();
     void setPicBig(QString pb);
-    QUrl getPicBig();
+    QUrl& getPicBig();
 
 private:
     QString m_uid;

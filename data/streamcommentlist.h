@@ -14,20 +14,20 @@ class StreamComment
 {
 public:
     StreamComment();
-    ~StreamComment();
+    ~StreamComment() {};
 
     void setPostId(QString id);
-    QString getPostId();
+    QString& getPostId();
     void setFromId(QString id);
-    QString getFromId();
+    QString& getFromId();
     void setTime(QString time);
-    QString getTime();
+    QString& getTime();
     void setText(QString text);
-    QString getText();
+    QString& getText();
     void setCommentId(QString id);
-    QString getCommentId();
-    QString getUserName();
-    QUrl getUserPicSquare();
+    QString& getCommentId();
+    QString& getUserName();
+    QUrl& getUserPicSquare();
 
     void setUserInfo(FbUserInfo *userInfo);
 

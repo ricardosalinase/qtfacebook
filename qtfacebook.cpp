@@ -32,6 +32,7 @@ QtFacebook::QtFacebook(QObject *parent) :
     m_animatingTrayIcon(false),
     m_totalNotifications(0),
     m_standardNotifications(0),
+    m_streamPostNotifications(0),
     m_invalidLogin(0),
     m_loginDialog(0)
 {
@@ -167,13 +168,17 @@ void QtFacebook::fbWizardComplete() {
             m_notificationCenter, SLOT(showYourself()));
     connect(m_notificationCenter, SIGNAL(receivedNewNotifications(int)),
             this, SLOT(receivedNewNotifications(int)));
-    connect(m_notificationCenter, SIGNAL(acknowledgedNotification(QString)),
-            this, SLOT(acknowledgedNotification(QString)));
-
+    connect(m_notificationCenter, SIGNAL(acknowledgedNotification(GUI::NotificationCenterItem::ItemType,QString)),
+            this, SLOT(acknowledgedNotification(GUI::NotificationCenterItem::ItemType, QString)));
+    connect(m_notificationCenter, SIGNAL(receivedNewStreamPosts(int)),
+            this, SLOT(receivedNewStreamPosts(int)));
 
     m_updatePoller = new UpdatePoller(m_userInfo);
     connect(m_updatePoller, SIGNAL(apiFqlGetNewNotifications(QList<DATA::Notification*>*)),
             m_notificationCenter, SLOT(newNotifications(QList<DATA::Notification*>*)),
+            Qt::QueuedConnection);
+    connect(m_updatePoller, SIGNAL(apiFqlGetStreamPostInfo(QList<DATA::StreamPost*>*)),
+            m_notificationCenter, SLOT(newStreamPostInfo(QList<DATA::StreamPost*>*)),
             Qt::QueuedConnection);
 
     m_updateThread = new UTIL::WorkerThread(m_updatePoller);
@@ -273,6 +278,12 @@ void QtFacebook::testQueryConsole() {
 
 }
 
+void QtFacebook::receivedNewStreamPosts(int numNew) {
+    m_totalNotifications += numNew;
+    m_streamPostNotifications += numNew;
+    showNotifications(true);
+}
+
 /************** Notifications ************************/
 void QtFacebook::receivedNewNotifications(int numNew) {
 
@@ -282,11 +293,22 @@ void QtFacebook::receivedNewNotifications(int numNew) {
 
 }
 
-void QtFacebook::acknowledgedNotification(QString nid) {
+void QtFacebook::acknowledgedNotification(GUI::NotificationCenterItem::ItemType type, QString nid) {
 
     m_totalNotifications--;
-    m_standardNotifications--;
 
+    switch(type)
+    {
+    case GUI::NotificationCenterItem::Notification:
+        m_standardNotifications--;
+        break;
+    case GUI::NotificationCenterItem::StreamPost:
+        m_streamPostNotifications--;
+        break;
+    default:
+        break;
+
+    }
     showNotifications(false);
 
 }

@@ -23,7 +23,7 @@ public:
 
 signals:
     void apiFqlGetNewNotifications(QList<DATA::Notification*> *);
-    void apiFqlGetStreamPosts(QList<DATA::StreamPost*> *);
+    void apiFqlGetStreamPostInfo(QList<DATA::StreamPost*> *);
 
 public slots:
 
@@ -32,8 +32,8 @@ private slots:
     void gotNewNotifications(API::FQL::GetNewNotifications *method);
     void gotNewNotificationsFailed(API::FQL::GetNewNotifications *method);
     void getNewStreamPosts();
-    void gotNewStreamPosts(API::FQL::GetStreamPosts *method);
-    void gotNewStreamPostsFailed(API::FQL::GetStreamPosts *method);
+    void gotNewStreamPostInfo(API::FQL::GetStreamPostInfo *method);
+    void gotNewStreamPostInfoFailed(API::FQL::GetStreamPostInfo *method);
 
 private:
     UserInfo *m_userInfo;
@@ -42,7 +42,7 @@ private:
     QTimer *m_streamPostTimer;
     int m_notificationUpdateInterval;
     int m_streamPostUpdateInterval;
-    uint m_lastStreamPostCheck;
+    QString m_lastStreamPostCheck;
 };
 
 

@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <QScrollArea>
 #include <QLabel>
+#include <QCloseEvent>
 
 
 #include "data/streampost.h"
@@ -18,10 +19,14 @@ class StreamPostWidget : public QWidget
 Q_OBJECT
 public:
     explicit StreamPostWidget(DATA::StreamPost *post, QWidget *parent = 0);
+    ~StreamPostWidget();
     void scrollToBottom();
 signals:
-
+    void closed(GUI::StreamPostWidget*);
 public slots:
+
+protected:
+    void closeEvent ( QCloseEvent * event );
 
 private slots:
     void gotPosterPixmap(QNetworkReply *reply);

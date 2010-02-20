@@ -13,6 +13,7 @@
 #include "gui/notifications_listview.h"
 #include "gui/notificationcenter.h"
 #include "gui/facebooklogindialog.h"
+#include "gui/notificationcenteritem.h"
 #include "util/workerthread.h"
 #include "updatepoller.h"
 
@@ -24,8 +25,6 @@ public:
     explicit QtFacebook(QObject *parent = 0);
 
 signals:
-    void newChatMessage(DATA::ChatMessage *);
-    void getBuddyList();
 
 public slots:
     void fbWizardComplete();
@@ -42,7 +41,8 @@ private slots:
     void exitMenuAction();
     void testQueryConsole();
     void receivedNewNotifications(int numNew);
-    void acknowledgedNotification(QString nid);
+    void receivedNewStreamPosts(int numNew);
+    void acknowledgedNotification(GUI::NotificationCenterItem::ItemType type, QString nid);
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);
@@ -67,6 +67,7 @@ private:
     QByteArray m_geometry;
     int m_totalNotifications;
     int m_standardNotifications;
+    int m_streamPostNotifications;
     QDialog *m_invalidLogin;
     GUI::FacebookLoginDialog *m_loginDialog;
     UTIL::WorkerThread *m_updateThread;

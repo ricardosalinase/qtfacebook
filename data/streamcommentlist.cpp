@@ -7,11 +7,13 @@ StreamComment::StreamComment()
 
 }
 
+
+
 void StreamComment::setPostId(QString id) {
     m_postId = id;
 }
 
-QString StreamComment::getPostId() {
+QString& StreamComment::getPostId() {
     return m_postId;
 }
 
@@ -19,7 +21,7 @@ void StreamComment::setCommentId(QString id) {
     m_commentId = id;
 }
 
-QString StreamComment::getCommentId() {
+QString& StreamComment::getCommentId() {
     return m_commentId;
 }
 
@@ -27,7 +29,7 @@ void StreamComment::setFromId(QString id) {
     m_fromId = id;
 }
 
-QString StreamComment::getFromId() {
+QString& StreamComment::getFromId() {
     return m_fromId;
 }
 
@@ -35,7 +37,7 @@ void StreamComment::setTime(QString time) {
     m_time = time;
 }
 
-QString StreamComment::getTime() {
+QString& StreamComment::getTime() {
     return m_time;
 }
 
@@ -43,15 +45,15 @@ void StreamComment::setText(QString text) {
     m_text = text;
 }
 
-QString StreamComment::getText() {
+QString& StreamComment::getText() {
     return m_text;
 }
 
-QString StreamComment::getUserName() {
+QString& StreamComment::getUserName() {
     return m_fbUserInfo.getName();
 }
 
-QUrl StreamComment::getUserPicSquare() {
+QUrl& StreamComment::getUserPicSquare() {
     return m_fbUserInfo.getPicSquare();
 }
 

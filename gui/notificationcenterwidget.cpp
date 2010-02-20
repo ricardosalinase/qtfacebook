@@ -1,30 +1,58 @@
 #include "notificationcenterwidget.h"
+
 #include <QGridLayout>
 #include <QDebug>
 #include <QPainter>
 
+#include "util/agestring.h"
+
 namespace GUI {
 
-NotificationCenterWidget::NotificationCenterWidget(GUI::NotificationCenterLabel *n, GUI::AppInfoLabel *a, QWidget *parent) :
-        QWidget(parent),
-        isStopping(false)
+NCWLabel::NCWLabel(GUI::NotificationCenterItem *i, QWidget *parent) :
+        QLabel(parent)
 {
-    n->setParent(this);
-    m_label = n;
-    a->setParent(this);
-    m_icon = a;
+    m_createdTime = i->getCreatedTime();
+    m_baseHtml = i->getNavigationHtml();
+
+    createDisplayText();
+    m_timer = new QTimer();
+    connect(m_timer, SIGNAL(timeout()),
+            this, SLOT(createDisplayText()));
+    m_timer->start(60000);
+}
+
+
+
+void NCWLabel::createDisplayText() {
+
+    QString age = UTIL::ageString(m_createdTime);
+
+    setText("<style type=\"text/css\">a { text-decoration: none; }</style>"
+            + m_baseHtml
+            + "<BR><font style=\"font-size : 8px;\"> " + age);
+    setWordWrap(true);
+
+}
+
+NotificationCenterWidget::NotificationCenterWidget(GUI::NotificationCenterItem *i, QLabel *pmLabel, QWidget *parent) :
+    QWidget(parent),
+    isStopping(false),
+    m_item(i)
+{
     setBackgroundRole(QPalette::Window);
 
     QGridLayout *gl = new QGridLayout();
-    gl->setHorizontalSpacing(10);
-    gl->addWidget(m_icon,0,0,Qt::AlignTop | Qt::AlignLeft);
 
-    gl->addWidget(m_label,0,1,Qt::AlignTop);
+    gl->setHorizontalSpacing(10);
+    gl->addWidget(pmLabel,0,0,Qt::AlignTop | Qt::AlignLeft);
+
+    NCWLabel *label = new NCWLabel(i,this);
+    gl->addWidget(label,0,1,Qt::AlignTop);
     gl->setColumnStretch(1,1);
 
     setLayout(gl);
 
-    connect(m_label, SIGNAL(linkActivated(QString)),
+    connect(label, SIGNAL(linkActivated(QString)),
             this, SIGNAL(linkActivated(QString)));
 
     timeLine = new QTimeLine(2000, this);
@@ -34,7 +62,6 @@ NotificationCenterWidget::NotificationCenterWidget(GUI::NotificationCenterLabel 
     connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
 
 }
-
 
 
 NotificationCenterWidget::~NotificationCenterWidget() {
@@ -55,7 +82,8 @@ void NotificationCenterWidget::enterEvent(QEvent *event) {
     if (event->type() == QEvent::Enter) {
         if (timeLine->state() == QTimeLine::Running && !isStopping) {
             stopAfter(5);
-            emit acknowledged(m_label->getNotificationId());
+            emit acknowledged(m_item->getNotificationCenterItemType(),
+                              m_item->getNotificationCenterId());
         }
     }
 }
@@ -102,8 +130,8 @@ void NotificationCenterWidget::paintEvent(QPaintEvent *) {
 
 }
 
-QString NotificationCenterWidget::getNotificationId() {
-    return m_label->getNotificationId();
+QString NotificationCenterWidget::getNotificationCenterId() {
+    return m_item->getNotificationCenterId();
 }
 
 

@@ -4,12 +4,13 @@
 #include <QString>
 
 #include "appinfo.h"
+#include "gui/notificationcenteritem.h"
 
 namespace DATA {
 /*!
  * The Notification class encapsulates individual notificaitons returned by the Facebook API call "notifications.getList"
  */
-class Notification
+    class Notification : public GUI::NotificationCenterItem
 {
 
 public:
@@ -108,6 +109,12 @@ public:
      * used to post the comment. (see: AppInfo )
      */
     AppInfo & getAppInfo();
+
+    // NotificationCenterItem Interface
+    QString getNavigationHtml();
+    inline ItemType getNotificationCenterItemType() { return NotificationCenterItem::Notification; }
+    QString getNotificationCenterId();
+
 
 private:
     QString m_notificationId;

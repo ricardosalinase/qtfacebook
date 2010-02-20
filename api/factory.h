@@ -15,6 +15,7 @@
 #include "fql_GetNewNotifications.h"
 #include "fql_GetAppInfo.h"
 #include "fql_GetStreamPosts.h"
+#include "fql_getstreampostinfo.h"
 
 
 // Simple factory
@@ -97,6 +98,13 @@ signals:
      */
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method);
     void apiFqlGetStreamPostsFailed(API::FQL::GetStreamPosts *method);
+    /*!
+     * This signal is emitted whenever a API::FQL::GetSteamPostInfo method has completed
+     */
+    void apiFqlGetStreamPostInfo(API::FQL::GetStreamPostInfo *method);
+    void apiFqlGetStreamPostInfoFailed(API::FQL::GetStreamPostInfo *method);
+
+
 
 public slots:
     void dispatch(API::Method *);
