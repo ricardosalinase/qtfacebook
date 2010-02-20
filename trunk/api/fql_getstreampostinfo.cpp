@@ -31,7 +31,8 @@ bool GetStreamPostInfo::prepare() {
         fql.append("AND created_time > " + m_argMap.take("start_time").toString());
 
     fql.append("\",\"poster_info\":\"SELECT uid, name, pic_square FROM user WHERE uid "
-              "IN (SELECT actor_id FROM #posts)\"}");
+               "IN (SELECT actor_id FROM #posts)\",\"page_info\":\"SELECT page_id, name, "
+               "pic_square FROM page WHERE page_id IN (SELECT actor_id FROM #posts)\"}");
 
     qDebug() << fql;
     m_argMap.insert("queries", fql);
@@ -54,7 +55,10 @@ bool GetStreamPostInfo::startElement(const QString &/*namespaceURI*/, const QStr
         else if (m_parseState == POSTER && qName == "user")
         {
             m_currentPoster = new DATA::FbUserInfo();
-
+        }
+        else if (m_parseState == PAGE && qName == "page")
+        {
+            m_currentPage = new DATA::FbPageInfo();
         }
     }
 
@@ -76,6 +80,8 @@ bool GetStreamPostInfo::endElement(const QString &/*namespaceURI*/, const QStrin
                 m_parseState = POSTS;
             else if (m_currentText == "poster_info")
                 m_parseState = POSTER;
+            else if (m_currentText == "page_info")
+                m_parseState = PAGE;
         }
         break;
     case POSTS:
@@ -116,6 +122,26 @@ bool GetStreamPostInfo::endElement(const QString &/*namespaceURI*/, const QStrin
             m_currentPoster->setUID(m_currentText);
         else if (qName == "pic_square")
             m_currentPoster->setPicSquare(m_currentText);
+        break;
+    case PAGE:
+        if (qName == "page")
+        {
+            QList<DATA::StreamPost *> pList = m_postMap.values(m_currentPage->getPageId());
+            for (int i = 0; i < pList.size(); i++)
+            {
+                pList.at(i)->setPage(m_currentPage);
+            }
+            delete m_currentPage;
+            m_currentPage = 0;
+        }
+        else if (qName == "fql_result")
+            m_parseState = QUERY;
+        else if (qName == "name")
+            m_currentPage->setName(m_currentText);
+        else if (qName == "page_id")
+            m_currentPage->setPageId(m_currentText);
+        else if (qName == "pic_square")
+            m_currentPage->setPicSquare(m_currentText);
         break;
     }
 

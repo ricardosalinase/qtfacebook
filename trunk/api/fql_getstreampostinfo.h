@@ -7,6 +7,7 @@
 #include "api/apimethod.h"
 #include "data/streampost.h"
 #include "data/fbuserinfo.h"
+#include "data/FbPageInfo.h"
 
 namespace API {
 namespace FQL {
@@ -23,12 +24,13 @@ public:
     QList<DATA::StreamPost *> * getStreamPosts();
 
 private:
-    enum ParseState { QUERY, POSTS, POSTER };
+    enum ParseState { QUERY, POSTS, POSTER, PAGE };
     ParseState m_parseState;
     bool prepare();
     QMap<QString, DATA::StreamPost* > m_postMap;
     DATA::StreamPost *m_currentStreamPost;
     DATA::FbUserInfo *m_currentPoster;
+    DATA::FbPageInfo *m_currentPage;
     QList<DATA::StreamPost *> *m_streamPosts;
 
 };

@@ -25,7 +25,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QVBoxLayout *contentLayout = new QVBoxLayout();
-    this->setWindowTitle(post->getPoster().getName());
+    if (post->isFromUser())
+        this->setWindowTitle(post->getPoster().getName());
+    else
+        this->setWindowTitle(post->getPage().getName());
 
 
     QString messageHtml;

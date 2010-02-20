@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     data/fbuserinfo.cpp \
     gui/commentwidget.cpp \
     api/fql_getstreampostinfo.cpp \
-    util/fbuserpiccache.cpp
+    util/fbuserpiccache.cpp \
+    data/FbPageInfo.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -86,7 +87,8 @@ HEADERS += fbconnectwizard.h \
     gui/commentwidget.h \
     api/fql_getstreampostinfo.h \
     gui/notificationcenteritem.h \
-    util/fbuserpiccache.h
+    util/fbuserpiccache.h \
+    data/FbPageInfo.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

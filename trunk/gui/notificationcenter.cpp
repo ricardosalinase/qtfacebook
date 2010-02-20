@@ -225,7 +225,10 @@ void NotificationCenter::newStreamPostInfo(QList<DATA::StreamPost *> *pList) {
         GUI::NotificationCenterWidget *nWidget;
         QLabel *ul = new QLabel();
 
-        getPixmap(ul, sp->getPoster());
+        if (sp->isFromUser())
+            getPixmap(ul, sp->getPoster());
+        else
+            getPixmap(ul, sp->getPage());
 
         nWidget = new GUI::NotificationCenterWidget((GUI::NotificationCenterItem*)sp, ul);
         connect(nWidget, SIGNAL(linkActivated(QString)),
@@ -301,6 +304,31 @@ void NotificationCenter::newNotification(DATA::Notification *n) {
     }
 }
 
+
+void NotificationCenter::getPixmap(QLabel *ul, DATA::FbPageInfo& fbp) {
+
+    UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
+
+    QPixmap *p = cache->getPixmap(fbp.getPageId(), UTIL::FbUserPicCache::PicSquare,
+                                  fbp.getPicSquare());
+    if (p != 0)
+    {
+        ul->setPixmap(*p);
+    }
+    else
+    {
+        QNetworkReply *reply;
+
+        QUrl url(fbp.getPicSquare());
+        reply = m_nam->get(QNetworkRequest(url));
+
+        QString s("pagePicSquare:" + fbp.getPageId());
+
+        m_tmpMap.insert(reply, QPair<QString, QLabel *>(s, ul));
+    }
+
+}
+
 void NotificationCenter::getPixmap(QLabel *ul, DATA::FbUserInfo& fbu) {
 
     UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
@@ -363,6 +391,12 @@ void NotificationCenter::receiveIconPixmap(QNetworkReply *reply) {
         {
             UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
             cache->cachePixmap(pair.first.remove("userPicSquare:"), UTIL::FbUserPicCache::PicSquare,
+                               reply->request().url(), p);
+        }
+        else if (pair.first.startsWith("pagePicSquare:"))
+        {
+            UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
+            cache->cachePixmap(pair.first.remove("pagePicSquare:"), UTIL::FbUserPicCache::PicSquare,
                                reply->request().url(), p);
         }
 

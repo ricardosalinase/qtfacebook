@@ -17,6 +17,7 @@
 #include "notificationcenterwidget.h"
 #include "util/fbuserpiccache.h"
 #include "gui/streampostwidget.h"
+#include "data/FbPageInfo.h"
 
 
 namespace GUI {
@@ -66,6 +67,7 @@ private:
     void restoreWindow();
     void getPixmap(QLabel *, DATA::AppInfo& ai);
     void getPixmap(QLabel *, DATA::FbUserInfo& fbu);
+    void getPixmap(QLabel *, DATA::FbPageInfo& fbp);
     void getInitialNotifications();
     QNetworkAccessManager *m_nam;
     UserInfo *m_userInfo;
