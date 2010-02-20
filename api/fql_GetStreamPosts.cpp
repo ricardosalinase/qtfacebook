@@ -39,7 +39,10 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         else if (m_parseState == POSTER && qName == "user")
         {
             m_currentPoster = new DATA::FbUserInfo();
-
+        }
+        else if (m_parseState == PAGE && qName == "page")
+        {
+            m_currentPage = new DATA::FbPageInfo();
         }
     }
 
@@ -63,6 +66,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
                 m_parseState = POSTER;
             else if (m_currentText == "commentors")
                 m_parseState = COMMENTOR;
+            else if (m_currentText == "page_info")
+                m_parseState = PAGE;
         }
         break;
     case POSTS:
@@ -161,6 +166,28 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         else if (qName == "uid")
             m_currentPoster->setUID(m_currentText);
         break;
+    case PAGE:
+        if (qName == "page")
+        {
+            QList<DATA::StreamPost *> pList = m_postMap.values(m_currentPage->getPageId());
+            for (int i = 0; i < pList.size(); i++)
+            {
+                pList.at(i)->setPage(m_currentPage);
+            }
+            delete m_currentPage;
+            m_currentPage = 0;
+        }
+        else if (qName == "fql_result")
+            m_parseState = QUERY;
+        else if (qName == "name")
+            m_currentPage->setName(m_currentText);
+        else if (qName == "page_id")
+            m_currentPage->setPageId(m_currentText);
+        else if (qName == "pic")
+            m_currentPage->setPic(m_currentText);
+        else if (qName == "pic_big")
+            m_currentPage->setPicBig(m_currentText);
+        break;
     }
 
     //qDebug() << "End: " << qName << ": " << m_currentText;
@@ -182,7 +209,9 @@ bool GetStreamPosts::prepare() {
               "\"poster_info\":\"SELECT uid, name, pic, pic_big FROM user WHERE uid "
               "IN (SELECT actor_id FROM #posts)\","
               "\"commentors\":\"SELECT uid, name, pic_square "
-              "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\"}");
+              "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\","
+              "\"page_info\":\"SELECT page_id, name, pic, pic_big FROM page WHERE page_id "
+              "IN (SELECT actor_id FROM #posts)\"}");
 
    //qDebug() << "queries: " << fql;
     m_argMap.insert("queries", fql);

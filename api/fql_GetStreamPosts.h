@@ -4,6 +4,7 @@
 #include "apimethod.h"
 #include "data/streampost.h"
 #include "data/fbuserinfo.h"
+#include "data/FbPageInfo.h"
 
 namespace API {
 namespace FQL {
@@ -23,7 +24,7 @@ public:
 
 private:
     enum ParseState { QUERY, POSTS, COMMENTLIST, 
-                      COMMENTS, POSTER, COMMENTOR };
+                      COMMENTS, POSTER, COMMENTOR, PAGE };
     ParseState m_parseState;
     bool prepare();
     QMap<QString, DATA::StreamPost* > m_postMap;
@@ -35,6 +36,7 @@ private:
     void fixHtml(QString *html);
     QString m_currentQueryName;
     DATA::FbUserInfo *m_currentPoster;
+    DATA::FbPageInfo *m_currentPage;
 
 
 };

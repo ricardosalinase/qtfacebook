@@ -2,7 +2,8 @@
 
 namespace DATA {
 
-StreamPost::StreamPost()
+StreamPost::StreamPost() :
+    m_isFromUser(true)
 {
     m_commentList = new StreamCommentList();
 }
@@ -75,6 +76,15 @@ FbUserInfo & StreamPost::getPoster() {
     return m_poster;
 }
 
+void StreamPost::setPage(FbPageInfo *page) {
+    m_isFromUser = false;
+    m_page = *page;
+}
+
+FbPageInfo & StreamPost::getPage() {
+    return m_page;
+}
+
 void StreamPost::setActorId(QString id) {
     m_actorId = id;
 }
@@ -83,13 +93,28 @@ QString StreamPost::getActorId() {
     return m_actorId;
 }
 
+bool StreamPost::isFromUser() {
+    return m_isFromUser;
+}
+
+void StreamPost::isFromUser(bool fromUser) {
+    m_isFromUser = fromUser;
+}
+
 // NotificationCenterItem Interface
 QString StreamPost::getNavigationHtml() {
 
     QString html("There is a <a href=\"streamPost:");
     html.append(m_postId + "\">");
-    html.append("new post</a> from " + m_poster.getName()
-                 + " on your page.");
+    html.append("new post</a> from ");
+
+    if (m_isFromUser)
+        html.append(m_poster.getName());
+    else
+        html.append(m_page.getName());
+
+    html.append(" on your page.");
+
     return html;
 }
 
