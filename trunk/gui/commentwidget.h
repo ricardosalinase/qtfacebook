@@ -14,7 +14,7 @@ class CommentWidget : public QWidget
 Q_OBJECT
 public:
     explicit CommentWidget(DATA::StreamComment *, QWidget *parent = 0);
-
+    ~CommentWidget();
 signals:
 
 public slots:

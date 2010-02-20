@@ -21,7 +21,9 @@ namespace GUI {
 
 NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     QWidget(parent),
-    m_userInfo(userInfo)
+    m_userInfo(userInfo),
+    m_showHiddenNotifications(false),
+    m_showHiddenStreamPosts(false)
 {
     m_scrollArea = new QScrollArea();
     m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
@@ -58,6 +60,10 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
             this,SLOT(notificationsMarkedAsRead(API::Notifications::MarkRead*)));
     connect(m_factory, SIGNAL(apiNotificationsMarkReadFailed(API::Notifications::MarkRead*)),
             this,SLOT(notificationsMarkedAsReadFailed(API::Notifications::MarkRead*)));
+
+    m_nam = new QNetworkAccessManager();
+    QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(receiveIconPixmap(QNetworkReply*)));
 
     getInitialNotifications();
 
@@ -154,9 +160,14 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
 
     QList<DATA::StreamPost *> *list = method->getStreamPosts();
 
-    StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0));
-    spw->show();
-    spw->scrollToBottom();
+    if (list->size())
+    {
+        StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0));
+        connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
+                this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
+        spw->show();
+        spw->scrollToBottom();
+    }
 
     delete list;
     method->deleteLater();
@@ -168,14 +179,20 @@ void NotificationCenter::getStreamPostsFailed(API::FQL::GetStreamPosts *method) 
     delete method;
 }
 
-void NotificationCenter::notificationAcknowledged(QString nId) {
+void NotificationCenter::notificationAcknowledged(NotificationCenterItem::ItemType type, QString nId) {
 
-    // Mark the notification read via the API
-    API::Method *method = m_factory->createMethod("notifications.markRead");
+    if (type == NotificationCenterItem::Notification)
+    {
+        // Mark the notification read via the API
+        API::Method *method = m_factory->createMethod("notifications.markRead");
 
-    method->setArgument("notification_ids",nId);
-    method->execute();
-
+        method->setArgument("notification_ids",nId);
+        method->execute();
+    }
+    else
+    {
+        emit acknowledgedNotification(type, nId);
+    }
 
 
 }
@@ -184,7 +201,7 @@ void NotificationCenter::notificationsMarkedAsRead(API::Notifications::MarkRead 
 
 
     QString nId = method->getNotificationIds();
-    emit acknowledgedNotification(nId);
+    emit acknowledgedNotification(NotificationCenterItem::Notification, nId);
     delete method;
 
 }
@@ -192,8 +209,48 @@ void NotificationCenter::notificationsMarkedAsReadFailed(API::Notifications::Mar
     qDebug() << "notifications.markRead failed, resending.";
     QString nId = method->getNotificationIds();
     delete method;
-    notificationAcknowledged(nId);
+    notificationAcknowledged(NotificationCenterItem::Notification, nId);
 }
+
+void NotificationCenter::newStreamPostInfo(QList<DATA::StreamPost *> *pList) {
+
+    qDebug() << "newStreamPostInfo(); pList: " << pList->size();
+
+    int numNew = 0;
+
+    while (!pList->empty())
+    {
+        DATA::StreamPost *sp = pList->takeLast();
+
+        GUI::NotificationCenterWidget *nWidget;
+        QLabel *ul = new QLabel();
+
+        getPixmap(ul, sp->getPoster());
+
+        nWidget = new GUI::NotificationCenterWidget((GUI::NotificationCenterItem*)sp, ul);
+        connect(nWidget, SIGNAL(linkActivated(QString)),
+                this, SLOT(linkActivated(QString)));
+        connect(nWidget, SIGNAL(acknowledged(NotificationCenterItem::ItemType,QString)),
+                this, SLOT(notificationAcknowledged(NotificationCenterItem::ItemType, QString)));
+        ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
+
+        if (sp->isHidden() && !m_showHiddenStreamPosts)
+            nWidget->hide();
+        else
+        {
+            numNew++;
+            nWidget->start();
+        }
+
+
+    }
+
+    if (numNew != 0)
+        emit receivedNewStreamPosts(numNew);
+
+
+}
+
 
 void NotificationCenter::newNotifications(QList<DATA::Notification *> *nList) {
 
@@ -212,15 +269,15 @@ void NotificationCenter::newNotification(DATA::Notification *n) {
     if (!m_notifications.contains(n->getNotificationId()))
     {
         GUI::NotificationCenterWidget *nWidget;
+        QLabel *al = new QLabel();
 
-        GUI::NotificationLabel *nl = new GUI::NotificationLabel(n);
-        GUI::AppInfoLabel *ai = new GUI::AppInfoLabel(n->getAppInfo());
-        getPixmap(ai);
-        nWidget = new GUI::NotificationCenterWidget(nl, ai);
+        getPixmap(al, n->getAppInfo());
+        
+        nWidget = new GUI::NotificationCenterWidget((GUI::NotificationCenterItem*)n, al);
         connect(nWidget, SIGNAL(linkActivated(QString)),
                 this, SLOT(linkActivated(QString)));
-        connect(nWidget, SIGNAL(acknowledged(QString)),
-                this, SLOT(notificationAcknowledged(QString)));
+        connect(nWidget, SIGNAL(acknowledged(NotificationCenterItem::ItemType,QString)),
+                this, SLOT(notificationAcknowledged(NotificationCenterItem::ItemType, QString)));
         ((QVBoxLayout*)m_nContainer->layout())->insertWidget(0,nWidget);
 
         if (n->getIsHidden() && !m_showHiddenNotifications)
@@ -244,21 +301,44 @@ void NotificationCenter::newNotification(DATA::Notification *n) {
     }
 }
 
+void NotificationCenter::getPixmap(QLabel *ul, DATA::FbUserInfo& fbu) {
 
-void NotificationCenter::getPixmap(GUI::AppInfoLabel *ai) {
+    UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
 
-    if (m_iconPixmapCache.contains(ai->getAppInfo().getAppId()))
-        ai->myIconPixmap(m_iconPixmapCache[ai->getAppInfo().getAppId()], true);
-    else {
-        QNetworkAccessManager *m_nam = new QNetworkAccessManager();
-        QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
-                this, SLOT(receiveIconPixmap(QNetworkReply*)));
-
+    QPixmap *p = cache->getPixmap(fbu.getUID(), UTIL::FbUserPicCache::PicSquare,
+                                  fbu.getPicSquare());
+    if (p != 0)
+    {
+        ul->setPixmap(*p);
+    }
+    else
+    {
         QNetworkReply *reply;
 
-        QUrl url(ai->getAppInfo().getIconUrl());
+        QUrl url(fbu.getPicSquare());
         reply = m_nam->get(QNetworkRequest(url));
-        m_tmpMap.insert(reply, ai);
+
+        QString s("userPicSquare:" + fbu.getUID());
+
+        m_tmpMap.insert(reply, QPair<QString, QLabel *>(s, ul));
+    }
+
+}
+
+void NotificationCenter::getPixmap(QLabel *al, DATA::AppInfo& ai) {
+
+    if (m_iconPixmapCache.contains(ai.getAppId()))
+        al->setPixmap(m_iconPixmapCache[ai.getAppId()]);
+    else
+    {
+        QNetworkReply *reply;
+
+        QUrl url(ai.getIconUrl());
+        reply = m_nam->get(QNetworkRequest(url));
+
+        QString s("appIcon:" + ai.getAppId());
+
+        m_tmpMap.insert(reply, QPair<QString, QLabel *>(s, al));
 
     }
 
@@ -269,11 +349,23 @@ void NotificationCenter::receiveIconPixmap(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError)
     {
 
-        GUI::AppInfoLabel *a = m_tmpMap.take(reply);
-        QPixmap *p = new QPixmap();
-        p->loadFromData(reply->readAll());
-        a->myIconPixmap(p, true);
-        m_iconPixmapCache.insert(a->getAppInfo().getAppId(), p);
+        QPair<QString, QLabel *> pair = m_tmpMap.take(reply);
+        QLabel *a = pair.second;
+        QPixmap p;
+        p.loadFromData(reply->readAll());
+        a->setPixmap(p);
+
+        if (pair.first.startsWith("appIcon:"))
+        {
+            m_iconPixmapCache.insert(pair.first.remove("appIcon:"), p);
+        }
+        else if (pair.first.startsWith("userPicSquare:"))
+        {
+            UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
+            cache->cachePixmap(pair.first.remove("userPicSquare:"), UTIL::FbUserPicCache::PicSquare,
+                               reply->request().url(), p);
+        }
+
 
     } else {
         qDebug() << reply->errorString();
@@ -286,18 +378,35 @@ void NotificationCenter::linkActivated(QString url) {
 
     qDebug() << "Notification Center; Url: " + url;
 
-    QString postId;
-    QRegExp rx("v=feed&story_fbid=(\\d+)&id=(\\d+)");
-    if (rx.indexIn(url) != -1)
+    QString postId = "";
+
+    QRegExp rx1("v=feed&story_fbid=(\\d+)&id=(\\d+)");
+    QRegExp rx2("streamPost:(\\d+_\\d+)");
+
+
+
+    if (rx1.indexIn(url) != -1)
+        postId = rx1.cap(2) + "_" + rx1.cap(1);
+    else if (rx2.indexIn(url) != -1)
+        postId = rx2.cap(1);
+
+    qDebug() << postId;
+
+    if (postId != "")
     {
-        postId = rx.cap(2) + "_" + rx.cap(1);
-        qDebug() << postId;
         API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
         method->setArgument("post_id", postId);
         bool rc = method->execute();
         if (!rc)
             qDebug() << "Method fql.multiquery.getStreamPosts error: " << method->getErrorStr();
     }
+
+
+
+}
+
+void NotificationCenter::streamPostClosed(GUI::StreamPostWidget *spw) {
+    delete spw;
 }
 
 void NotificationCenter::closeEvent(QCloseEvent *event) {

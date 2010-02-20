@@ -40,6 +40,8 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new FQL::GetAppInfo());
     else if (method.compare("fql.multiquery.getStreamPosts",Qt::CaseInsensitive) == 0)
         return prepareMethod(new FQL::GetStreamPosts());
+    else if (method.compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
+        return prepareMethod(new FQL::GetStreamPostInfo());
     else
         return 0;
 }
@@ -51,6 +53,8 @@ Method * Factory::prepareMethod(Method *m) {
 
     connect(m,SIGNAL(methodComplete(API::Method*)),
             this, SLOT(dispatch(API::Method*)));
+    connect(m,SIGNAL(methodFailed(API::Method*)),
+            this,SLOT(dispatchFailed(API::Method*)));
 
     return m;
 
@@ -73,6 +77,9 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiFqlGetAppInfoFailed((API::FQL::GetAppInfo*)method);
     else if (method->getMethodName().compare("fql.multiquery.getStreamposts", Qt::CaseInsensitive) == 0)
         emit apiFqlGetStreamPostsFailed((API::FQL::GetStreamPosts*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetStreamPostInfoFailed((API::FQL::GetStreamPostInfo*)method);
+
 }
 
 void Factory::dispatch(API::Method *method) {
@@ -93,6 +100,8 @@ void Factory::dispatch(API::Method *method) {
         emit apiFqlGetAppInfo((API::FQL::GetAppInfo*)method);
     else if (method->getMethodName().compare("fql.multiquery.getStreamposts", Qt::CaseInsensitive) == 0)
         emit apiFqlGetStreamPosts((API::FQL::GetStreamPosts*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetStreamPostInfo((API::FQL::GetStreamPostInfo*)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {

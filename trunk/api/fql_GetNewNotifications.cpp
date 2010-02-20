@@ -150,10 +150,7 @@ bool GetNewNotifications::endElement(const QString &/*namespaceURI*/,
         else if (qName == "display_name")
             m_currentAppInfo->setDisplayName(m_currentText);
         else if (qName == "icon_url")
-        {
             m_currentAppInfo->setIconUrl(m_currentText);
-            qDebug() << m_currentText;
-        }
         else if (qName == "logo_url")
             m_currentAppInfo->setLogoUrl(m_currentText);
         else if (qName == "company_name")

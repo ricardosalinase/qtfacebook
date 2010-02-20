@@ -1,5 +1,7 @@
 #include "fql_getstreampostinfo.h"
 
+#include <QDebug>
+
 namespace API {
 namespace FQL {
 
@@ -13,12 +15,25 @@ GetStreamPostInfo::GetStreamPostInfo(QObject *parent) :
 
 bool GetStreamPostInfo::prepare() {
 
-   QString fql("{\"posts\":\"SELECT post_id, actor_id, created_time "
-               "FROM stream WHERE filter_key = 'nf' AND is_hidden = 0\","
-                "\"poster_info\":\"SELECT uid, name FROM user WHERE uid "
+    QString fql("{\"posts\":\"SELECT post_id, actor_id, created_time, is_hidden "
+               "FROM stream WHERE filter_key = 'nf' ");
+
+    if (m_argMap.contains("get_hidden"))
+    {
+        m_argMap.take("get_hidden");
+    }
+    else
+    {
+        fql.append("AND is_hidden = 0 ");
+    }
+
+    if (m_argMap.contains("start_time"))
+        fql.append("AND created_time > " + m_argMap.take("start_time").toString());
+
+    fql.append("\",\"poster_info\":\"SELECT uid, name, pic_square FROM user WHERE uid "
               "IN (SELECT actor_id FROM #posts)\"}");
 
-
+    qDebug() << fql;
     m_argMap.insert("queries", fql);
 
 
@@ -43,6 +58,8 @@ bool GetStreamPostInfo::startElement(const QString &/*namespaceURI*/, const QStr
         }
     }
 
+    qDebug() << "Start: " << qName;
+
     m_currentText.clear();
     return true;
 }
@@ -66,7 +83,7 @@ bool GetStreamPostInfo::endElement(const QString &/*namespaceURI*/, const QStrin
         {
             m_streamPosts->append(m_currentStreamPost);
             m_postMap.insert(m_currentStreamPost->getPostId(), m_currentStreamPost);
-            m_postMap.insert(m_currentStreamPost->getActorId(), m_currentStreamPost);
+            m_postMap.insertMulti(m_currentStreamPost->getActorId(), m_currentStreamPost);
             m_currentStreamPost = 0;
         }
         else if (qName == "fql_result")
@@ -77,11 +94,18 @@ bool GetStreamPostInfo::endElement(const QString &/*namespaceURI*/, const QStrin
             m_currentStreamPost->setActorId(m_currentText);
         else if (qName == "created_time")
             m_currentStreamPost->setCreatedTime(m_currentText);
+        else if (qName == "is_hidden")
+            m_currentStreamPost->isHidden(m_currentText.compare("1") == 0 ? true : false );
         break;
     case POSTER:
         if (qName == "user")
         {
-            m_postMap[m_currentPoster->getUID()]->setPoster(m_currentPoster);
+            QList<DATA::StreamPost *> pList = m_postMap.values(m_currentPoster->getUID());
+            for (int i = 0; i < pList.size(); i++)
+            {
+                pList.at(i)->setPoster(m_currentPoster);
+            }
+            delete m_currentPoster;
             m_currentPoster = 0;
         }
         else if (qName == "fql_result")
@@ -90,10 +114,13 @@ bool GetStreamPostInfo::endElement(const QString &/*namespaceURI*/, const QStrin
             m_currentPoster->setName(m_currentText);
         else if (qName == "uid")
             m_currentPoster->setUID(m_currentText);
+        else if (qName == "pic_square")
+            m_currentPoster->setPicSquare(m_currentText);
         break;
     }
 
-
+    qDebug() << m_currentText;
+    qDebug() << "End: " << qName;
 
     return true;
 }

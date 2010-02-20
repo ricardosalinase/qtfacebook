@@ -8,12 +8,15 @@
 #include <QMap>
 #include <QUrl>
 #include <QEvent>
+#include <QPair>
+#include <QNetworkAccessManager>
 
 
 #include "userinfo.h"
 #include "api/factory.h"
 #include "notificationcenterwidget.h"
-#include "cometconnection.h"
+#include "util/fbuserpiccache.h"
+#include "gui/streampostwidget.h"
 
 
 namespace GUI {
@@ -33,14 +36,15 @@ public:
 
 signals:
     void receivedNewNotifications(int numNew);
-    void acknowledgedNotification(QString nId);
+    void receivedNewStreamPosts(int numNew);
+    void acknowledgedNotification(GUI::NotificationCenterItem::ItemType, QString nId);
 
 public slots:
     void showYourself();
     void newNotifications(QList<DATA::Notification*> *nList);
     void newNotification(DATA::Notification *n);
     void linkActivated(QString url);
-    void notificationAcknowledged(QString nId);
+    void notificationAcknowledged(NotificationCenterItem::ItemType, QString nId);
 
 
 
@@ -52,19 +56,23 @@ private slots:
     void getStreamPostsFailed(API::FQL::GetStreamPosts*);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
+    void newStreamPostInfo(QList<DATA::StreamPost *> *pList);
+    void streamPostClosed(GUI::StreamPostWidget *);
 
 protected:
     void closeEvent ( QCloseEvent * event );
 
 private:
     void restoreWindow();
-    void getPixmap(GUI::AppInfoLabel *ai);
+    void getPixmap(QLabel *, DATA::AppInfo& ai);
+    void getPixmap(QLabel *, DATA::FbUserInfo& fbu);
     void getInitialNotifications();
-
+    QNetworkAccessManager *m_nam;
     UserInfo *m_userInfo;
-    QMap<QNetworkReply *, GUI::AppInfoLabel *> m_tmpMap;
-    QMap<QString, QPixmap *> m_iconPixmapCache;
+    QMap<QNetworkReply *, QPair<QString, QLabel *> > m_tmpMap;
+    QMap<QString, QPixmap> m_iconPixmapCache;
     bool m_showHiddenNotifications;
+    bool m_showHiddenStreamPosts;
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
 

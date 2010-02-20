@@ -141,8 +141,14 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
     case POSTER:
         if (qName == "user")
         {
-            m_postMap[m_currentPoster->getUID()]->setPoster(m_currentPoster);
+            QList<DATA::StreamPost *> pList = m_postMap.values(m_currentPoster->getUID());
+            for (int i = 0; i < pList.size(); i++)
+            {
+                pList.at(i)->setPoster(m_currentPoster);
+            }
+            delete m_currentPoster;
             m_currentPoster = 0;
+
         }
         else if (qName == "fql_result")
             m_parseState = QUERY;

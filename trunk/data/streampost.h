@@ -5,10 +5,11 @@
 
 #include "streamcommentlist.h"
 #include "data/fbuserinfo.h"
+#include "gui/notificationcenteritem.h"
 
 namespace DATA {
 
-class StreamPost
+    class StreamPost : public GUI::NotificationCenterItem
 {
 public:
     explicit StreamPost();
@@ -27,9 +28,17 @@ public:
     QString getUpdatedTime();
     void setActorId(QString id);
     QString getActorId();
+    void isHidden(bool hidden);
+    bool isHidden();
     StreamCommentList * getCommentList();
     void setPoster(FbUserInfo *poster);
-    FbUserInfo * getPoster();
+    FbUserInfo& getPoster();
+
+    // NotificationCenterItem Interface
+    QString getNavigationHtml();
+    inline ItemType getNotificationCenterItemType() { return NotificationCenterItem::StreamPost; }
+    QString getNotificationCenterId();
+
 
 private:
     QString m_postId;
@@ -39,9 +48,10 @@ private:
     QString m_targetId;
     QString m_createdTime;
     QString m_updatedTime;
+    bool m_isHidden;
     // StreamAttachment m_attachment;
     StreamCommentList *m_commentList;
-    FbUserInfo *m_poster;
+    FbUserInfo m_poster;
 
 
 };

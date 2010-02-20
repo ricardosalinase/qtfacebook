@@ -1,7 +1,6 @@
 QT += webkit \
     network \
     xml
-LIBS += -lqjson
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
@@ -33,7 +32,6 @@ SOURCES += main.cpp \
     gui/loginfaileddialog.cpp \
     data/chatmessage.cpp \
     data/buddy.cpp \
-    cometconnection.cpp \
     api/fql_GetStreamPosts.cpp \
     util/workerthread.cpp \
     util/worker.cpp \
@@ -43,7 +41,8 @@ SOURCES += main.cpp \
     gui/streampostwidget.cpp \
     data/fbuserinfo.cpp \
     gui/commentwidget.cpp \
-    api/fql_getstreampostinfo.cpp
+    api/fql_getstreampostinfo.cpp \
+    util/fbuserpiccache.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -75,7 +74,6 @@ HEADERS += fbconnectwizard.h \
     gui/loginfaileddialog.h \
     data/chatmessage.h \
     data/buddy.h \
-    cometconnection.h \
     api/fql_GetStreamPosts.h \
     data/fbuserinfo.h \
     gui/streampostwidget.h \
@@ -86,7 +84,9 @@ HEADERS += fbconnectwizard.h \
     util/worker.h \
     util/agestring.h \
     gui/commentwidget.h \
-    api/fql_getstreampostinfo.h
+    api/fql_getstreampostinfo.h \
+    gui/notificationcenteritem.h \
+    util/fbuserpiccache.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
@@ -94,11 +94,3 @@ OTHER_FILES += uiImages/thumbsUp3.jpg \
     Doxyfile
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
-unix { 
-    INCLUDEPATH += /usr/local/include
-    LIBS += -L/usr/local/lib
-}
-win32 { 
-    INCLUDEPATH += "C:\Program Files\qjson\include"
-    LIBS += -L"C:\Program Files\qjson\bin"
-}

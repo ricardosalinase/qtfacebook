@@ -124,6 +124,16 @@ AppInfo & Notification::getAppInfo()  {
     return m_appInfo;
 }
 
+// NotificationCenterItem Interface
+QString Notification::getNavigationHtml() {
+
+    return m_titleHtml;
+
+}
+
+QString Notification::getNotificationCenterId() {
+    return m_notificationId;
+}
 
 
 } // namespace Data

@@ -13,6 +13,7 @@
 
 #include "util/agestring.h"
 #include "commentwidget.h"
+#include "util/fbuserpiccache.h"
 
 
 namespace GUI {
@@ -24,7 +25,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QVBoxLayout *contentLayout = new QVBoxLayout();
-    this->setWindowTitle(post->getPoster()->getName());
+    this->setWindowTitle(post->getPoster().getName());
 
 
     QString messageHtml;
@@ -50,7 +51,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
     for (int i = cList->size() - 1; i >= 0; i--)
     {
-        CommentWidget *cw = new CommentWidget(cList->at(i),this);
+        CommentWidget *cw = new CommentWidget(cList->at(i));
         commentLayout->insertWidget(0,cw);
     }
 
@@ -70,24 +71,36 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     this->setMinimumWidth(640);
 
 
-    
-    
+    m_nam = new QNetworkAccessManager(this);
+    connect(m_nam,SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(gotPosterPixmap(QNetworkReply*)));
+
     getPosterPixmap();
 
 }
 
+StreamPostWidget::~StreamPostWidget() {
+    delete m_post;
+}
 
 void StreamPostWidget::getPosterPixmap() {
 
-    m_nam = new QNetworkAccessManager(this);
+    UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
+    QPixmap *p = cache->getPixmap(m_post->getPoster().getUID(), UTIL::FbUserPicCache::PicBig,
+                               m_post->getPoster().getPicBig());
 
-    connect(m_nam,SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(gotPosterPixmap(QNetworkReply*)));
-
-    QNetworkRequest nr;
-    nr.setUrl(m_post->getPoster()->getPicBig());
-    m_nam->get(nr);
-
+    if (p == 0)
+    {
+        QNetworkRequest nr;
+        nr.setUrl(m_post->getPoster().getPicBig());
+        m_nam->get(nr);
+    }
+    else
+    {
+        QLabel *l = new QLabel();
+        l->setPixmap(*p);
+        ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
+    }
 }
 
 void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
@@ -98,6 +111,11 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
         p.loadFromData(reply->readAll());
         QLabel *l = new QLabel();
         l->setPixmap(p);
+
+        UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
+        cache->cachePixmap(m_post->getPoster().getUID(), UTIL::FbUserPicCache::PicBig,
+                           reply->request().url(), p);
+
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
     }
     else
@@ -113,6 +131,10 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
 
 void StreamPostWidget::scrollToBottom() {
 
+}
+
+void StreamPostWidget::closeEvent(QCloseEvent *event) {
+    emit closed(this);
 }
 
 } // namespace GUI
