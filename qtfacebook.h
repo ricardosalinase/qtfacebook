@@ -12,7 +12,6 @@
 #include "api/notifications_markread.h"
 #include "gui/notifications_listview.h"
 #include "gui/notificationcenter.h"
-#include "gui/facebooklogindialog.h"
 #include "gui/notificationcenteritem.h"
 #include "util/workerthread.h"
 #include "updatepoller.h"
@@ -68,8 +67,6 @@ private:
     int m_totalNotifications;
     int m_standardNotifications;
     int m_streamPostNotifications;
-    QDialog *m_invalidLogin;
-    GUI::FacebookLoginDialog *m_loginDialog;
     UTIL::WorkerThread *m_updateThread;
 };
 

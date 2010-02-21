@@ -26,10 +26,7 @@ SOURCES += main.cpp \
     api/fql_GetAppInfo.cpp \
     gui/notificationcenterlabel.cpp \
     gui/notificationcenterwidget.cpp \
-    util/facebooklogin.cpp \
     util/cookiejar.cpp \
-    gui/facebooklogindialog.cpp \
-    gui/loginfaileddialog.cpp \
     data/chatmessage.cpp \
     data/buddy.cpp \
     api/fql_GetStreamPosts.cpp \
@@ -43,7 +40,10 @@ SOURCES += main.cpp \
     gui/commentwidget.cpp \
     api/fql_getstreampostinfo.cpp \
     util/fbuserpiccache.cpp \
-    data/FbPageInfo.cpp
+    data/FbPageInfo.cpp \
+    data/FbPhoto.cpp \
+    data/FbStreamAttachment.cpp \
+    data/FbStreamMedia.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -69,10 +69,7 @@ HEADERS += fbconnectwizard.h \
     api/fql_GetAppInfo.h \
     gui/notificationcenterlabel.h \
     gui/notificationcenterwidget.h \
-    util/facebooklogin.h \
     util/cookiejar.h \
-    gui/facebooklogindialog.h \
-    gui/loginfaileddialog.h \
     data/chatmessage.h \
     data/buddy.h \
     api/fql_GetStreamPosts.h \
@@ -88,7 +85,10 @@ HEADERS += fbconnectwizard.h \
     api/fql_getstreampostinfo.h \
     gui/notificationcenteritem.h \
     util/fbuserpiccache.h \
-    data/FbPageInfo.h
+    data/FbPageInfo.h \
+    data/FbPhoto.h \
+    data/FbStreamAttachment.h \
+    data/FbStreamMedia.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

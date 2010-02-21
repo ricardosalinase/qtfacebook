@@ -14,9 +14,6 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/factory.h"
-#include "util/facebooklogin.h"
-#include "gui/facebooklogindialog.h"
-#include "gui/loginfaileddialog.h"
 
 #define API_KEY "61cecf6f7ee5528d294e1d6bf675f424"
 
@@ -32,9 +29,7 @@ QtFacebook::QtFacebook(QObject *parent) :
     m_animatingTrayIcon(false),
     m_totalNotifications(0),
     m_standardNotifications(0),
-    m_streamPostNotifications(0),
-    m_invalidLogin(0),
-    m_loginDialog(0)
+    m_streamPostNotifications(0)
 {
 
     QApplication::setQuitOnLastWindowClosed(false);

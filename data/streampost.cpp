@@ -101,6 +101,18 @@ void StreamPost::isFromUser(bool fromUser) {
     m_isFromUser = fromUser;
 }
 
+bool StreamPost::hasAttachment() {
+    return m_hasAttachment;
+}
+
+const DATA::FbStreamAttachment * StreamPost::getAttachment() {
+    return m_attachment;
+}
+
+void StreamPost::setAttachment(const DATA::FbStreamAttachment *attachment) {
+    m_attachment = attachment;
+}
+
 // NotificationCenterItem Interface
 QString StreamPost::getNavigationHtml() {
 

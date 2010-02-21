@@ -5,6 +5,8 @@
 #include "data/streampost.h"
 #include "data/fbuserinfo.h"
 #include "data/FbPageInfo.h"
+#include "data/FbStreamAttachment.h"
+#include "data/FbPhoto.h"
 
 namespace API {
 namespace FQL {
@@ -24,7 +26,8 @@ public:
 
 private:
     enum ParseState { QUERY, POSTS, COMMENTLIST, 
-                      COMMENTS, POSTER, COMMENTOR, PAGE };
+                      COMMENTS, POSTER, COMMENTOR, PAGE,
+                    ATTACHMENT, STREAMMEDIA, PHOTO};
     ParseState m_parseState;
     bool prepare();
     QMap<QString, DATA::StreamPost* > m_postMap;
@@ -37,7 +40,9 @@ private:
     QString m_currentQueryName;
     DATA::FbUserInfo *m_currentPoster;
     DATA::FbPageInfo *m_currentPage;
-
+    DATA::FbStreamAttachment *m_currentAttachment;
+    DATA::FbPhoto *m_currentPhoto;
+    DATA::FbStreamMedia *m_currentStreamMedia;
 
 };
 
