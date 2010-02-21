@@ -28,6 +28,21 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         {
             m_parseState = COMMENTLIST;
         }
+        else if (m_parseState == POSTS && qName == "attachement")
+        {
+            m_currentAttachment = new DATA::FbStreamAttachment();
+            m_parseState = ATTACHMENT;
+        }
+        else if (m_parseState == ATTACHMENT && qName == "stream_media")
+        {
+            m_currentStreamMedia = new DATA::FbStreamMedia;
+            m_parseState = STREAMMEDIA;
+        }
+        else if (m_parseState == STREAMMEDIA && qName == "photo")
+        {
+            m_currentPhoto = new DATA::FbPhoto();
+            m_parseState = PHOTO;
+        }
         else if (m_parseState == COMMENTS && qName == "comment")
         {
             m_currentStreamComment = new DATA::StreamComment();
@@ -44,8 +59,11 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         {
             m_currentPage = new DATA::FbPageInfo();
         }
+
     }
 
+    qDebug() << "Start: " << qName;
+    
     m_currentText.clear();
     return true;
 }
@@ -188,9 +206,62 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         else if (qName == "pic_big")
             m_currentPage->setPicBig(m_currentText);
         break;
+    case ATTACHMENT:
+        if (qName == "attachment")
+        {
+            m_currentStreamPost->setAttachment(m_currentAttachment);
+            m_currentAttachment = 0;
+            m_parseState = POSTS;
+        }
+        else if (qName == "name")
+            m_currentAttachment->setName(m_currentText);
+        else if (qName == "href")
+            m_currentAttachment->setHref(m_currentText);
+        else if (qName == "description")
+            m_currentAttachment->setDescription(m_currentText);
+        else if (qName == "caption")
+            m_currentAttachment->setCaption(m_currentText);
+        else if (qName == "icon")
+            m_currentAttachment->setIcon(m_currentText);
+        else if (qName == "fb_object_type")
+            m_currentAttachment->setFbObjectType(m_currentText);
+        break;
+    case STREAMMEDIA:
+        if (qName == "stream_media")
+        {
+            m_currentAttachment->addMedia(m_currentStreamMedia);
+            m_currentStreamMedia = 0;
+            m_parseState = ATTACHMENT;
+        }
+        else if (qName == "href")
+            m_currentStreamMedia->setHref(m_currentText);
+        else if (qName == "src")
+            m_currentStreamMedia->setSrc(m_currentText);
+        else if (qName == "alt")
+            m_currentStreamMedia->setAlt(m_currentText);
+        else if (qName == "type")
+            m_currentStreamMedia->setType(m_currentText);
+        break;
+    case PHOTO:
+        if (qName == "photo")
+        {
+            QVariant *v = new QVariant();
+            v->setValue(*m_currentPhoto);
+            m_currentStreamMedia->setMedia(v);
+            delete m_currentPhoto;
+            m_currentPhoto = 0;
+            m_parseState = STREAMMEDIA;
+        }
+        else if (qName == "aid")
+            m_currentPhoto->setAlbumId(m_currentText);
+        else if (qName == "pid")
+            m_currentPhoto->setPhotoId(m_currentText);
+        else if (qName == "owner")
+            m_currentPhoto->setOwnerId(m_currentText);
+
     }
 
-    //qDebug() << "End: " << qName << ": " << m_currentText;
+    qDebug() << "End: " << qName << ": " << m_currentText;
 
     return true;
 }

@@ -231,7 +231,7 @@ void Method::gotReply(QNetworkReply *reply) {
     {
         QXmlInputSource is;
 
-        //qDebug() << reply;
+        qDebug() << reply;
 
         if (reply->error() == QNetworkReply::NoError)
         {

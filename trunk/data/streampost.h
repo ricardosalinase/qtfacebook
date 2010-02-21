@@ -6,6 +6,7 @@
 #include "streamcommentlist.h"
 #include "data/fbuserinfo.h"
 #include "data/FbPageInfo.h"
+#include "data/FbStreamAttachment.h"
 #include "gui/notificationcenteritem.h"
 
 namespace DATA {
@@ -38,6 +39,12 @@ public:
     FbPageInfo& getPage();
     bool isFromUser();
     void isFromUser(bool fromUser);
+    bool hasAttachment();
+    const DATA::FbStreamAttachment * getAttachment();
+    void setAttachment(const DATA::FbStreamAttachment *attachment);
+
+
+
     // NotificationCenterItem Interface
     QString getNavigationHtml();
     inline ItemType getNotificationCenterItemType() { return NotificationCenterItem::StreamPost; }
@@ -58,6 +65,8 @@ private:
     FbUserInfo m_poster;
     FbPageInfo m_page;
     bool m_isFromUser;
+    bool m_hasAttachment;
+    const DATA::FbStreamAttachment *m_attachment;
 
 
 };

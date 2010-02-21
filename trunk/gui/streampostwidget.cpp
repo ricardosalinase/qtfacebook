@@ -138,6 +138,7 @@ void StreamPostWidget::scrollToBottom() {
 
 void StreamPostWidget::closeEvent(QCloseEvent *event) {
     emit closed(this);
+    event->accept();
 }
 
 } // namespace GUI
