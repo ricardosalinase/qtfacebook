@@ -13,16 +13,16 @@ class FbStreamMedia
 public:
     FbStreamMedia();
 
-    void setType(const QString& type);
-    const QString& getType();
-    void setAlt(const QString& alt);
-    const QString& getAlt();
-    void setHref(const QString& href);
-    const QUrl& getHref();
-    void setSrc(const QString& src);
-    const QUrl& getSrc();
-    void setMedia(const QVariant *media);
-    const QVariant * getMedia();
+    void setType(QString& type);
+    QString& getType();
+    void setAlt(QString& alt);
+    QString& getAlt();
+    void setHref(QString& href);
+    QUrl& getHref();
+    void setSrc(QString& src);
+    QUrl& getSrc();
+    void setMedia(QVariant *media);
+    QVariant * getMedia();
 
 
 protected:
@@ -30,7 +30,7 @@ protected:
     QString m_alt;
     QUrl m_href;
     QUrl m_src;
-    const QVariant *m_media;
+    QVariant *m_media;
 };
 
 } // namespace DATA

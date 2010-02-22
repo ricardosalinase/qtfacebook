@@ -6,35 +6,35 @@ FbPhoto::FbPhoto()
 {
 }
 
-void FbPhoto::setPhotoId(const QString &pid) {
+void FbPhoto::setPhotoId(QString &pid) {
     m_pid = pid;
 }
 
-const QString& FbPhoto::getPhotoId() {
+QString& FbPhoto::getPhotoId() {
     return m_pid;
 }
 
-void FbPhoto::setAlbumId(const QString &aid) {
+void FbPhoto::setAlbumId(QString &aid) {
     m_aid = aid;
 }
 
-const QString& FbPhoto::getAlbumId() {
+QString& FbPhoto::getAlbumId() {
     return m_aid;
 }
 
-void FbPhoto::setOwnerId(const QString &id) {
+void FbPhoto::setOwnerId(QString &id) {
     m_owner = id;
 }
 
-const QString& FbPhoto::getOwnerId() {
+QString& FbPhoto::getOwnerId() {
     return m_owner;
 }
 
-void FbPhoto::setSrcSmall(const QString &ss) {
+void FbPhoto::setSrcSmall(QString &ss) {
     m_srcSmall = QUrl(ss);
 }
 
-const QUrl& FbPhoto::getSrcSmall() {
+QUrl& FbPhoto::getSrcSmall() {
     return m_srcSmall;
 }
 
@@ -54,11 +54,11 @@ int FbPhoto::getSrcSmallWidth() {
     return m_srcSmallWidth;
 }
 
-void FbPhoto::setSrcBig(const QString &sb) {
+void FbPhoto::setSrcBig(QString &sb) {
     m_srcBig = QUrl(sb);
 }
 
-const QUrl& FbPhoto::getSrcBig() {
+QUrl& FbPhoto::getSrcBig() {
     return m_srcBig;
 }
 
@@ -78,11 +78,11 @@ int FbPhoto::getSrcBigWidth() {
     return m_srcBigWidth;
 }
 
-void FbPhoto::setSrc(const QString &s) {
+void FbPhoto::setSrc(QString &s) {
     m_src = QUrl(s);
 }
 
-const QUrl& FbPhoto::getSrc() {
+QUrl& FbPhoto::getSrc() {
     return m_src;
 }
 
@@ -102,35 +102,35 @@ int FbPhoto::getSrcWidth() {
     return m_srcWidth;
 }
 
-void FbPhoto::setCaption(const QString &caption) {
+void FbPhoto::setCaption(QString &caption) {
     m_caption = caption;
 }
 
-const QString& FbPhoto::getCaption() {
+QString& FbPhoto::getCaption() {
     return m_caption;
 }
 
-void FbPhoto::setCreatedTime(const QString &t) {
+void FbPhoto::setCreatedTime(QString &t) {
     m_createdTime = t;
 }
 
-const QString& FbPhoto::getCreatedTime() {
+QString& FbPhoto::getCreatedTime() {
     return m_createdTime;
 }
 
-void FbPhoto::setModifiedTime(const QString &t) {
+void FbPhoto::setModifiedTime(QString &t) {
     m_modifiedTime = t;
 }
 
-const QString& FbPhoto::getModifiedTime() {
+QString& FbPhoto::getModifiedTime() {
     return m_modifiedTime;
 }
 
-void FbPhoto::setObjectId(const QString &oid) {
+void FbPhoto::setObjectId(QString &oid) {
     m_objectId = oid;
 }
 
-const QString& FbPhoto::getObjectId() {
+QString& FbPhoto::getObjectId() {
     return m_objectId;
 }
 

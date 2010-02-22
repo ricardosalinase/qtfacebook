@@ -28,14 +28,14 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         {
             m_parseState = COMMENTLIST;
         }
-        else if (m_parseState == POSTS && qName == "attachement")
+        else if (m_parseState == POSTS && qName == "attachment")
         {
             m_currentAttachment = new DATA::FbStreamAttachment();
             m_parseState = ATTACHMENT;
         }
         else if (m_parseState == ATTACHMENT && qName == "stream_media")
         {
-            m_currentStreamMedia = new DATA::FbStreamMedia;
+            m_currentStreamMedia = new DATA::FbStreamMedia();
             m_parseState = STREAMMEDIA;
         }
         else if (m_parseState == STREAMMEDIA && qName == "photo")
@@ -112,6 +112,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentStreamPost->setCreatedTime(m_currentText);
         else if (qName == "updated_time")
             m_currentStreamPost->setUpdatedTime(m_currentText);
+        else if (qName == "attribution")
+            m_currentStreamPost->setAttribution(m_currentText);
         break;
     case COMMENTLIST:
         if (qName == "can_remove")
@@ -192,6 +194,20 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             {
                 pList.at(i)->setPage(m_currentPage);
             }
+            // A page can also leave comments ...
+            QList<DATA::StreamComment *> cList = m_commentMap.values(m_currentPage->getPageId());
+            if (cList.size() > 0)
+            {
+                DATA::FbUserInfo *info = new DATA::FbUserInfo();
+                info->setName(m_currentPage->getName());
+                info->setPicSquare(m_currentPage->getPicSquare().toString());
+                info->setUID(m_currentPage->getPageId());
+                for (int i = 0; i < cList.size(); i++)
+                {
+                    cList.at(i)->setUserInfo(info);
+                }
+                delete info;
+            }
             delete m_currentPage;
             m_currentPage = 0;
         }
@@ -205,6 +221,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentPage->setPic(m_currentText);
         else if (qName == "pic_big")
             m_currentPage->setPicBig(m_currentText);
+        else if (qName == "pic_square")
+            m_currentPage->setPicSquare(m_currentText);
         break;
     case ATTACHMENT:
         if (qName == "attachment")
@@ -281,8 +299,8 @@ bool GetStreamPosts::prepare() {
               "IN (SELECT actor_id FROM #posts)\","
               "\"commentors\":\"SELECT uid, name, pic_square "
               "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\","
-              "\"page_info\":\"SELECT page_id, name, pic, pic_big FROM page WHERE page_id "
-              "IN (SELECT actor_id FROM #posts)\"}");
+              "\"page_info\":\"SELECT page_id, name, pic, pic_square, pic_big FROM page WHERE page_id "
+              "IN (SELECT actor_id FROM #posts) OR page_id IN (SELECT fromid FROM #post_comments)\"}");
 
    //qDebug() << "queries: " << fql;
     m_argMap.insert("queries", fql);

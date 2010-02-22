@@ -3,7 +3,9 @@
 namespace DATA {
 
 StreamPost::StreamPost() :
-    m_isFromUser(true)
+    m_isFromUser(true),
+    m_hasAttachment(false),
+    m_attachment(0)
 {
     m_commentList = new StreamCommentList();
 }
@@ -93,6 +95,14 @@ QString StreamPost::getActorId() {
     return m_actorId;
 }
 
+void StreamPost::setAttribution(QString attribution) {
+    m_attribution = attribution;
+}
+
+QString StreamPost::getAttribution() {
+    return m_attribution;
+}
+
 bool StreamPost::isFromUser() {
     return m_isFromUser;
 }
@@ -105,12 +115,13 @@ bool StreamPost::hasAttachment() {
     return m_hasAttachment;
 }
 
-const DATA::FbStreamAttachment * StreamPost::getAttachment() {
+DATA::FbStreamAttachment * StreamPost::getAttachment() {
     return m_attachment;
 }
 
-void StreamPost::setAttachment(const DATA::FbStreamAttachment *attachment) {
+void StreamPost::setAttachment(DATA::FbStreamAttachment *attachment) {
     m_attachment = attachment;
+    m_hasAttachment = true;
 }
 
 // NotificationCenterItem Interface
