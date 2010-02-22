@@ -30,6 +30,8 @@ public:
     QString getUpdatedTime();
     void setActorId(QString id);
     QString getActorId();
+    void setAttribution(QString attribution);
+    QString getAttribution();
     void isHidden(bool hidden);
     bool isHidden();
     StreamCommentList * getCommentList();
@@ -40,8 +42,8 @@ public:
     bool isFromUser();
     void isFromUser(bool fromUser);
     bool hasAttachment();
-    const DATA::FbStreamAttachment * getAttachment();
-    void setAttachment(const DATA::FbStreamAttachment *attachment);
+    DATA::FbStreamAttachment * getAttachment();
+    void setAttachment(DATA::FbStreamAttachment *attachment);
 
 
 
@@ -59,6 +61,7 @@ private:
     QString m_targetId;
     QString m_createdTime;
     QString m_updatedTime;
+    QString m_attribution;
     bool m_isHidden;
     // StreamAttachment m_attachment;
     StreamCommentList *m_commentList;
@@ -66,7 +69,7 @@ private:
     FbPageInfo m_page;
     bool m_isFromUser;
     bool m_hasAttachment;
-    const DATA::FbStreamAttachment *m_attachment;
+    DATA::FbStreamAttachment *m_attachment;
 
 
 };

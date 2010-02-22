@@ -1,48 +1,50 @@
 #include "FbStreamMedia.h"
 
+#include <QDebug>
+
 namespace DATA {
 
 FbStreamMedia::FbStreamMedia()
 {
 }
 
-void FbStreamMedia::setType(const QString &type) {
+void FbStreamMedia::setType(QString &type) {
     m_type = type;
 }
 
-const QString& FbStreamMedia::getType() {
+QString& FbStreamMedia::getType() {
     return m_type;
 }
 
-void FbStreamMedia::setAlt(const QString &alt) {
+void FbStreamMedia::setAlt(QString &alt) {
     m_alt = alt;
 }
 
-const QString& FbStreamMedia::getAlt() {
+QString& FbStreamMedia::getAlt() {
     return m_alt;
 }
 
-void FbStreamMedia::setHref(const QString &href) {
+void FbStreamMedia::setHref(QString &href) {
     m_href = QUrl(href);
 }
 
-const QUrl& FbStreamMedia::getHref() {
+QUrl& FbStreamMedia::getHref() {
     return m_href;
 }
 
-void FbStreamMedia::setSrc(const QString &src) {
+void FbStreamMedia::setSrc(QString& src) {
     m_src = QUrl(src);
 }
 
-const QUrl& FbStreamMedia::getSrc() {
+QUrl& FbStreamMedia::getSrc() {
     return m_src;
 }
 
-void FbStreamMedia::setMedia(const QVariant *media) {
+void FbStreamMedia::setMedia(QVariant *media) {
     m_media = media;
 }
 
-const QVariant * FbStreamMedia::getMedia() {
+QVariant * FbStreamMedia::getMedia() {
     return m_media;
 }
 

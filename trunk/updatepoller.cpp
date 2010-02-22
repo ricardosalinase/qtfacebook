@@ -34,8 +34,8 @@ void UpdatePoller::init() {
             this, SLOT(getNewNotifications()));
     m_notificationTimer->start(1000 * (m_notificationUpdateInterval * 60));
 
-    m_lastStreamPostCheck = QString::number(QDateTime::currentDateTime().toUTC().toTime_t());
-    //m_lastStreamPostCheck = "0";
+    //m_lastStreamPostCheck = QString::number(QDateTime::currentDateTime().toUTC().toTime_t());
+    m_lastStreamPostCheck = "0";
 
     m_streamPostTimer = new QTimer(this);
     connect(m_streamPostTimer, SIGNAL(timeout()),
@@ -44,7 +44,7 @@ void UpdatePoller::init() {
 
 
     QTimer::singleShot(1000,this,SLOT(getNewNotifications()));
-
+    QTimer::singleShot(1000,this,SLOT(getNewStreamPosts()));
 
 }
 

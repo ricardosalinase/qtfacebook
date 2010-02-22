@@ -14,20 +14,20 @@ class FbStreamAttachment
 public:
     FbStreamAttachment();
 
-    void setName(const QString& name);
-    const QString& getName();
-    void setHref(const QString& href);
-    const QUrl& getHref();
-    void setDescription(const QString& desc);
-    const QString& getDescription();
-    void setCaption(const QString& caption);
-    const QString& getCaption();
-    void setIcon(const QString& icon);
-    const QUrl& getIcon();
-    void setFbObjectType(const QString& type);
-    const QString& getFbObjectType();
-    void addMedia(const DATA::FbStreamMedia *media);
-    const QList<const DATA::FbStreamMedia *>& getMedia();
+    void setName(QString& name);
+    QString& getName();
+    void setHref(QString& href);
+    QUrl& getHref();
+    void setDescription(QString& desc);
+    QString& getDescription();
+    void setCaption(QString& caption);
+    QString& getCaption();
+    void setIcon(QString& icon);
+    QUrl& getIcon();
+    void setFbObjectType(QString& type);
+    QString& getFbObjectType();
+    void addMedia(DATA::FbStreamMedia *media);
+    QList<DATA::FbStreamMedia *>& getMedia();
 
 private:
     QString m_name;
@@ -36,7 +36,7 @@ private:
     QString m_caption;
     QUrl m_icon;
     QString m_objType;
-    QList<const DATA::FbStreamMedia *> m_media;
+    QList<DATA::FbStreamMedia *> m_media;
 
 
 };

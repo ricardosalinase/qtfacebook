@@ -13,38 +13,38 @@ class FbPhoto
 public:
     FbPhoto();
 
-    void setPhotoId(const QString& pid);
-    const QString& getPhotoId();
-    void setAlbumId(const QString& aid);
-    const QString& getAlbumId();
-    void setOwnerId(const QString& id);
-    const QString& getOwnerId();
-    void setSrcSmall(const QString& ss);
-    const QUrl& getSrcSmall();
+    void setPhotoId(QString& pid);
+    QString& getPhotoId();
+    void setAlbumId(QString& aid);
+    QString& getAlbumId();
+    void setOwnerId(QString& id);
+    QString& getOwnerId();
+    void setSrcSmall(QString& ss);
+    QUrl& getSrcSmall();
     void setSrcSmallHeight(int h);
     int getSrcSmallHeight();
     void setSrcSmallWidth(int w);
     int getSrcSmallWidth();
-    void setSrcBig(const QString& sb);
-    const QUrl& getSrcBig();
+    void setSrcBig(QString& sb);
+    QUrl& getSrcBig();
     void setSrcBigHeight(int h);
     int getSrcBigHeight();
     void setSrcBigWidth(int w);
     int getSrcBigWidth();
-    void setSrc(const QString& s);
-    const QUrl& getSrc();
+    void setSrc(QString& s);
+    QUrl& getSrc();
     void setSrcHeight(int h);
     int getSrcHeight();
     void setSrcWidth(int w);
     int getSrcWidth();
-    void setCaption(const QString& caption);
-    const QString& getCaption();
-    void setCreatedTime(const QString& t);
-    const QString& getCreatedTime();
-    void setModifiedTime(const QString& t);
-    const QString& getModifiedTime();
-    void setObjectId(const QString& oid);
-    const QString& getObjectId();
+    void setCaption(QString& caption);
+    QString& getCaption();
+    void setCreatedTime(QString& t);
+    QString& getCreatedTime();
+    void setModifiedTime(QString& t);
+    QString& getModifiedTime();
+    void setObjectId(QString& oid);
+    QString& getObjectId();
 
 
 private:
