@@ -74,6 +74,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         }
 
         QString type = attachment->getFbObjectType();
+
         if (type == "album" || type == "photo")
         {
             m_photoLayout = new QHBoxLayout();
@@ -98,6 +99,26 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
                 contentLayout->addWidget(new QLabel(albumText));
             }
 
+        }
+        else if (type == "") // No type specified in the attachment
+        {
+            QList<DATA::FbStreamMedia *> mList = attachment->getMedia();
+            if (mList.size() == 1)
+            {
+                if (mList.at(0)->getType() == "link")
+                {
+                    m_linkLayout = new QHBoxLayout();
+                    contentLayout->addLayout(m_linkLayout);
+                    QString html = attachment->getName() + "<BR>" + attachment->getCaption();
+                    QLabel *l = new QLabel(html);
+                    l->setWordWrap(true);
+                    m_linkLayout->insertWidget(1,l,1);
+                    QNetworkRequest nr;
+                    nr.setUrl(mList.at(0)->getSrc());
+                    QNetworkReply *reply = m_nam2->get(nr);
+                    m_outstandingNetworkRequests.insert(reply, LinkThumb);
+                }
+            }
         }
 
 
@@ -170,6 +191,13 @@ void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
             l->setPixmap(p);
             m_ageLineLayout->insertWidget(0,l,0);
 
+        } else if (t == LinkThumb)
+        {
+            QPixmap p;
+            p.loadFromData(reply->readAll());
+            QLabel *l = new QLabel();
+            l->setPixmap(p);
+            m_linkLayout->insertWidget(0,l,0);
         }
     }
     else

@@ -276,6 +276,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentPhoto->setPhotoId(m_currentText);
         else if (qName == "owner")
             m_currentPhoto->setOwnerId(m_currentText);
+        break;
 
     }
 
