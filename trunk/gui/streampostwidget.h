@@ -19,7 +19,7 @@ class StreamPostWidget : public QWidget
 {
 Q_OBJECT
 public:
-    enum RequestType { PosterPixmap, Photo, AppIcon };
+    enum RequestType { PosterPixmap, Photo, AppIcon, LinkThumb };
     explicit StreamPostWidget(DATA::StreamPost *post, QWidget *parent = 0);
     ~StreamPostWidget();
     void scrollToBottom();
@@ -39,6 +39,7 @@ private:
     void getPhoto(DATA::FbStreamMedia *media);
     QHBoxLayout *m_photoLayout;
     QHBoxLayout *m_ageLineLayout;
+    QHBoxLayout *m_linkLayout;
     QNetworkAccessManager *m_nam;
     QNetworkAccessManager *m_nam2;
     DATA::StreamPost *m_post;
