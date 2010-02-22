@@ -78,6 +78,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         if (type == "album" || type == "photo")
         {
             m_photoLayout = new QHBoxLayout();
+            m_photoLayout->addStretch();
             contentLayout->addLayout(m_photoLayout);
             QList<DATA::FbStreamMedia *> mList = attachment->getMedia();
 
@@ -91,7 +92,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
                 m_outstandingNetworkRequests.insert(reply, Photo);
             }
 
-            if (type == "album")
+            if (type == "album" && attachment->getName() != "")
             {
                 QString albumText = "Album: " + attachment->getName() + "<BR>" +
                                     attachment->getCaption();
@@ -180,8 +181,8 @@ void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
             p.loadFromData(reply->readAll());
             QLabel *l = new QLabel();
             l->setPixmap(p);
-            m_photoLayout->addWidget(l);
-            qDebug() << "Adding photo to layout";
+            m_photoLayout->insertWidget(0,l);
+
         }
         else if (t == AppIcon)
         {
@@ -203,7 +204,7 @@ void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
     else
     {
         qDebug() << reply->errorString();
-        qDebug() << reply->request().url().toString();
+        qDebug() << reply->request().url().toEncoded();
     }
 
     reply->deleteLater();
