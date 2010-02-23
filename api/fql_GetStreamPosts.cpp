@@ -38,6 +38,11 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
             m_currentStreamMedia = new DATA::FbStreamMedia();
             m_parseState = STREAMMEDIA;
         }
+        else if (m_parseState == ATTACHMENT && qName == "stream_property")
+        {
+            m_currentProperty = new DATA::FbStreamAttachmentProperty();
+            m_parseState = PROPERTY;
+        }
         else if (m_parseState == STREAMMEDIA && qName == "photo")
         {
             m_currentPhoto = new DATA::FbPhoto();
@@ -59,6 +64,8 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         {
             m_currentPage = new DATA::FbPageInfo();
         }
+        else if (m_parseState == APPINFO && qName == "app_info")
+            m_currentAppInfo = new DATA::AppInfo();
 
     }
 
@@ -86,6 +93,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
                 m_parseState = COMMENTOR;
             else if (m_currentText == "page_info")
                 m_parseState = PAGE;
+            else if (m_currentText == "app_icons")
+                m_parseState = APPINFO;
         }
         break;
     case POSTS:
@@ -94,6 +103,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_streamPosts->append(m_currentStreamPost);
             m_postMap.insert(m_currentStreamPost->getPostId(), m_currentStreamPost);
             m_postMap.insert(m_currentStreamPost->getActorId(), m_currentStreamPost);
+            m_appToPostMap.insertMulti(m_currentStreamPost->getAppId(), m_currentStreamPost);
             m_currentStreamPost = 0;
         }
         else if (qName == "fql_result")
@@ -114,6 +124,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentStreamPost->setUpdatedTime(m_currentText);
         else if (qName == "attribution")
             m_currentStreamPost->setAttribution(m_currentText);
+        else if (qName == "app_id")
+            m_currentStreamPost->setAppId(m_currentText);
         break;
     case COMMENTLIST:
         if (qName == "can_remove")
@@ -224,6 +236,24 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         else if (qName == "pic_square")
             m_currentPage->setPicSquare(m_currentText);
         break;
+    case APPINFO:
+        if (qName == "app_info")
+        {
+            QList<DATA::StreamPost *> pList = m_appToPostMap.values(m_currentAppInfo->getAppId());
+            for (int i = 0; i < pList.size(); i++)
+            {
+                pList.at(i)->setAppIcon(m_currentAppInfo->getIconUrl());
+            }
+            delete m_currentAppInfo;
+            m_currentAppInfo = 0;
+        }
+        else if (qName == "fql_result")
+            m_parseState = QUERY;
+        else if (qName == "app_id")
+            m_currentAppInfo->setAppId(m_currentText);
+        else if (qName == "icon_url")
+            m_currentAppInfo->setIconUrl(m_currentText);
+        break;
     case ATTACHMENT:
         if (qName == "attachment")
         {
@@ -259,6 +289,20 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentStreamMedia->setAlt(m_currentText);
         else if (qName == "type")
             m_currentStreamMedia->setType(m_currentText);
+        break;
+    case PROPERTY:
+        if (qName == "stream_property")
+        {
+            m_currentAttachment->addProperty(m_currentProperty);
+            m_currentProperty = 0;
+            m_parseState = ATTACHMENT;
+        }
+        else if (qName == "name")
+            m_currentProperty->setName(m_currentText);
+        else if (qName == "text")
+            m_currentProperty->setText(m_currentText);
+        else if (qName == "href")
+            m_currentProperty->setHref(m_currentText);
         break;
     case PHOTO:
         if (qName == "photo")
@@ -301,7 +345,9 @@ bool GetStreamPosts::prepare() {
               "\"commentors\":\"SELECT uid, name, pic_square "
               "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\","
               "\"page_info\":\"SELECT page_id, name, pic, pic_square, pic_big FROM page WHERE page_id "
-              "IN (SELECT actor_id FROM #posts) OR page_id IN (SELECT fromid FROM #post_comments)\"}");
+              "IN (SELECT actor_id FROM #posts) OR page_id IN (SELECT fromid FROM #post_comments)\","
+              "\"app_icons\":\"SELECT app_id, icon_url FROM application "
+              "WHERE app_id IN (SELECT app_id FROM #posts)\"}");
 
    //qDebug() << "queries: " << fql;
     m_argMap.insert("queries", fql);

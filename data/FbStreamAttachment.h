@@ -6,6 +6,7 @@
 #include <QList>
 
 #include "data/FbStreamMedia.h"
+#include "data/FbStreamAttachmentProperty.h"
 
 namespace DATA {
 
@@ -28,6 +29,9 @@ public:
     QString& getFbObjectType();
     void addMedia(DATA::FbStreamMedia *media);
     QList<DATA::FbStreamMedia *>& getMedia();
+    void addProperty(DATA::FbStreamAttachmentProperty *p);
+    QList<DATA::FbStreamAttachmentProperty *>& getProperties();
+    bool isEmpty();
 
 private:
     QString m_name;
@@ -37,6 +41,8 @@ private:
     QUrl m_icon;
     QString m_objType;
     QList<DATA::FbStreamMedia *> m_media;
+    QList<DATA::FbStreamAttachmentProperty *> m_properties;
+    bool m_attachmentIsEmpty;
 
 
 };

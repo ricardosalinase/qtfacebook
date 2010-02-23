@@ -103,6 +103,24 @@ QString StreamPost::getAttribution() {
     return m_attribution;
 }
 
+void StreamPost::setAppId(QString appId) {
+    m_appId = appId;
+}
+
+QString StreamPost::getAppId() {
+    return m_appId;
+}
+
+void StreamPost::setAppIcon(QString icon) {
+    QByteArray url;
+    url.append(icon);
+    m_appIcon.setEncodedUrl(url);
+}
+
+QUrl StreamPost::getAppIcon() {
+    return m_appIcon;
+}
+
 bool StreamPost::isFromUser() {
     return m_isFromUser;
 }
