@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QCloseEvent>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 
 
 #include "data/streampost.h"
@@ -37,6 +38,7 @@ private slots:
 private:
     void getPosterPixmap();
     void getPhoto(DATA::FbStreamMedia *media);
+    QVBoxLayout *m_contentLayout;
     QHBoxLayout *m_photoLayout;
     QHBoxLayout *m_ageLineLayout;
     QHBoxLayout *m_linkLayout;
@@ -47,6 +49,7 @@ private:
     QWidget *m_commentContainer;
     QLabel *m_userPicLabel;
     QLabel *m_postLabel;
+    bool m_triedBothIcons;
     QMap<QNetworkReply*, RequestType> m_outstandingNetworkRequests;
 
 };

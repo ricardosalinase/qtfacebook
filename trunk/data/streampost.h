@@ -32,6 +32,10 @@ public:
     QString getActorId();
     void setAttribution(QString attribution);
     QString getAttribution();
+    void setAppId(QString appId);
+    QString getAppId();
+    void setAppIcon(QString icon);
+    QUrl getAppIcon();
     void isHidden(bool hidden);
     bool isHidden();
     StreamCommentList * getCommentList();
@@ -62,6 +66,8 @@ private:
     QString m_createdTime;
     QString m_updatedTime;
     QString m_attribution;
+    QString m_appId;
+    QUrl m_appIcon;
     bool m_isHidden;
     // StreamAttachment m_attachment;
     StreamCommentList *m_commentList;

@@ -33,7 +33,9 @@ QUrl& FbStreamMedia::getHref() {
 }
 
 void FbStreamMedia::setSrc(QString& src) {
-    m_src = QUrl(src);
+    QByteArray encodedUrl;
+    encodedUrl.append(src);
+    m_src.setEncodedUrl(encodedUrl);
 }
 
 QUrl& FbStreamMedia::getSrc() {

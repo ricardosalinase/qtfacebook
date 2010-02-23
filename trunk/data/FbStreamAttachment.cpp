@@ -2,12 +2,14 @@
 
 namespace DATA {
 
-FbStreamAttachment::FbStreamAttachment()
+FbStreamAttachment::FbStreamAttachment() :
+    m_attachmentIsEmpty(true)
 {
 }
 
 void FbStreamAttachment::setName(QString &name) {
     m_name = name;
+    m_attachmentIsEmpty = false;
 }
 
 QString& FbStreamAttachment::getName() {
@@ -16,6 +18,7 @@ QString& FbStreamAttachment::getName() {
 
 void FbStreamAttachment::setHref(QString &href) {
     m_href = QUrl(href);
+    m_attachmentIsEmpty = false;
 }
 
 QUrl& FbStreamAttachment::getHref() {
@@ -24,6 +27,8 @@ QUrl& FbStreamAttachment::getHref() {
 
 void FbStreamAttachment::setDescription(QString &desc) {
     m_desc = desc;
+    if (desc.compare("") != 0)
+        m_attachmentIsEmpty = false;
 }
 
 QString& FbStreamAttachment::getDescription() {
@@ -32,6 +37,7 @@ QString& FbStreamAttachment::getDescription() {
 
 void FbStreamAttachment::setCaption(QString &caption) {
     m_caption = caption;
+    m_attachmentIsEmpty = false;
 }
 
 
@@ -49,6 +55,7 @@ QUrl& FbStreamAttachment::getIcon() {
 
 void FbStreamAttachment::setFbObjectType(QString &type) {
     m_objType = type;
+    m_attachmentIsEmpty = false;
 }
 
 QString& FbStreamAttachment::getFbObjectType() {
@@ -57,11 +64,24 @@ QString& FbStreamAttachment::getFbObjectType() {
 
 void FbStreamAttachment::addMedia(DATA::FbStreamMedia *media) {
     m_media.append(media);
+    m_attachmentIsEmpty = false;
 }
 
 QList<DATA::FbStreamMedia *>& FbStreamAttachment::getMedia() {
     return m_media;
 }
 
+void FbStreamAttachment::addProperty(DATA::FbStreamAttachmentProperty *p) {
+    m_properties.append(p);
+    m_attachmentIsEmpty = false;
+}
+
+QList<DATA::FbStreamAttachmentProperty *>& FbStreamAttachment::getProperties() {
+    return m_properties;
+}
+
+bool FbStreamAttachment::isEmpty() {
+    return m_attachmentIsEmpty;
+}
 
 } // namespace DATA
