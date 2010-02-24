@@ -12,7 +12,7 @@
 int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
-    QtFacebook *fb = new QtFacebook();
+    (new QtFacebook());
 
 
     return app.exec();

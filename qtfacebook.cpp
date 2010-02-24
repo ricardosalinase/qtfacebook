@@ -288,7 +288,7 @@ void QtFacebook::receivedNewNotifications(int numNew) {
 
 }
 
-void QtFacebook::acknowledgedNotification(GUI::NotificationCenterItem::ItemType type, QString nid) {
+void QtFacebook::acknowledgedNotification(GUI::NotificationCenterItem::ItemType type, QString /*nid*/) {
 
     m_totalNotifications--;
 

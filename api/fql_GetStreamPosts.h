@@ -29,7 +29,7 @@ public:
 private:
     enum ParseState { QUERY, POSTS, COMMENTLIST, 
                       COMMENTS, POSTER, COMMENTOR, PAGE,
-                    ATTACHMENT, STREAMMEDIA, PHOTO, LINK, PROPERTY,
+                    ATTACHMENT, STREAMMEDIA, PHOTO, PROPERTY,
                     APPINFO };
     ParseState m_parseState;
     bool prepare();

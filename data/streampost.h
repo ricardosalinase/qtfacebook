@@ -7,6 +7,7 @@
 #include "data/fbuserinfo.h"
 #include "data/FbPageInfo.h"
 #include "data/FbStreamAttachment.h"
+#include "data/appinfo.h"
 #include "gui/notificationcenteritem.h"
 
 namespace DATA {
@@ -34,8 +35,8 @@ public:
     QString getAttribution();
     void setAppId(QString appId);
     QString getAppId();
-    void setAppIcon(QString icon);
-    QUrl getAppIcon();
+    void setAppInfo(AppInfo *);
+    AppInfo& getAppInfo();
     void isHidden(bool hidden);
     bool isHidden();
     StreamCommentList * getCommentList();
@@ -67,7 +68,7 @@ private:
     QString m_updatedTime;
     QString m_attribution;
     QString m_appId;
-    QUrl m_appIcon;
+    AppInfo m_appInfo;
     bool m_isHidden;
     // StreamAttachment m_attachment;
     StreamCommentList *m_commentList;

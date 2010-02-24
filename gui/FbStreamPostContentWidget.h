@@ -16,9 +16,9 @@ class FbStreamPostContentWidget : public QWidget
 Q_OBJECT
 public:
     explicit FbStreamPostContentWidget(DATA::FbStreamAttachment *attachment, QWidget *parent = 0);
-
+    virtual QSize minimumSizeHint () const;
 signals:
-
+    void contentLoaded();
 public slots:
 
 private slots:

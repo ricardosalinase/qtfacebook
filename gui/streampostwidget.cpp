@@ -10,6 +10,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QScrollBar>
+#include <QCoreApplication>
 
 #include "util/agestring.h"
 #include "commentwidget.h"
@@ -38,7 +39,8 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     mainLayout->insertSpacing(1,10);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_contentLayout = new QVBoxLayout();
-    //m_contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    //m_contentLayout->addStrut(500);
+    m_contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     if (post->isFromUser())
         this->setWindowTitle(post->getPoster().getName());
@@ -51,6 +53,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         message->setTextInteractionFlags(Qt::TextBrowserInteraction);
         message->setWordWrap(true);
         message->setMinimumWidth(450);
+        message->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
         m_contentLayout->addWidget(message,0,Qt::AlignTop);
     }
 
@@ -67,11 +70,11 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_ageLineLayout->insertWidget(1,age,1);
 
     // Get the app icon, prefer the one in post if present
-    if (m_post->getAppIcon().toString() != "")
+    if (m_post->getAppInfo().getIconUrl() != "")
     {
         m_triedBothIcons = true;
         QNetworkRequest nr;
-        nr.setUrl(m_post->getAppIcon());
+        nr.setUrl(QUrl(m_post->getAppInfo().getIconUrl()));
         QNetworkReply *reply2 = m_nam2->get(nr);
         m_outstandingNetworkRequests.insert(reply2, AppIcon);
     }
@@ -93,7 +96,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         if (type == "album" || type == "photo")
         {
             GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment);
-            pw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            pw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
             m_contentLayout->addWidget(pw);
 
         }
@@ -101,7 +104,9 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         else // if (type == "") // No FbObjectType specified in the attachment
         {
             GUI::FbStreamPostContentWidget *cw = new GUI::FbStreamPostContentWidget(attachment);
-            cw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            cw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+            connect(cw, SIGNAL(contentLoaded()),
+                    this, SLOT(gotContentUpdate()));
             m_contentLayout->addWidget(cw);
         }
     }
@@ -271,7 +276,8 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
                            url, p);
 
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
-        adjustSize();
+        updateGeometry();
+        gotContentUpdate();
     }
     else
     {
@@ -291,6 +297,18 @@ void StreamPostWidget::scrollToBottom() {
 void StreamPostWidget::closeEvent(QCloseEvent *event) {
     emit closed(this);
     event->accept();
+}
+
+void StreamPostWidget::gotContentUpdate() {
+    QCoreApplication::sendPostedEvents();
+//    qDebug() << "widget sizeHint: " << sizeHint();
+//    qDebug() << "mainlayout sizeHint: " << layout()->sizeHint();
+//    qDebug() << "cw sizeHint; " << m_cw->sizeHint();
+//    qDebug() << "cw minSizeHint: " << m_cw->minimumSizeHint();
+//    qDebug() << "widget min size: " << minimumSize();
+    resize(sizeHint());
+    //setMinimumSize(sizeHint());
+
 }
 
 } // namespace GUI
