@@ -242,7 +242,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             QList<DATA::StreamPost *> pList = m_appToPostMap.values(m_currentAppInfo->getAppId());
             for (int i = 0; i < pList.size(); i++)
             {
-                pList.at(i)->setAppIcon(m_currentAppInfo->getIconUrl());
+                pList.at(i)->setAppInfo(m_currentAppInfo);
             }
             delete m_currentAppInfo;
             m_currentAppInfo = 0;

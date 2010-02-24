@@ -111,14 +111,12 @@ QString StreamPost::getAppId() {
     return m_appId;
 }
 
-void StreamPost::setAppIcon(QString icon) {
-    QByteArray url;
-    url.append(icon);
-    m_appIcon.setEncodedUrl(url);
+void StreamPost::setAppInfo(AppInfo *info) {
+    m_appInfo = *info;
 }
 
-QUrl StreamPost::getAppIcon() {
-    return m_appIcon;
+AppInfo& StreamPost::getAppInfo() {
+    return m_appInfo;
 }
 
 bool StreamPost::isFromUser() {

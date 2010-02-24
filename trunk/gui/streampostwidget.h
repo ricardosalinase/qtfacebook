@@ -14,6 +14,7 @@
 #include "data/streampost.h"
 
 
+
 namespace GUI {
 
 class StreamPostWidget : public QWidget
@@ -34,6 +35,7 @@ protected:
 private slots:
     void gotPosterPixmap(QNetworkReply *reply);
     void gotPhoto(QNetworkReply *reply);
+    void gotContentUpdate();
 
 private:
     void getPosterPixmap();

@@ -8,7 +8,7 @@ namespace GUI {
 FbStreamPostContentWidget::FbStreamPostContentWidget(DATA::FbStreamAttachment *attachment, QWidget *parent) :
     QWidget(parent)
 {
-    this->setMinimumWidth(450);
+    //this->setMinimumWidth(450);
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
@@ -74,12 +74,10 @@ void FbStreamPostContentWidget::gotNetworkReply(QNetworkReply *reply) {
         p.loadFromData(reply->readAll());
         QLabel *l = new QLabel();
         l->setPixmap(p);
-
         l->setMinimumHeight(p.height());
+        l->setMinimumWidth(p.width());
         m_linkLayout->insertWidget(0,l,0,Qt::AlignTop);
-        updateGeometry();
-        adjustSize();
-        update();
+        emit contentLoaded();
     }
     else
     {
@@ -88,6 +86,12 @@ void FbStreamPostContentWidget::gotNetworkReply(QNetworkReply *reply) {
     }
 
     reply->deleteLater();
+}
+
+QSize FbStreamPostContentWidget::minimumSizeHint () const {
+    if (sizeHint().width() > 450)
+        return sizeHint();
+    else return QSize(450,sizeHint().height());
 }
 
 } // namespace GUI
