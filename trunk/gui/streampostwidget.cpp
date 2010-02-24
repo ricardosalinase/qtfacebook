@@ -34,7 +34,6 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
             this, SLOT(gotPhoto(QNetworkReply*)));
 
     this->setStyleSheet("background : white;");
-
     QHBoxLayout *mainLayout = new QHBoxLayout();
     mainLayout->insertSpacing(1,10);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
@@ -49,6 +48,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     if (post->getMessage() != "")
     {
         QLabel *message = new QLabel(post->getMessage());
+        message->setTextInteractionFlags(Qt::TextBrowserInteraction);
         message->setWordWrap(true);
         message->setMinimumWidth(450);
         m_contentLayout->addWidget(message,0,Qt::AlignTop);
@@ -93,8 +93,9 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         if (type == "album" || type == "photo")
         {
             GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment);
+            pw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
             m_contentLayout->addWidget(pw);
-            //pw->show();
+
         }
         //else if (type == "event") {}
         else // if (type == "") // No FbObjectType specified in the attachment
@@ -236,6 +237,8 @@ void StreamPostWidget::getPosterPixmap() {
         QLabel *l = new QLabel();
         l->setPixmap(*p);
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
+        adjustSize();
+
     }
 }
 
@@ -268,6 +271,7 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
                            url, p);
 
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
+        adjustSize();
     }
     else
     {
