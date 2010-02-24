@@ -8,19 +8,17 @@ namespace GUI {
 FbStreamPostPhotoWidget::FbStreamPostPhotoWidget(DATA::FbStreamAttachment *attachment, QWidget *parent) :
     QWidget(parent)
 {
-
+    this->setMinimumWidth(450);
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
 
     m_mainLayout = new QVBoxLayout();
-    m_mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_photoLayout = new QHBoxLayout();
-    m_photoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_photoLayout->setSpacing(20);
     m_photoLayout->addStretch();
     m_mainLayout->addLayout(m_photoLayout);
-    //m_mainLayout->setMargin(0);
+    m_mainLayout->setMargin(0);
     QList<DATA::FbStreamMedia *> mList = attachment->getMedia();
 
     for (int i = 0; i < mList.size(); i++)
@@ -31,6 +29,8 @@ FbStreamPostPhotoWidget::FbStreamPostPhotoWidget(DATA::FbStreamAttachment *attac
         nr.setUrl(url);
         QNetworkReply *reply = m_nam->get(nr);
     }
+
+
 
     if (attachment->getName() != "")
     {
@@ -43,8 +43,6 @@ FbStreamPostPhotoWidget::FbStreamPostPhotoWidget(DATA::FbStreamAttachment *attac
 
 
     setLayout(m_mainLayout);
-    this->setMinimumWidth(500);
-    //this->setMinimumHeight(400);
 
 
 }
@@ -60,7 +58,9 @@ void FbStreamPostPhotoWidget::gotNetworkReply(QNetworkReply *reply) {
         l->setPixmap(p);
 
         l->setMinimumHeight(p.height());
-        m_photoLayout->insertWidget(0,l);
+        m_photoLayout->addWidget(l,0,Qt::AlignTop);
+        m_photoLayout->addStretch(1);
+
 
     }
     else

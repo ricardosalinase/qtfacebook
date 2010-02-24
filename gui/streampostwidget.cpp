@@ -16,6 +16,7 @@
 #include "util/fbuserpiccache.h"
 #include "data/FbStreamAttachment.h"
 #include "gui/FbStreamPostPhotoWidget.h"
+#include "gui/FbStreamPostContentWidget.h"
 
 
 namespace GUI {
@@ -35,9 +36,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     this->setStyleSheet("background : white;");
 
     QHBoxLayout *mainLayout = new QHBoxLayout();
+    mainLayout->insertSpacing(1,10);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_contentLayout = new QVBoxLayout();
-    m_contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    //m_contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     if (post->isFromUser())
         this->setWindowTitle(post->getPoster().getName());
@@ -48,7 +50,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     {
         QLabel *message = new QLabel(post->getMessage());
         message->setWordWrap(true);
-        message->setMinimumWidth(500);
+        message->setMinimumWidth(450);
         m_contentLayout->addWidget(message,0,Qt::AlignTop);
     }
 
@@ -90,63 +92,16 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
         if (type == "album" || type == "photo")
         {
-            GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment, this);
+            GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment);
             m_contentLayout->addWidget(pw);
+            //pw->show();
         }
-        else if (type == "") // No FbObjectType specified in the attachment
+        //else if (type == "event") {}
+        else // if (type == "") // No FbObjectType specified in the attachment
         {
-
-            m_linkLayout = new QHBoxLayout();
-            m_linkLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-            QVBoxLayout *linkTextLayout = new QVBoxLayout();
-            linkTextLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-            if (attachment->getName() != "")
-            {
-                QLabel *name = new QLabel("<a href=\"" + attachment->getHref().toString() + "\">" +
-                                      attachment->getName() + "</a>");
-                name->setMinimumWidth(500);
-                name->setWordWrap(true);
-                linkTextLayout->addWidget(name,0,Qt::AlignTop);
-            }
-
-            if (attachment->getCaption() != "")
-            {
-                QLabel *caption = new QLabel(attachment->getCaption());
-                caption->setWordWrap(true);
-                linkTextLayout->addWidget(caption);
-            }
-
-            if (attachment->getDescription() != "")
-            {
-                QLabel *description = new QLabel(attachment->getDescription());
-                description->setWordWrap(true);
-                linkTextLayout->addWidget(description);
-            }
-
-            QList<DATA::FbStreamAttachmentProperty *> pList = attachment->getProperties();
-
-            for (int i = 0; i < pList.size(); i++)
-            {
-                linkTextLayout->addWidget(new QLabel(pList.at(i)->getName() + ": " +
-                                                     pList.at(i)->getText()));
-            }
-
-            //linkTextLayout->addStretch();
-            m_linkLayout->insertLayout(1,linkTextLayout,0);
-            m_contentLayout->addLayout(m_linkLayout,0);
-
-
-            QList<DATA::FbStreamMedia *> mList = attachment->getMedia();
-            for (int i = 0; i < mList.size(); i++)
-            {
-                if (mList.at(i)->getType() == "link")
-                {
-                    QNetworkRequest nr;
-                    nr.setUrl(mList.at(i)->getSrc());
-                    QNetworkReply *reply = m_nam2->get(nr);
-                    m_outstandingNetworkRequests.insert(reply, LinkThumb);
-                }
-            }
+            GUI::FbStreamPostContentWidget *cw = new GUI::FbStreamPostContentWidget(attachment);
+            cw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            m_contentLayout->addWidget(cw);
         }
     }
 
@@ -173,12 +128,13 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_commentContainer->setLayout(commentLayout);
     m_commentScrollArea->setWidget(m_commentContainer);
     m_commentScrollArea->setWidgetResizable(true);
+
     if (!cList->size())
         m_commentScrollArea->setVisible(false);
-
     
     m_contentLayout->addWidget(m_commentScrollArea,1);
-    mainLayout->insertLayout(1,m_contentLayout,1);
+
+    mainLayout->insertLayout(2,m_contentLayout,1);
     setLayout(mainLayout);
 
     //this->resize(800,600);
