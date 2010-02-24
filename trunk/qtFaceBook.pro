@@ -45,7 +45,8 @@ SOURCES += main.cpp \
     data/FbStreamAttachment.cpp \
     data/FbStreamMedia.cpp \
     data/FbStreamAttachmentProperty.cpp \
-    gui/FbStreamPostPhotoWidget.cpp
+    gui/FbStreamPostPhotoWidget.cpp \
+    gui/FbStreamPostContentWidget.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -92,7 +93,8 @@ HEADERS += fbconnectwizard.h \
     data/FbStreamAttachment.h \
     data/FbStreamMedia.h \
     data/FbStreamAttachmentProperty.h \
-    gui/FbStreamPostPhotoWidget.h
+    gui/FbStreamPostPhotoWidget.h \
+    gui/FbStreamPostContentWidget.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
