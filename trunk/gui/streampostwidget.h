@@ -9,7 +9,7 @@
 #include <QCloseEvent>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
+#include <QTextEdit>
 
 #include "data/streampost.h"
 
@@ -53,7 +53,7 @@ private:
     QLabel *m_postLabel;
     bool m_triedBothIcons;
     QMap<QNetworkReply*, RequestType> m_outstandingNetworkRequests;
-
+    QTextEdit *m_commentEdit;
 };
 
 } // namespace GUI

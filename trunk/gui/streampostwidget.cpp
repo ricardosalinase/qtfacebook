@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QCoreApplication>
+#include <QFrame>
 
 #include "util/agestring.h"
 #include "commentwidget.h"
@@ -36,7 +37,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
     this->setStyleSheet("background : white;");
     QHBoxLayout *mainLayout = new QHBoxLayout();
-    mainLayout->insertSpacing(1,10);
+    //mainLayout->insertSpacing(1,10);
+    QFrame *f = new QFrame();
+    f->setFrameShape(QFrame::VLine);
+    mainLayout->insertWidget(1,f);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_contentLayout = new QVBoxLayout();
     //m_contentLayout->addStrut(500);
@@ -139,6 +143,20 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         m_commentScrollArea->setVisible(false);
     
     m_contentLayout->addWidget(m_commentScrollArea,1);
+
+
+    m_commentEdit = new QTextEdit();
+//    QPalette p = m_commentEdit->palette();
+//    p.setColor(QPalette::Base, QColor(240, 240, 255));
+//    m_commentEdit->setPalette(p);
+    m_commentEdit->setStyleSheet("background-color : #FFFFF0");
+    //m_commentEdit->setLineWidth(3);
+    m_commentEdit->setAcceptRichText(false);
+    m_commentEdit->setFrameStyle(QFrame::Panel);
+    m_commentEdit->setFrameShadow(QFrame::Sunken);
+    m_contentLayout->addWidget(m_commentEdit);
+
+
 
     mainLayout->insertLayout(2,m_contentLayout,1);
     setLayout(mainLayout);
