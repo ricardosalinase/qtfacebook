@@ -12,6 +12,7 @@
 #include <QScrollBar>
 #include <QCoreApplication>
 #include <QFrame>
+#include <QPushButton>
 
 #include "util/agestring.h"
 #include "commentwidget.h"
@@ -23,11 +24,19 @@
 
 namespace GUI {
 
-StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
+StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidget *parent) :
     QWidget(parent),
     m_post(post),
     m_triedBothIcons(false)
 {
+
+    m_factory = new API::Factory(info);
+    connect(m_factory, SIGNAL(apiStreamAddComment(API::Stream::AddComment*)),
+           this, SLOT(apiStreamAddComment(API::Stream::AddComment*)));
+    connect(m_factory, SIGNAL(apiStreamAddCommentFailed(API::Stream::AddComment*)),
+            this, SLOT(apiStreamAddCommentFailed(API::Stream::AddComment*)));
+
+
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotPosterPixmap(QNetworkReply*)));
@@ -138,11 +147,11 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_commentContainer->setLayout(commentLayout);
     m_commentScrollArea->setWidget(m_commentContainer);
     m_commentScrollArea->setWidgetResizable(true);
-
+    m_contentLayout->addSpacing(15);
     if (!cList->size())
         m_commentScrollArea->setVisible(false);
-    
-    m_contentLayout->addWidget(m_commentScrollArea,1);
+    m_commentScrollArea->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
+    m_contentLayout->addWidget(m_commentScrollArea,2);
 
 
     m_commentEdit = new QTextEdit();
@@ -154,8 +163,15 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_commentEdit->setAcceptRichText(false);
     m_commentEdit->setFrameStyle(QFrame::Panel);
     m_commentEdit->setFrameShadow(QFrame::Sunken);
-    m_contentLayout->addWidget(m_commentEdit);
+    m_commentEdit->setMaximumHeight(75);
+    m_commentEdit->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+    m_contentLayout->addSpacing(15);
+    m_contentLayout->addWidget(m_commentEdit,0);
 
+    m_addCommentButton = new QPushButton("Add Comment");
+    m_contentLayout->addWidget(m_addCommentButton, 0);
+    connect(m_addCommentButton, SIGNAL(clicked()),
+            this, SLOT(commentButtonClicked()));
 
 
     mainLayout->insertLayout(2,m_contentLayout,1);
@@ -261,7 +277,7 @@ void StreamPostWidget::getPosterPixmap() {
         l->setPixmap(*p);
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
         adjustSize();
-
+        update();
     }
 }
 
@@ -296,6 +312,7 @@ void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
         updateGeometry();
         gotContentUpdate();
+        update();
     }
     else
     {
@@ -327,6 +344,37 @@ void StreamPostWidget::gotContentUpdate() {
     resize(sizeHint());
     //setMinimumSize(sizeHint());
 
+}
+
+void StreamPostWidget::commentButtonClicked() {
+
+    m_addCommentButton->setDisabled(true);
+
+    // See if there's actually a comment
+    QString comment = m_commentEdit->toPlainText();
+    if (comment != "")
+    {
+        API::Method *method = m_factory->createMethod("stream.addComment");
+        method->setArgument("post_id", m_post->getPostId());
+        method->setArgument("comment", comment);
+        method->execute();
+    }
+    else
+    {
+        m_addCommentButton->setEnabled(true);
+    }
+}
+
+void StreamPostWidget::apiStreamAddComment(API::Stream::AddComment *method) {
+    qDebug() << "Added Comment";
+    m_commentEdit->clear();
+    m_addCommentButton->setEnabled(true);
+
+}
+
+void StreamPostWidget::apiStreamAddCommentFailed(API::Stream::AddComment *method) {
+    qDebug() << "Failed to add Comment";
+    m_addCommentButton->setEnabled(true);
 }
 
 } // namespace GUI

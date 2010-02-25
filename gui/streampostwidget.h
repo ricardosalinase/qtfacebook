@@ -10,8 +10,11 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QTextEdit>
+#include <QPushButton>
 
 #include "data/streampost.h"
+#include "api/factory.h"
+#include "userinfo.h"
 
 
 
@@ -22,7 +25,7 @@ class StreamPostWidget : public QWidget
 Q_OBJECT
 public:
     enum RequestType { PosterPixmap, Photo, AppIcon, LinkThumb };
-    explicit StreamPostWidget(DATA::StreamPost *post, QWidget *parent = 0);
+    explicit StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidget *parent = 0);
     ~StreamPostWidget();
     void scrollToBottom();
 signals:
@@ -36,6 +39,10 @@ private slots:
     void gotPosterPixmap(QNetworkReply *reply);
     void gotPhoto(QNetworkReply *reply);
     void gotContentUpdate();
+    void commentButtonClicked();
+    void apiStreamAddComment(API::Stream::AddComment *method);
+    void apiStreamAddCommentFailed(API::Stream::AddComment *method);
+
 
 private:
     void getPosterPixmap();
@@ -54,6 +61,8 @@ private:
     bool m_triedBothIcons;
     QMap<QNetworkReply*, RequestType> m_outstandingNetworkRequests;
     QTextEdit *m_commentEdit;
+    QPushButton *m_addCommentButton;
+    API::Factory *m_factory;
 };
 
 } // namespace GUI

@@ -162,7 +162,7 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
 
     if (list->size())
     {
-        StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0));
+        StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0), m_userInfo);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
         spw->show();
