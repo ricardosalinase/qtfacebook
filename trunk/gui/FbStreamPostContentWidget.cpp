@@ -36,7 +36,7 @@ FbStreamPostContentWidget::FbStreamPostContentWidget(DATA::FbStreamAttachment *a
     {
         QLabel *description = new QLabel(attachment->getDescription());
         description->setWordWrap(true);
-        linkTextLayout->addWidget(description);
+        linkTextLayout->addWidget(description,1);
     }
 
     QList<DATA::FbStreamAttachmentProperty *> pList = attachment->getProperties();
@@ -73,6 +73,8 @@ void FbStreamPostContentWidget::gotNetworkReply(QNetworkReply *reply) {
         QPixmap p;
         p.loadFromData(reply->readAll());
         QLabel *l = new QLabel();
+        if (p.width() > 100)
+            p = p.scaledToWidth(100);
         l->setPixmap(p);
         l->setMinimumHeight(p.height());
         l->setMinimumWidth(p.width());

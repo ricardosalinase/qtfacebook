@@ -42,6 +42,8 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new FQL::GetStreamPosts());
     else if (method.compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
         return prepareMethod(new FQL::GetStreamPostInfo());
+    else if (method.compare("stream.addcomment", Qt::CaseInsensitive) == 0)
+        return prepareMethod(new API::Stream::AddComment());
     else
         return 0;
 }
@@ -79,6 +81,8 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiFqlGetStreamPostsFailed((API::FQL::GetStreamPosts*)method);
     else if (method->getMethodName().compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
         emit apiFqlGetStreamPostInfoFailed((API::FQL::GetStreamPostInfo*)method);
+    else if (method->getMethodName().compare("stream.addComment", Qt::CaseInsensitive) == 0)
+        emit apiStreamAddCommentFailed((API::Stream::AddComment *)method);
 
 }
 
@@ -102,6 +106,8 @@ void Factory::dispatch(API::Method *method) {
         emit apiFqlGetStreamPosts((API::FQL::GetStreamPosts*)method);
     else if (method->getMethodName().compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
         emit apiFqlGetStreamPostInfo((API::FQL::GetStreamPostInfo*)method);
+    else if (method->getMethodName().compare("stream.addComment", Qt::CaseInsensitive) == 0)
+            emit apiStreamAddComment((API::Stream::AddComment *)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {
