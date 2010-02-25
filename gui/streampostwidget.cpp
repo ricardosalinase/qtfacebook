@@ -110,6 +110,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
         {
             GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment);
             pw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+            m_contentLayout->addSpacing(10);
             m_contentLayout->addWidget(pw);
 
         }
@@ -120,6 +121,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
             cw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
             connect(cw, SIGNAL(contentLoaded()),
                     this, SLOT(gotContentUpdate()));
+            m_contentLayout->addSpacing(10);
             m_contentLayout->addWidget(cw);
         }
     }
@@ -158,7 +160,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 //    QPalette p = m_commentEdit->palette();
 //    p.setColor(QPalette::Base, QColor(240, 240, 255));
 //    m_commentEdit->setPalette(p);
-    m_commentEdit->setStyleSheet("background-color : #FFFFF0");
+    m_commentEdit->setStyleSheet("background-color : #e4e8f8");
     //m_commentEdit->setLineWidth(3);
     m_commentEdit->setAcceptRichText(false);
     m_commentEdit->setFrameStyle(QFrame::Panel);
