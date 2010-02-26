@@ -43,7 +43,7 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, QWidget *parent) :
 }
 
 CommentWidget::~CommentWidget() {
-    delete m_comment;
+    //delete m_comment;
 }
 
 void CommentWidget::getCommentPic() {

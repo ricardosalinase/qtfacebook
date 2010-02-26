@@ -23,7 +23,7 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
     QWidget(parent),
     m_userInfo(userInfo),
     m_showHiddenNotifications(false),
-    m_showHiddenStreamPosts(false)
+    m_showHiddenStreamPosts(true)
 {
     m_scrollArea = new QScrollArea();
     m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
