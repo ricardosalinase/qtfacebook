@@ -185,7 +185,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 }
 
 StreamPostWidget::~StreamPostWidget() {
-    delete m_post;
+
 }
 
 void StreamPostWidget::gotPhoto(QNetworkReply *reply) {

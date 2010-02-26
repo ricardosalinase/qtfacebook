@@ -57,7 +57,7 @@ private slots:
     void getStreamPostsFailed(API::FQL::GetStreamPosts*);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
-    void newStreamPostInfo(QList<DATA::StreamPost *> *pList);
+    void newStreamPosts(QList<DATA::StreamPost *> *pList);
     void streamPostClosed(GUI::StreamPostWidget *);
 
 protected:
@@ -77,6 +77,8 @@ private:
     bool m_showHiddenStreamPosts;
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
+    QMap<QString, DATA::StreamPost *> m_streamPosts;
+
 
     // UI componenets
     QScrollArea *m_scrollArea;
