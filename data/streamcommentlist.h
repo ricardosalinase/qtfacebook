@@ -52,12 +52,15 @@ public:
     void canRemove(bool);
     bool canPost();
     void canPost(bool);
+    int getTotalAvailable();
+    void setTotalAvailable(int count);
     void addUserInfo(FbUserInfo *info);
 
 
 private:
     bool m_canRemove;
     bool m_canPost;
+    int m_totalAvailable;
 
 
 };

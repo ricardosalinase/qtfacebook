@@ -84,6 +84,12 @@ void StreamCommentList::canPost(bool cp) {
     m_canPost = cp;
 }
 
+void StreamCommentList::setTotalAvailable(int count) {
 
+    m_totalAvailable = count;
+}
 
+int StreamCommentList::getTotalAvailable() {
+    return m_totalAvailable;
+}
 } // namespace DATA
