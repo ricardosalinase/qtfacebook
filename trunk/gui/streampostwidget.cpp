@@ -337,14 +337,10 @@ void StreamPostWidget::closeEvent(QCloseEvent *event) {
 }
 
 void StreamPostWidget::gotContentUpdate() {
+
     QCoreApplication::sendPostedEvents();
-//    qDebug() << "widget sizeHint: " << sizeHint();
-//    qDebug() << "mainlayout sizeHint: " << layout()->sizeHint();
-//    qDebug() << "cw sizeHint; " << m_cw->sizeHint();
-//    qDebug() << "cw minSizeHint: " << m_cw->minimumSizeHint();
-//    qDebug() << "widget min size: " << minimumSize();
     resize(sizeHint());
-    //setMinimumSize(sizeHint());
+
 
 }
 
