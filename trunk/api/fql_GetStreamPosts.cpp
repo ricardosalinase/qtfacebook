@@ -102,7 +102,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         {
             m_streamPosts->append(m_currentStreamPost);
             m_postMap.insert(m_currentStreamPost->getPostId(), m_currentStreamPost);
-            m_postMap.insert(m_currentStreamPost->getActorId(), m_currentStreamPost);
+            m_postMap.insertMulti(m_currentStreamPost->getActorId(), m_currentStreamPost);
             m_appToPostMap.insertMulti(m_currentStreamPost->getAppId(), m_currentStreamPost);
             m_currentStreamPost = 0;
         }
@@ -195,6 +195,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentPoster->setPic(m_currentText);
         else if (qName == "pic_big")
             m_currentPoster->setPicBig(m_currentText);
+        else if (qName == "pic_square")
+            m_currentPoster->setPicSquare(m_currentText);
         else if (qName == "uid")
             m_currentPoster->setUID(m_currentText);
         break;
@@ -334,13 +336,24 @@ bool GetStreamPosts::prepare() {
    QString fql("{\"posts\":\"SELECT post_id, source_id, app_id, "
                "target_id, actor_id, message, created_time, updated_time, "
                "attachment, likes, action_links, attribution "
-               "FROM stream WHERE post_id='");
+               "FROM stream WHERE filter_key = 'nf' ");
 
-   fql.append(m_argMap.take("post_id").toString());
+    if (m_argMap.contains("post_id"))
+        fql.append("AND post_id = '" + m_argMap.take("post_id").toString() + "' ");
 
-   fql.append("'\",\"post_comments\":\"SELECT post_id, fromid, text, time, id "
+    if (m_argMap.contains("get_hidden"))
+    {
+       m_argMap.take("get_hidden");
+    }
+    else
+    {
+       fql.append("AND is_hidden = 0 ");
+    }
+
+
+    fql.append("\",\"post_comments\":\"SELECT post_id, fromid, text, time, id "
               "FROM comment WHERE post_id IN (select post_id FROM #posts)\","
-              "\"poster_info\":\"SELECT uid, name, pic, pic_big FROM user WHERE uid "
+              "\"poster_info\":\"SELECT uid, name, pic_square, pic, pic_big FROM user WHERE uid "
               "IN (SELECT actor_id FROM #posts)\","
               "\"commentors\":\"SELECT uid, name, pic_square "
               "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\","
@@ -349,7 +362,7 @@ bool GetStreamPosts::prepare() {
               "\"app_icons\":\"SELECT app_id, icon_url FROM application "
               "WHERE app_id IN (SELECT app_id FROM #posts)\"}");
 
-   //qDebug() << "queries: " << fql;
+    //qDebug() << "queries: " << fql;
     m_argMap.insert("queries", fql);
 
 

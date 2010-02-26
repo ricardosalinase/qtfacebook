@@ -23,10 +23,10 @@ void UpdatePoller::init() {
             this, SLOT(gotNewNotifications(API::FQL::GetNewNotifications*)));
     connect(m_factory, SIGNAL(apiFqlGetNewNotificationsFailed(API::FQL::GetNewNotifications*)),
             this, SLOT(gotNewNotificationsFailed(API::FQL::GetNewNotifications*)));
-    connect(m_factory, SIGNAL(apiFqlGetStreamPostInfo(API::FQL::GetStreamPostInfo*)),
-            this, SLOT(gotNewStreamPostInfo(API::FQL::GetStreamPostInfo*)));
-    connect(m_factory, SIGNAL(apiFqlGetStreamPostInfoFailed(API::FQL::GetStreamPostInfo*)),
-            this, SLOT(gotNewStreamPostInfoFailed(API::FQL::GetStreamPostInfo*)));
+    connect(m_factory, SIGNAL(apiFqlGetStreamPosts(API::FQL::GetStreamPosts*)),
+            this, SLOT(gotNewStreamPosts(API::FQL::GetStreamPosts*)));
+    connect(m_factory, SIGNAL(apiFqlGetStreamPostsFailed(API::FQL::GetStreamPosts*)),
+            this, SLOT(gotNewStreamPostsFailed(API::FQL::GetStreamPosts*)));
 
 
     m_notificationTimer = new QTimer(this);
@@ -82,30 +82,30 @@ void UpdatePoller::gotNewNotificationsFailed(API::FQL::GetNewNotifications *meth
 
 void UpdatePoller::getNewStreamPosts() {
 
-    API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPostInfo");
+    API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
     method->setArgument("start_time", m_lastStreamPostCheck);
     method->setArgument("get_hidden",1);
     bool rc = method->execute();
 
     if (!rc)
     {
-        qDebug() << "fql.multiquery.getStreamPostInfo exec() failed in UpdatePoller::getNewStreamPosts(): " << method->errorString();
+        qDebug() << "fql.multiquery.getStreamPosts exec() failed in UpdatePoller::getNewStreamPosts(): " << method->errorString();
         delete method;
     }
 
 }
 
-void UpdatePoller::gotNewStreamPostInfo(API::FQL::GetStreamPostInfo *method) {
+void UpdatePoller::gotNewStreamPosts(API::FQL::GetStreamPosts *method) {
 
     QList<DATA::StreamPost *> *pList = method->getStreamPosts();
-    qDebug() << "UpdatePoller::gotNewStreamPostInfo(); pList:" << pList->size();
+    qDebug() << "UpdatePoller::gotNewStreamPosts(); pList:" << pList->size();
 
     if (pList->size())
     {
         // This syncs us with their time
         m_lastStreamPostCheck = pList->first()->getCreatedTime();
 
-        emit apiFqlGetStreamPostInfo(pList);
+        emit apiFqlGetStreamPosts(pList);
     }
     else
     {
@@ -116,9 +116,11 @@ void UpdatePoller::gotNewStreamPostInfo(API::FQL::GetStreamPostInfo *method) {
 
 }
 
-void UpdatePoller::gotNewStreamPostInfoFailed(API::FQL::GetStreamPostInfo *method) {
+void UpdatePoller::gotNewStreamPostsFailed(API::FQL::GetStreamPosts *method) {
+    qDebug() << "UpdatePoller::gotNewStreamPostsFailed(); retrying in 5 seconds";
     delete method;
-    getNewStreamPosts();
+    QTimer::singleShot(5000, this, SLOT(getNewStreamPosts()));
+    //getNewStreamPosts();
 
 }
 

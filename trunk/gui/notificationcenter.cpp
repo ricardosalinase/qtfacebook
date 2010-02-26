@@ -162,7 +162,9 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
 
     if (list->size())
     {
-        StreamPostWidget *spw = new StreamPostWidget(list->takeAt(0), m_userInfo);
+        DATA::StreamPost *sp = list->takeAt(0);
+        m_streamPosts.insert(sp->getPostId(), sp);
+        StreamPostWidget *spw = new StreamPostWidget(sp, m_userInfo);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
         spw->show();
@@ -212,9 +214,9 @@ void NotificationCenter::notificationsMarkedAsReadFailed(API::Notifications::Mar
     notificationAcknowledged(NotificationCenterItem::Notification, nId);
 }
 
-void NotificationCenter::newStreamPostInfo(QList<DATA::StreamPost *> *pList) {
+void NotificationCenter::newStreamPosts(QList<DATA::StreamPost *> *pList) {
 
-    qDebug() << "newStreamPostInfo(); pList: " << pList->size();
+    qDebug() << "NotificationCenter::newStreamPosts(); pList: " << pList->size();
 
     int numNew = 0;
 
@@ -245,6 +247,7 @@ void NotificationCenter::newStreamPostInfo(QList<DATA::StreamPost *> *pList) {
             nWidget->start();
         }
 
+        m_streamPosts.insert(sp->getPostId(), sp);
 
     }
 
@@ -417,25 +420,32 @@ void NotificationCenter::linkActivated(QString url) {
     QRegExp rx1("v=feed&story_fbid=(\\d+)&id=(\\d+)");
     QRegExp rx2("streamPost:(\\d+_\\d+)");
 
-
-
     if (rx1.indexIn(url) != -1)
         postId = rx1.cap(2) + "_" + rx1.cap(1);
     else if (rx2.indexIn(url) != -1)
         postId = rx2.cap(1);
 
-    qDebug() << postId;
-
-    if (postId != "")
+    if (m_streamPosts.contains(postId))
     {
-        API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
-        method->setArgument("post_id", postId);
-        bool rc = method->execute();
-        if (!rc)
-            qDebug() << "Method fql.multiquery.getStreamPosts error: " << method->getErrorStr();
+        StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId], m_userInfo);
+        connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
+                this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
+        spw->show();
+        spw->scrollToBottom();
+    }
+    else
+    {
+       if (postId != "")
+        {
+            API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
+            method->setArgument("post_id", postId);
+            bool rc = method->execute();
+            if (!rc)
+                qDebug() << "Method fql.multiquery.getStreamPosts error: " << method->getErrorStr();
+        }
     }
 
-
+    qDebug() << postId;
 
 }
 
