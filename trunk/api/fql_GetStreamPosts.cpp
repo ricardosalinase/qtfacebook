@@ -350,6 +350,9 @@ bool GetStreamPosts::prepare() {
        fql.append("AND is_hidden = 0 ");
     }
 
+    if (m_argMap.contains("start_time"))
+        fql.append("AND created_time > " + m_argMap.take("start_time").toString());
+
 
     fql.append("\",\"post_comments\":\"SELECT post_id, fromid, text, time, id "
               "FROM comment WHERE post_id IN (select post_id FROM #posts)\","
