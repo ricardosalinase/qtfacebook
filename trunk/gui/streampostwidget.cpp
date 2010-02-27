@@ -51,10 +51,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(gotPosterPixmap(QNetworkReply*)));
-    m_nam2 = new QNetworkAccessManager(this);
-    connect(m_nam2,SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(gotPhoto(QNetworkReply*)));
+            this, SLOT(gotNetworkReply(QNetworkReply*)));
 
     this->setStyleSheet("background : white;");
     QHBoxLayout *mainLayout = new QHBoxLayout();
@@ -99,15 +96,15 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
         m_triedBothIcons = true;
         QNetworkRequest nr;
         nr.setUrl(QUrl(m_post->getAppInfo().getIconUrl()));
-        QNetworkReply *reply2 = m_nam2->get(nr);
-        m_outstandingNetworkRequests.insert(reply2, AppIcon);
+        QNetworkReply *reply = m_nam->get(nr);
+        m_outstandingNetworkRequests.insert(reply, AppIcon);
     }
     else if (post->getAttachment()->getIcon().toString() != "")
     {
         m_triedBothIcons = true;
         QNetworkRequest nr;
         nr.setUrl(post->getAttachment()->getIcon());
-        QNetworkReply *reply = m_nam2->get(nr);
+        QNetworkReply *reply = m_nam->get(nr);
         m_outstandingNetworkRequests.insert(reply, AppIcon);
     }
 
@@ -220,6 +217,10 @@ StreamPostWidget::~StreamPostWidget() {
         delete c;
     }
 
+    // Also deletes any outstanding network requests.
+    delete m_nam;
+
+
 }
 
 void StreamPostWidget::getComments()
@@ -304,28 +305,18 @@ void StreamPostWidget::getCommentsFailed(API::FQL::GetComments *method) {
 
     qDebug() << "API::FQL::GetComments Failed. Retrying in 5 seconds";
     m_commentTimer->start(5000);
-    m_progressWidget->setVisible(false);
+    //m_progressWidget->setVisible(false);
     delete method;
 }
 
 
-void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
+void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {
 
     RequestType t = m_outstandingNetworkRequests.take(reply);
 
     if (reply->error() == QNetworkReply::NoError)
     {
-        if (t == Photo)
-        {
-            QPixmap p;
-            p.loadFromData(reply->readAll());
-            QLabel *l = new QLabel();
-            l->setPixmap(p);
-            l->setMinimumHeight(p.height());
-            m_photoLayout->insertWidget(0,l);
-
-        }
-        else if (t == AppIcon)
+        if (t == AppIcon)
         {
             QPixmap p;
             p.loadFromData(reply->readAll());
@@ -333,14 +324,37 @@ void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
             l->setPixmap(p);
             m_ageLineLayout->insertWidget(0,l,0);
 
-        } else if (t == LinkThumb)
+        }
+        else if (t == PosterPixmap)
         {
             QPixmap p;
             p.loadFromData(reply->readAll());
             QLabel *l = new QLabel();
             l->setPixmap(p);
-            m_linkLayout->insertWidget(0,l,0,Qt::AlignTop);
+            l->setMinimumWidth(p.width());
+
+            QString uid;
+            QUrl url;
+
+            if (m_post->isFromUser())
+            {
+                uid = m_post->getPoster().getUID();
+                url = m_post->getPoster().getPicBig();
+            }
+            else
+            {
+                uid = m_post->getPage().getPageId();
+                url = m_post->getPage().getPicBig();
+            }
+
+            UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
+            cache->cachePixmap(uid, UTIL::FbUserPicCache::PicBig,
+                               url, p);
+
+            ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
             updateGeometry();
+            gotContentUpdate();
+            update();
         }
     }
     else
@@ -356,7 +370,7 @@ void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
             {
                 QNetworkRequest nr;
                 nr.setUrl(m_post->getAttachment()->getIcon());
-                QNetworkReply *reply2 = m_nam2->get(nr);
+                QNetworkReply *reply2 = m_nam->get(nr);
                 m_outstandingNetworkRequests.insert(reply2, AppIcon);
             }
 
@@ -392,65 +406,21 @@ void StreamPostWidget::getPosterPixmap() {
     {
         QNetworkRequest nr;
         nr.setUrl(url);
-        m_nam->get(nr);
+        QNetworkReply *reply = m_nam->get(nr);
+        m_outstandingNetworkRequests.insert(reply, PosterPixmap);
     }
     else
     {
         QLabel *l = new QLabel();
         l->setPixmap(*p);
+        delete p;
         ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
         adjustSize();
         update();
     }
 }
 
-void StreamPostWidget::gotPosterPixmap(QNetworkReply *reply) {
 
-    if (reply->error() == QNetworkReply::NoError)
-    {
-        QPixmap p;
-        p.loadFromData(reply->readAll());
-        QLabel *l = new QLabel();
-        l->setPixmap(p);
-        l->setMinimumWidth(p.width());
-
-        QString uid;
-        QUrl url;
-
-        if (m_post->isFromUser())
-        {
-            uid = m_post->getPoster().getUID();
-            url = m_post->getPoster().getPicBig();
-        }
-        else
-        {
-            uid = m_post->getPage().getPageId();
-            url = m_post->getPage().getPicBig();
-        }
-
-        UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
-        cache->cachePixmap(uid, UTIL::FbUserPicCache::PicBig,
-                           url, p);
-
-        ((QHBoxLayout *)layout())->insertWidget(0,l,0,Qt::AlignTop);
-        updateGeometry();
-        gotContentUpdate();
-        update();
-    }
-    else
-    {
-        qDebug() << reply->errorString();
-        qDebug() << reply->request().url().toString();
-    }
-
-
-
-
-}
-
-void StreamPostWidget::scrollToBottom() {
-
-}
 
 void StreamPostWidget::closeEvent(QCloseEvent *event) {
     emit closed(this);
@@ -483,7 +453,11 @@ void StreamPostWidget::commentButtonClicked() {
         API::Method *method = m_factory->createMethod("stream.addComment");
         method->setArgument("post_id", m_post->getPostId());
         method->setArgument("comment", comment);
-        method->execute();
+        if (!method->execute())
+        {
+            qDebug() << "stream.addComment failed to execute: " << method->errorString();
+            delete method;
+        }
     }
     else
     {

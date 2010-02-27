@@ -168,7 +168,7 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
         spw->show();
-        spw->scrollToBottom();
+
     }
 
     delete list;
@@ -317,6 +317,7 @@ void NotificationCenter::getPixmap(QLabel *ul, DATA::FbPageInfo& fbp) {
     if (p != 0)
     {
         ul->setPixmap(*p);
+        delete p;
     }
     else
     {
@@ -341,6 +342,7 @@ void NotificationCenter::getPixmap(QLabel *ul, DATA::FbUserInfo& fbu) {
     if (p != 0)
     {
         ul->setPixmap(*p);
+        delete p;
     }
     else
     {
@@ -431,7 +433,7 @@ void NotificationCenter::linkActivated(QString url) {
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
         spw->show();
-        spw->scrollToBottom();
+
     }
     else
     {

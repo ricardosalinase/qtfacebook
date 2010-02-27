@@ -47,6 +47,7 @@ FbStreamPostContentWidget::FbStreamPostContentWidget(DATA::FbStreamAttachment *a
                                              pList.at(i)->getText()));
     }
 
+
     m_linkLayout->insertLayout(1,linkTextLayout,1);
 
 
