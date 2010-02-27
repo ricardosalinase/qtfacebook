@@ -1,4 +1,4 @@
-#include "notifications_markread.h"
+#include "notifications_MarkRead.h"
 #include <QDebug>
 
 namespace API {

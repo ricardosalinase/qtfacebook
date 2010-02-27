@@ -1,24 +1,28 @@
-#ifndef COMMENTS_GET_H
-#define COMMENTS_GET_H
+#ifndef STREAM_REMOVECOMMENT_H
+#define STREAM_REMOVECOMMENT_H
 
 #include "apimethod.h"
 
 namespace API {
-namespace Comments {
+namespace Stream {
 
-class Get : public API::Method
+class RemoveComment : public API::Method
 {
 public:
-    Get(QObject *parent = 0);
+    explicit RemoveComment(QObject *parent = 0);
     bool startElement(const QString &namespaceURI, const QString &localName,
                       const QString &qName, const QXmlAttributes &attributes);
     bool endElement(const QString &namespaceURI, const QString &localName,
                     const QString &qName);
     QString getMethodName();
 
+signals:
+
+public slots:
+
 };
 
-} // namespace Comments
+} // namespace Stream
 } // namespace API
 
-#endif // COMMENTS_GET_H
+#endif // STREAM_REMOVECOMMENT_H

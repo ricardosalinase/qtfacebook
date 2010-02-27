@@ -7,17 +7,15 @@
 #include "userinfo.h"
 #include "apimethod.h"
 #include "friends_get.h"
-#include "comments_get.h"
-#include "notifications_get.h"
 #include "notifications_getlist.h"
 #include "users_getloggedinuser.h"
-#include "notifications_markread.h"
+#include "notifications_MarkRead.h"
 #include "fql_GetNewNotifications.h"
 #include "fql_GetAppInfo.h"
 #include "fql_GetStreamPosts.h"
-#include "fql_getstreampostinfo.h"
-#include "api_AddComment.h"
+#include "stream_AddComment.h"
 #include "fql_GetComments.h"
+#include "stream_RemoveComment.h"
 
 
 // Simple factory
@@ -61,16 +59,6 @@ signals:
     void apiFriendsGet(API::Friends::Get *method);
     void apiFriendsGetFailed(API::Friends::Get *method);
     /*!
-    * This signal is emitted whenever a API::Comments::Get method has completed
-    */
-    void apiCommentsGet(API::Comments::Get *method );
-    void apiCommentsGetFailed(API::Comments::Get *method );
-    /*!
-    * This signal is emitted whenever a API::Notifications::Get method has completed
-    */
-    void apiNotificationsGet(API::Notifications::Get *method);
-    void apiNotificationsGetFailed(API::Notifications::Get *method);
-    /*!
     * This signal is emitted whenever a API::Notifications::GetList method has completed
     */
     void apiNotificationsGetList(API::Notifications::GetList *method);
@@ -101,11 +89,6 @@ signals:
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method);
     void apiFqlGetStreamPostsFailed(API::FQL::GetStreamPosts *method);
     /*!
-     * This signal is emitted whenever a API::FQL::GetSteamPostInfo method has completed
-     */
-    void apiFqlGetStreamPostInfo(API::FQL::GetStreamPostInfo *method);
-    void apiFqlGetStreamPostInfoFailed(API::FQL::GetStreamPostInfo *method);
-    /*!
      * This signal is emitted whenever a API::Stream::AddComment method has completed
      */
     void apiStreamAddComment(API::Stream::AddComment *method);
@@ -115,6 +98,12 @@ signals:
      */
     void apiFqlGetComments(API::FQL::GetComments *method);
     void apiFqlGetCommentsFailed(API::FQL::GetComments *method);
+    /*!
+     * This signal is emitted whenever a API::Stream::RemoveComment method has completed
+     */
+    void apiStreamRemoveComment(API::Stream::RemoveComment *method);
+    void apiStreamRemoveCommentFailed(API::Stream::RemoveComment *method);
+
 
 public slots:
     void dispatch(API::Method *);

@@ -27,10 +27,10 @@ public:
 
 
 private:
-    enum ParseState { QUERY, POSTS, COMMENTLIST, 
-                      COMMENTS, POSTER, COMMENTOR, PAGE,
-                    ATTACHMENT, STREAMMEDIA, PHOTO, PROPERTY,
-                    APPINFO };
+    enum ParseState {   QUERY, POSTS, COMMENTLIST,
+                        POSTER, PAGE, ATTACHMENT,
+                        STREAMMEDIA, PHOTO, PROPERTY,
+                        APPINFO };
     ParseState m_parseState;
     bool prepare();
     QMap<QString, DATA::StreamPost* > m_postMap;

@@ -9,12 +9,9 @@ SOURCES += main.cpp \
     testqueryconsole.cpp \
     api/apimethod.cpp \
     api/factory.cpp \
-    api/comments_get.cpp \
     api/friends_get.cpp \
-    api/notifications_get.cpp \
     api/notifications_getlist.cpp \
     api/users_getloggedinuser.cpp \
-    api/notifications_markread.cpp \
     gui/notifications_listview.cpp \
     gui/notifications_widget.cpp \
     data/notification.cpp \
@@ -38,7 +35,6 @@ SOURCES += main.cpp \
     gui/streampostwidget.cpp \
     data/fbuserinfo.cpp \
     gui/commentwidget.cpp \
-    api/fql_getstreampostinfo.cpp \
     util/fbuserpiccache.cpp \
     data/FbPageInfo.cpp \
     data/FbPhoto.cpp \
@@ -47,8 +43,10 @@ SOURCES += main.cpp \
     data/FbStreamAttachmentProperty.cpp \
     gui/FbStreamPostPhotoWidget.cpp \
     gui/FbStreamPostContentWidget.cpp \
-    api/api_AddComment.cpp \
-    api/fql_GetComments.cpp
+    api/fql_GetComments.cpp \
+    api/stream_RemoveComment.cpp \
+    api/stream_AddComment.cpp \
+    api/notifications_MarkRead.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -56,13 +54,10 @@ HEADERS += fbconnectwizard.h \
     testqueryconsole.h \
     ui_testqueryconsole.h \
     api/factory.h \
-    api/comments_get.h \
     api/friends_get.h \
     api/apimethod.h \
-    api/notifications_get.h \
     api/notifications_getlist.h \
     api/users_getloggedinuser.h \
-    api/notifications_markread.h \
     gui/notifications_listview.h \
     gui/notifications_widget.h \
     data/notification.h \
@@ -87,7 +82,6 @@ HEADERS += fbconnectwizard.h \
     util/worker.h \
     util/agestring.h \
     gui/commentwidget.h \
-    api/fql_getstreampostinfo.h \
     gui/notificationcenteritem.h \
     util/fbuserpiccache.h \
     data/FbPageInfo.h \
@@ -97,8 +91,10 @@ HEADERS += fbconnectwizard.h \
     data/FbStreamAttachmentProperty.h \
     gui/FbStreamPostPhotoWidget.h \
     gui/FbStreamPostContentWidget.h \
-    api/api_AddComment.h \
-    api/fql_GetComments.h
+    api/fql_GetComments.h \
+    api/stream_RemoveComment.h \
+    api/stream_AddComment.h \
+    api/notifications_MarkRead.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

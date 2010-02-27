@@ -9,7 +9,7 @@
 #include "userinfo.h"
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
-#include "api/notifications_markread.h"
+#include "api/notifications_MarkRead.h"
 #include "gui/notifications_listview.h"
 #include "gui/notificationcenter.h"
 #include "gui/notificationcenteritem.h"

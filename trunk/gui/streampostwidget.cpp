@@ -27,7 +27,8 @@ namespace GUI {
 StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidget *parent) :
     QWidget(parent),
     m_post(post),
-    m_triedBothIcons(false)
+    m_triedBothIcons(false),
+    m_userInfo(info)
 {
 
     m_factory = new API::Factory(info);
@@ -39,6 +40,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
             this, SLOT(gotComments(API::FQL::GetComments*)));
     connect(m_factory, SIGNAL(apiFqlGetCommentsFailed(API::FQL::GetComments*)),
             this, SLOT(getCommentsFailed(API::FQL::GetComments*)));
+    connect(m_factory, SIGNAL(apiStreamRemoveComment(API::Stream::RemoveComment*)),
+            this, SLOT(apiStreamRemoveComment(API::Stream::RemoveComment*)));
+    connect(m_factory, SIGNAL(apiStreamRemoveCommentFailed(API::Stream::RemoveComment*)),
+            this, SLOT(apiStreamRemoveCommentFailed(API::Stream::RemoveComment*)));
 
     m_commentTimer = new QTimer();
     connect(m_commentTimer, SIGNAL(timeout()),
@@ -53,13 +58,12 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     this->setStyleSheet("background : white;");
     QHBoxLayout *mainLayout = new QHBoxLayout();
-    //mainLayout->insertSpacing(1,10);
     QFrame *f = new QFrame();
+    f->setMinimumWidth(10);
     f->setFrameShape(QFrame::VLine);
     mainLayout->insertWidget(1,f);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_contentLayout = new QVBoxLayout();
-    //m_contentLayout->addStrut(500);
     m_contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     if (post->isFromUser())
@@ -135,11 +139,29 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     m_contentLayout->addLayout(m_ageLineLayout,0);
     m_contentLayout->addStretch();
-    m_contentLayout->addSpacing(15);
+    m_contentLayout->addSpacing(10);
+
+
+
+
+    m_commentContainer = new QWidget();
+    m_commentScrollArea = new QScrollArea();
+
+    m_commentLayout = new QVBoxLayout();
+
+    m_commentLayout->addStretch();
+
+    m_commentContainer->setLayout(m_commentLayout);
+    m_commentScrollArea->setWidget(m_commentContainer);
+    m_commentScrollArea->setWidgetResizable(true);
+    m_commentScrollArea->setVisible(false);
+    m_commentScrollArea->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
+    m_contentLayout->addWidget(m_commentScrollArea,2);
+
 
     m_progressWidget = new QWidget();
     QHBoxLayout *hbl = new QHBoxLayout();
-
+    hbl->setMargin(0);
     m_commentProgressBar = new QProgressBar();
     m_commentProgressBar->setMinimum(0);
     m_commentProgressBar->setMaximum(0);
@@ -150,34 +172,13 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
     hbl->addWidget(l);
     hbl->addWidget(m_commentProgressBar);
     m_progressWidget->setLayout(hbl);
-    m_contentLayout->addWidget(m_progressWidget);
-
-
-    m_commentContainer = new QWidget();
-    m_commentScrollArea = new QScrollArea();
-
-    m_commentLayout = new QVBoxLayout();
-
-
-    DATA::StreamCommentList *cList = post->getCommentList();
-
-
-    for (int i = cList->size() - 1; i >= 0; i--)
-    {
-        //CommentWidget *cw = new CommentWidget(cList->at(i));
-        //m_commentLayout->insertWidget(0,cw);
-    }
-
-    m_commentLayout->addStretch();
-
-    m_commentContainer->setLayout(m_commentLayout);
-    m_commentScrollArea->setWidget(m_commentContainer);
-    m_commentScrollArea->setWidgetResizable(true);
-    if (!cList->size())
-        m_commentScrollArea->setVisible(false);
-    m_commentScrollArea->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
-    m_contentLayout->addWidget(m_commentScrollArea,2);
-
+    //m_contentLayout->addWidget(m_progressWidget);
+    QHBoxLayout *hbl2 = new QHBoxLayout();
+    l = new QLabel();
+    l->setMinimumHeight(15);
+    hbl2->addWidget(l);
+    hbl2->addWidget(m_progressWidget);
+    m_contentLayout->addLayout(hbl2);
 
     m_commentEdit = new QTextEdit();
 //    QPalette p = m_commentEdit->palette();
@@ -190,7 +191,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
     m_commentEdit->setFrameShadow(QFrame::Sunken);
     m_commentEdit->setMaximumHeight(75);
     m_commentEdit->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    m_contentLayout->addSpacing(15);
+    m_contentLayout->addSpacing(5);
     m_contentLayout->addWidget(m_commentEdit,0);
 
     m_addCommentButton = new QPushButton("Add Comment");
@@ -209,8 +210,16 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 }
 
 StreamPostWidget::~StreamPostWidget() {
+
     m_commentTimer->stop();
     delete m_commentTimer;
+
+    while (!m_post->getCommentList()->empty())
+    {
+        DATA::StreamComment *c = m_post->getCommentList()->takeFirst();
+        delete c;
+    }
+
 }
 
 void StreamPostWidget::getComments()
@@ -230,30 +239,60 @@ void StreamPostWidget::getComments()
 }
 
 void StreamPostWidget::gotComments(API::FQL::GetComments *method) {
-    //m_commentScrollArea->setMinimumHeight(300);
+
     QList<DATA::StreamComment *> cList = method->getCommentList();
     int num = cList.size();
 
-    QLayoutItem *child;
-    while ((child = m_commentLayout->takeAt(0)) != 0)
+    // TODO: Should be only get the comments we don't have?
+
+    // This is the *only* way I've found to make this work
+    // otherwise the viewport of the QScrollArea doesn't repaint
+    // and you end up with artifacts of old comments
+    m_commentScrollArea->takeWidget();
+    delete m_commentContainer;
+    while (!m_post->getCommentList()->empty())
     {
-        m_commentLayout->removeItem(child);
-        delete child;
+        DATA::StreamComment *c = m_post->getCommentList()->takeFirst();
+        delete c;
     }
-    m_commentScrollArea->viewport()->repaint();
+
+    m_commentContainer = new QWidget();
+    m_commentLayout = new QVBoxLayout();
+
+    CommentWidget *last = 0;
     while(!cList.empty())
     {
-        CommentWidget *cw = new CommentWidget(cList.takeFirst());
+        DATA::StreamComment *c = cList.takeFirst();
+        m_post->getCommentList()->append(c);
+
+        bool canDelete = false;
+        if(m_post->getCommentList()->canRemove() ||
+            c->getFromId() == m_userInfo->getUID())
+        {
+            canDelete = true;
+        }
+
+        CommentWidget *cw = new CommentWidget(c, canDelete);
         m_commentLayout->addWidget(cw);
-        cw->show();
+        connect(cw, SIGNAL(userClickedDelete(GUI::CommentWidget*)),
+                this, SLOT(userDeletedComment(GUI::CommentWidget*)));
+        last = cw;
     }
     m_commentLayout->addStretch();
+    m_commentContainer->setLayout(m_commentLayout);
+    m_commentScrollArea->setWidget(m_commentContainer);
 
 
-    QCoreApplication::sendPostedEvents();
-    m_commentScrollArea->setMinimumHeight(m_commentContainer->sizeHint().height());
     if (num)
+    {
         m_commentScrollArea->setVisible(true);
+        m_commentScrollArea->ensureWidgetVisible(last);
+        gotContentUpdate();
+    }
+    else
+    {
+        m_commentScrollArea->setVisible(false);
+    }
 
     delete method;
     m_progressWidget->setVisible(false);
@@ -421,7 +460,14 @@ void StreamPostWidget::closeEvent(QCloseEvent *event) {
 void StreamPostWidget::gotContentUpdate() {
 
     QCoreApplication::sendPostedEvents();
-    resize(sizeHint());
+
+    int h;
+    int w;
+
+    size().height() < sizeHint().height() ? h = sizeHint().height() : h = size().height();
+    size().width() < sizeHint().width() ? w = sizeHint().width() : w = size().width();
+
+    resize(w,h);
 
 
 }
@@ -445,10 +491,26 @@ void StreamPostWidget::commentButtonClicked() {
     }
 }
 
+void StreamPostWidget::userDeletedComment(GUI::CommentWidget *commentWidget) {
+
+    qDebug() << "Delete comment: " << commentWidget->getComment()->getCommentId();
+
+    API::Method *method = m_factory->createMethod("stream.removeComment");
+
+    method->setArgument("comment_id",commentWidget->getComment()->getCommentId());
+    if(!method->execute())
+    {
+        qDebug() << "API::Stream::removeComment failed to execute: " << method->getErrorStr();
+        delete method;
+    }
+
+}
+
 void StreamPostWidget::apiStreamAddComment(API::Stream::AddComment *method) {
     qDebug() << "Added Comment";
     m_commentEdit->clear();
     m_addCommentButton->setEnabled(true);
+    delete method;
     getComments();
 
 }
@@ -456,6 +518,20 @@ void StreamPostWidget::apiStreamAddComment(API::Stream::AddComment *method) {
 void StreamPostWidget::apiStreamAddCommentFailed(API::Stream::AddComment *method) {
     qDebug() << "Failed to add Comment";
     m_addCommentButton->setEnabled(true);
+    delete method;
+}
+
+void StreamPostWidget::apiStreamRemoveComment(API::Stream::RemoveComment *method) {
+
+    qDebug() << "Removed Comment";
+    delete method;
+    getComments();
+
+}
+
+void StreamPostWidget::apiStreamRemoveCommentFailed(API::Stream::RemoveComment *method) {
+    qDebug() << "Failed to remove comment";
+    delete method;
 }
 
 } // namespace GUI
