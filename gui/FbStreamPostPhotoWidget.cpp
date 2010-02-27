@@ -27,7 +27,7 @@ FbStreamPostPhotoWidget::FbStreamPostPhotoWidget(DATA::FbStreamAttachment *attac
         DATA::FbStreamMedia *m = mList.at(i);
         QUrl url = m->getSrc();
         nr.setUrl(url);
-        QNetworkReply *reply = m_nam->get(nr);
+        m_nam->get(nr);
     }
 
 

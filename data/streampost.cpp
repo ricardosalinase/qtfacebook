@@ -140,6 +140,7 @@ void StreamPost::setAttachment(DATA::FbStreamAttachment *attachment) {
     m_hasAttachment = true;
 }
 
+
 // NotificationCenterItem Interface
 QString StreamPost::getNavigationHtml() {
 

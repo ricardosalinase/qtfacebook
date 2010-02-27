@@ -17,6 +17,7 @@
 #include "data/streampost.h"
 #include "api/factory.h"
 #include "userinfo.h"
+#include "gui/commentwidget.h"
 
 
 
@@ -47,6 +48,9 @@ private slots:
     void gotComments(API::FQL::GetComments *method);
     void getCommentsFailed(API::FQL::GetComments *method);
     void getComments();
+    void userDeletedComment(GUI::CommentWidget *commentWidget);
+    void apiStreamRemoveComment(API::Stream::RemoveComment *method);
+    void apiStreamRemoveCommentFailed(API::Stream::RemoveComment *method);
 
 private:
     void getPosterPixmap();
@@ -71,6 +75,7 @@ private:
     QTimer *m_commentTimer;
     QProgressBar *m_commentProgressBar;
     QWidget *m_progressWidget;
+    UserInfo *m_userInfo;
 };
 
 } // namespace GUI

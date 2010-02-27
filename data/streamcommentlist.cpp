@@ -17,6 +17,14 @@ QString& StreamComment::getPostId() {
     return m_postId;
 }
 
+void StreamComment::setFbObjectId(QString id) {
+    m_fbObjectId = id;
+}
+
+QString& StreamComment::getFbObjectId() {
+    return m_fbObjectId;
+}
+
 void StreamComment::setCommentId(QString id) {
     m_commentId = id;
 }

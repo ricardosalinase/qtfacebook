@@ -53,6 +53,8 @@ bool GetComments::endElement(const QString &/*namespaceURI*/, const QString &/*l
             m_parseState = QUERY;
         else if (qName == "post_id")
             m_currentComment->setPostId(m_currentText);
+        else if (qName == "object_id")
+            m_currentComment->setFbObjectId(m_currentText);
         else if (qName == "fromid")
             m_currentComment->setFromId(m_currentText);
         else if (qName == "time")
@@ -122,7 +124,7 @@ QList<DATA::StreamComment *> GetComments::getCommentList()
 
 bool GetComments::prepare() {
 
-    QString fql("{\"comments\":\"SELECT post_id, fromid, time, text, id FROM comment WHERE post_id='");
+    QString fql("{\"comments\":\"SELECT post_id, object_id, fromid, time, text, id FROM comment WHERE post_id='");
 
     if (m_argMap.contains("post_id"))
         fql.append(m_argMap.take("post_id").toString());

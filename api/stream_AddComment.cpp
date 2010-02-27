@@ -1,4 +1,4 @@
-#include "api_AddComment.h"
+#include "stream_AddComment.h"
 
 namespace API {
 namespace Stream {
@@ -15,14 +15,15 @@ bool AddComment::startElement(const QString &/*namespaceURI*/, const QString &/*
                   const QString &qName, const QXmlAttributes &/*attributes*/)
 {
 
-
-
+    m_currentText.clear();
+    return true;
 }
 
 bool AddComment::endElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
                 const QString &qName)
 {
 
+    return true;
 }
 
 QString AddComment::getMethodName() {

@@ -22,12 +22,8 @@ Method * Factory::createMethod(QString method) {
 
     Q_ASSERT_X(0 != m_userInfo, "createMethod()","UserInfo object not set in factory" );
 
-    if (method.compare("comments.get",Qt::CaseInsensitive) == 0)
-        return prepareMethod(new Comments::Get());
-    else if (method.compare("friends.get",Qt::CaseInsensitive) == 0)
+    if (method.compare("friends.get",Qt::CaseInsensitive) == 0)
         return prepareMethod(new Friends::Get());
-    else if (method.compare("notifications.get", Qt::CaseInsensitive) == 0)
-        return prepareMethod(new Notifications::Get());
     else if (method.compare("notifications.getList", Qt::CaseInsensitive) == 0)
         return prepareMethod(new Notifications::GetList());
     else if (method.compare("users.getLoggedInUser", Qt::CaseInsensitive) == 0)
@@ -40,12 +36,12 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new FQL::GetAppInfo());
     else if (method.compare("fql.multiquery.getStreamPosts",Qt::CaseInsensitive) == 0)
         return prepareMethod(new FQL::GetStreamPosts());
-    else if (method.compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
-        return prepareMethod(new FQL::GetStreamPostInfo());
     else if (method.compare("stream.addcomment", Qt::CaseInsensitive) == 0)
         return prepareMethod(new API::Stream::AddComment());
     else if (method.compare("fql.multiquery.getComments",Qt::CaseInsensitive) == 0)
         return prepareMethod(new API::FQL::GetComments());
+    else if (method.compare("stream.removeComment", Qt::CaseInsensitive) == 0)
+        return prepareMethod(new API::Stream::RemoveComment());
     else
         return 0;
 }
@@ -69,8 +65,6 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiFriendsGetFailed((API::Friends::Get*)method);
     else if (method->getMethodName().compare("notifications.getList", Qt::CaseInsensitive) == 0)
         emit apiNotificationsGetListFailed((API::Notifications::GetList*)method);
-    else if (method->getMethodName().compare("notifications.get", Qt::CaseInsensitive) == 0)
-        emit apiNotificationsGetFailed((API::Notifications::Get*)method);
     else if (method->getMethodName().compare("users.getLoggedInUser", Qt::CaseInsensitive) == 0)
         emit apiUsersGetLoggedInUserFailed((API::Users::GetLoggedInUser*)method);
     else if (method->getMethodName().compare("notifications.markRead", Qt::CaseInsensitive) == 0)
@@ -81,12 +75,12 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiFqlGetAppInfoFailed((API::FQL::GetAppInfo*)method);
     else if (method->getMethodName().compare("fql.multiquery.getStreamposts", Qt::CaseInsensitive) == 0)
         emit apiFqlGetStreamPostsFailed((API::FQL::GetStreamPosts*)method);
-    else if (method->getMethodName().compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
-        emit apiFqlGetStreamPostInfoFailed((API::FQL::GetStreamPostInfo*)method);
     else if (method->getMethodName().compare("stream.addComment", Qt::CaseInsensitive) == 0)
         emit apiStreamAddCommentFailed((API::Stream::AddComment *)method);
     else if (method->getMethodName().compare("fql.multiquery.getComments", Qt::CaseInsensitive) == 0)
         emit apiFqlGetCommentsFailed((API::FQL::GetComments *)method);
+    else if (method->getMethodName().compare("stream.removeComment", Qt::CaseInsensitive) == 0)
+        emit apiStreamRemoveCommentFailed((API::Stream::RemoveComment*)method);
 }
 
 void Factory::dispatch(API::Method *method) {
@@ -95,8 +89,6 @@ void Factory::dispatch(API::Method *method) {
         emit apiFriendsGet((API::Friends::Get*)method);
     else if (method->getMethodName().compare("notifications.getList", Qt::CaseInsensitive) == 0)
         emit apiNotificationsGetList((API::Notifications::GetList*)method);
-    else if (method->getMethodName().compare("notifications.get", Qt::CaseInsensitive) == 0)
-        emit apiNotificationsGet((API::Notifications::Get*)method);
     else if (method->getMethodName().compare("users.getLoggedInUser", Qt::CaseInsensitive) == 0)
         emit apiUsersGetLoggedInUser((API::Users::GetLoggedInUser*)method);
     else if (method->getMethodName().compare("notifications.markRead", Qt::CaseInsensitive) == 0)
@@ -107,12 +99,12 @@ void Factory::dispatch(API::Method *method) {
         emit apiFqlGetAppInfo((API::FQL::GetAppInfo*)method);
     else if (method->getMethodName().compare("fql.multiquery.getStreamposts", Qt::CaseInsensitive) == 0)
         emit apiFqlGetStreamPosts((API::FQL::GetStreamPosts*)method);
-    else if (method->getMethodName().compare("fql.multiquery.getStreamPostInfo", Qt::CaseInsensitive) == 0)
-        emit apiFqlGetStreamPostInfo((API::FQL::GetStreamPostInfo*)method);
     else if (method->getMethodName().compare("stream.addComment", Qt::CaseInsensitive) == 0)
         emit apiStreamAddComment((API::Stream::AddComment *)method);
     else if (method->getMethodName().compare("fql.multiquery.getComments", Qt::CaseInsensitive) == 0)
         emit apiFqlGetComments((API::FQL::GetComments *)method);
+    else if (method->getMethodName().compare("stream.removeComment", Qt::CaseInsensitive) == 0)
+            emit apiStreamRemoveComment((API::Stream::RemoveComment*)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {

@@ -18,6 +18,8 @@ public:
 
     void setPostId(QString id);
     QString& getPostId();
+    void setFbObjectId(QString id);
+    QString& getFbObjectId();
     void setFromId(QString id);
     QString& getFromId();
     void setTime(QString time);
@@ -34,6 +36,7 @@ public:
 
 private:
     QString m_postId;
+    QString m_fbObjectId;
     QString m_fromId;
     QString m_time;
     QString m_text;

@@ -49,7 +49,10 @@ public:
     bool hasAttachment();
     DATA::FbStreamAttachment * getAttachment();
     void setAttachment(DATA::FbStreamAttachment *attachment);
-
+    bool canPostComments();
+    void canPostComments(bool);
+    bool canDeleteComments();
+    void canDeleteComments(bool);
 
 
     // NotificationCenterItem Interface
