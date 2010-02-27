@@ -27,10 +27,10 @@ class StreamPostWidget : public QWidget
 {
 Q_OBJECT
 public:
-    enum RequestType { PosterPixmap, Photo, AppIcon, LinkThumb };
+    enum RequestType { PosterPixmap, AppIcon };
     explicit StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidget *parent = 0);
     ~StreamPostWidget();
-    void scrollToBottom();
+
 signals:
     void closed(GUI::StreamPostWidget*);
 public slots:
@@ -39,8 +39,7 @@ protected:
     void closeEvent ( QCloseEvent * event );
 
 private slots:
-    void gotPosterPixmap(QNetworkReply *reply);
-    void gotPhoto(QNetworkReply *reply);
+    void gotNetworkReply(QNetworkReply *reply);
     void gotContentUpdate();
     void commentButtonClicked();
     void apiStreamAddComment(API::Stream::AddComment *method);
@@ -61,7 +60,6 @@ private:
     QHBoxLayout *m_linkLayout;
     QVBoxLayout *m_commentLayout;
     QNetworkAccessManager *m_nam;
-    QNetworkAccessManager *m_nam2;
     DATA::StreamPost *m_post;
     QScrollArea *m_commentScrollArea;
     QWidget *m_commentContainer;

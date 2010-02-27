@@ -91,7 +91,7 @@ void CommentWidget::getCommentPic() {
     else
     {
         m_picLabel->setPixmap(*p);
-        //((QGridLayout *)layout())->addWidget(l,0,0,2,1,Qt::AlignTop);
+        delete p;
     }
 }
 
@@ -105,7 +105,7 @@ void CommentWidget::gotUserPicSquare(QNetworkReply *reply) {
         UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
         cache->cachePixmap(m_comment->getFromId(),UTIL::FbUserPicCache::PicSquare,
                            reply->request().url(),p);
-        //((QGridLayout *)layout())->addWidget(l,0,0,2,1,Qt::AlignTop);
+
 
     }
 
