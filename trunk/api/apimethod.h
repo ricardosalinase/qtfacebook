@@ -126,10 +126,6 @@ namespace API
 
     private:
         /*!
-         * Used internally to store error information. Returned by getErrStr()
-         */
-        QString m_errStr;
-        /*!
          * Called during execute() this method varidates that all required parameters have been set and
          * that internal objects such as UserInfo are set.
          */
@@ -138,6 +134,10 @@ namespace API
 
 
     protected:
+        /*!
+         * Used internally to store error information. Returned by getErrStr()
+         */
+        QString m_errStr;
         /*!
          * Method used in FQL queries to prepare the FQL statement. Is it called in exec() prior to making the
          * POST to the Facebook API. The default implementation does nothing.

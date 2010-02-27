@@ -28,11 +28,6 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         {
             m_parseState = COMMENTLIST;
         }
-        else if (m_parseState == COMMENTLIST && qName == "comment")
-        {
-            m_parseState = COMMENTS;
-            m_currentStreamComment = new DATA::StreamComment();
-        }
         else if (m_parseState == POSTS && qName == "attachment")
         {
             m_currentAttachment = new DATA::FbStreamAttachment();
@@ -52,6 +47,10 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         {
             m_currentPhoto = new DATA::FbPhoto();
             m_parseState = PHOTO;
+        }
+        else if (m_parseState == COMMENTS && qName == "comment")
+        {
+            m_currentStreamComment = new DATA::StreamComment();
         }
         else if (m_parseState == COMMENTOR && qName == "user")
         {
@@ -86,6 +85,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         {
             if (m_currentText == "posts")
                 m_parseState = POSTS;
+            else if (m_currentText == "post_comments")
+                m_parseState = COMMENTS;
             else if (m_currentText == "poster_info")
                 m_parseState = POSTER;
             else if (m_currentText == "commentors")
@@ -131,19 +132,18 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentStreamPost->getCommentList()->canRemove(m_currentText.compare("1") == 0 ? true : false);
         else if (qName == "can_post")
             m_currentStreamPost->getCommentList()->canPost(m_currentText.compare("1") == 0 ? true : false);
-        else if (qName == "count")
-            m_currentStreamPost->getCommentList()->setTotalAvailable(m_currentText.toInt());
         else if (qName == "comments")
             m_parseState = POSTS;
         break;
     case COMMENTS:
         if (qName == "comment")
         {
-            m_currentStreamPost->getCommentList()->append(m_currentStreamComment);
+            m_postMap[m_currentStreamComment->getPostId()]->getCommentList()->append(m_currentStreamComment);
             m_commentMap.insertMulti(m_currentStreamComment->getFromId(), m_currentStreamComment);
             m_currentStreamComment = 0;
-            m_parseState = COMMENTLIST;
         }
+        else if (qName == "fql_result")
+            m_parseState = QUERY;
         else if (qName == "post_id")
             m_currentStreamComment->setPostId(m_currentText);
         else if (qName == "fromid")
@@ -335,7 +335,7 @@ bool GetStreamPosts::prepare() {
 
    QString fql("{\"posts\":\"SELECT post_id, source_id, app_id, "
                "target_id, actor_id, message, created_time, updated_time, "
-               "attachment, likes, action_links, attribution, comments "
+               "attachment, likes, action_links, attribution "
                "FROM stream WHERE filter_key = 'nf' ");
 
     if (m_argMap.contains("post_id"))
@@ -354,12 +354,14 @@ bool GetStreamPosts::prepare() {
         fql.append("AND created_time > " + m_argMap.take("start_time").toString());
 
 
-    fql.append("\",\"poster_info\":\"SELECT uid, name, pic_square, pic, pic_big FROM user WHERE uid "
+    fql.append("\",\"post_comments\":\"SELECT post_id, fromid, text, time, id "
+              "FROM comment WHERE post_id IN (select post_id FROM #posts)\","
+              "\"poster_info\":\"SELECT uid, name, pic_square, pic, pic_big FROM user WHERE uid "
               "IN (SELECT actor_id FROM #posts)\","
               "\"commentors\":\"SELECT uid, name, pic_square "
-              "FROM user WHERE uid IN (SELECT comments.comment_list.fromid FROM #posts)\","
+              "FROM user WHERE uid IN (SELECT fromid FROM #post_comments)\","
               "\"page_info\":\"SELECT page_id, name, pic, pic_square, pic_big FROM page WHERE page_id "
-              "IN (SELECT actor_id FROM #posts) OR page_id IN (SELECT comments.comment_list.fromid FROM #posts)\","
+              "IN (SELECT actor_id FROM #posts) OR page_id IN (SELECT fromid FROM #post_comments)\","
               "\"app_icons\":\"SELECT app_id, icon_url FROM application "
               "WHERE app_id IN (SELECT app_id FROM #posts)\"}");
 

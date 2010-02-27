@@ -17,6 +17,7 @@
 #include "fql_GetStreamPosts.h"
 #include "fql_getstreampostinfo.h"
 #include "api_AddComment.h"
+#include "fql_GetComments.h"
 
 
 // Simple factory
@@ -109,7 +110,11 @@ signals:
      */
     void apiStreamAddComment(API::Stream::AddComment *method);
     void apiStreamAddCommentFailed(API::Stream::AddComment *method);
-
+    /*!
+     * This signal is emitted whenever a API::FQL::GetComments method has completed
+     */
+    void apiFqlGetComments(API::FQL::GetComments *method);
+    void apiFqlGetCommentsFailed(API::FQL::GetComments *method);
 
 public slots:
     void dispatch(API::Method *);

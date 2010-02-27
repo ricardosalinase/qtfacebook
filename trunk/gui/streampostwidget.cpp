@@ -35,7 +35,14 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
            this, SLOT(apiStreamAddComment(API::Stream::AddComment*)));
     connect(m_factory, SIGNAL(apiStreamAddCommentFailed(API::Stream::AddComment*)),
             this, SLOT(apiStreamAddCommentFailed(API::Stream::AddComment*)));
+    connect(m_factory, SIGNAL(apiFqlGetComments(API::FQL::GetComments*)),
+            this, SLOT(gotComments(API::FQL::GetComments*)));
+    connect(m_factory, SIGNAL(apiFqlGetCommentsFailed(API::FQL::GetComments*)),
+            this, SLOT(getCommentsFailed(API::FQL::GetComments*)));
 
+    m_commentTimer = new QTimer();
+    connect(m_commentTimer, SIGNAL(timeout()),
+            this, SLOT(getComments()));
 
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
@@ -128,11 +135,28 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     m_contentLayout->addLayout(m_ageLineLayout,0);
     m_contentLayout->addStretch();
+    m_contentLayout->addSpacing(15);
+
+    m_progressWidget = new QWidget();
+    QHBoxLayout *hbl = new QHBoxLayout();
+
+    m_commentProgressBar = new QProgressBar();
+    m_commentProgressBar->setMinimum(0);
+    m_commentProgressBar->setMaximum(0);
+    m_commentProgressBar->setMaximumHeight(10);
+
+    QLabel *l = new QLabel("Updating Comments");
+    l->setStyleSheet("font-size: 8pt;");
+    hbl->addWidget(l);
+    hbl->addWidget(m_commentProgressBar);
+    m_progressWidget->setLayout(hbl);
+    m_contentLayout->addWidget(m_progressWidget);
+
 
     m_commentContainer = new QWidget();
     m_commentScrollArea = new QScrollArea();
 
-    QVBoxLayout *commentLayout = new QVBoxLayout();
+    m_commentLayout = new QVBoxLayout();
 
 
     DATA::StreamCommentList *cList = post->getCommentList();
@@ -140,16 +164,15 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     for (int i = cList->size() - 1; i >= 0; i--)
     {
-        CommentWidget *cw = new CommentWidget(cList->at(i));
-        commentLayout->insertWidget(0,cw);
+        //CommentWidget *cw = new CommentWidget(cList->at(i));
+        //m_commentLayout->insertWidget(0,cw);
     }
 
-    commentLayout->addStretch();
+    m_commentLayout->addStretch();
 
-    m_commentContainer->setLayout(commentLayout);
+    m_commentContainer->setLayout(m_commentLayout);
     m_commentScrollArea->setWidget(m_commentContainer);
     m_commentScrollArea->setWidgetResizable(true);
-    m_contentLayout->addSpacing(15);
     if (!cList->size())
         m_commentScrollArea->setVisible(false);
     m_commentScrollArea->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
@@ -181,12 +204,71 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     //this->resize(800,600);
     getPosterPixmap();
+    getComments();
 
 }
 
 StreamPostWidget::~StreamPostWidget() {
+    m_commentTimer->stop();
+    delete m_commentTimer;
+}
+
+void StreamPostWidget::getComments()
+{
+    m_progressWidget->setVisible(true);
+    API::Method *method = m_factory->createMethod("fql.multiquery.getComments");
+
+    method->setArgument("post_id", m_post->getPostId());
+    bool rc = method->execute();
+    if (!rc)
+    {
+        qDebug() << "fql.multiquery.getComments failed to execute: " << method->errorString();
+        delete method;
+    }
+
 
 }
+
+void StreamPostWidget::gotComments(API::FQL::GetComments *method) {
+    //m_commentScrollArea->setMinimumHeight(300);
+    QList<DATA::StreamComment *> cList = method->getCommentList();
+    int num = cList.size();
+
+    QLayoutItem *child;
+    while ((child = m_commentLayout->takeAt(0)) != 0)
+    {
+        m_commentLayout->removeItem(child);
+        delete child;
+    }
+    m_commentScrollArea->viewport()->repaint();
+    while(!cList.empty())
+    {
+        CommentWidget *cw = new CommentWidget(cList.takeFirst());
+        m_commentLayout->addWidget(cw);
+        cw->show();
+    }
+    m_commentLayout->addStretch();
+
+
+    QCoreApplication::sendPostedEvents();
+    m_commentScrollArea->setMinimumHeight(m_commentContainer->sizeHint().height());
+    if (num)
+        m_commentScrollArea->setVisible(true);
+
+    delete method;
+    m_progressWidget->setVisible(false);
+    gotContentUpdate();
+    m_commentTimer->start(60000);
+}
+
+void StreamPostWidget::getCommentsFailed(API::FQL::GetComments *method) {
+
+    qDebug() << "API::FQL::GetComments Failed. Retrying in 5 seconds";
+    m_commentTimer->start(5000);
+    m_progressWidget->setVisible(false);
+    delete method;
+}
+
 
 void StreamPostWidget::gotPhoto(QNetworkReply *reply) {
 
@@ -367,6 +449,7 @@ void StreamPostWidget::apiStreamAddComment(API::Stream::AddComment *method) {
     qDebug() << "Added Comment";
     m_commentEdit->clear();
     m_addCommentButton->setEnabled(true);
+    getComments();
 
 }
 
