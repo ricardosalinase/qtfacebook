@@ -46,7 +46,9 @@ SOURCES += main.cpp \
     api/fql_GetComments.cpp \
     api/stream_RemoveComment.cpp \
     api/stream_AddComment.cpp \
-    api/notifications_MarkRead.cpp
+    api/notifications_MarkRead.cpp \
+    util/FbPhotoCache.cpp \
+    gui/FbPhotoLabel.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -94,7 +96,9 @@ HEADERS += fbconnectwizard.h \
     api/fql_GetComments.h \
     api/stream_RemoveComment.h \
     api/stream_AddComment.h \
-    api/notifications_MarkRead.h
+    api/notifications_MarkRead.h \
+    util/FbPhotoCache.h \
+    gui/FbPhotoLabel.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

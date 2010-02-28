@@ -33,6 +33,7 @@ public:
 
 signals:
     void closed(GUI::StreamPostWidget*);
+    void photoSelectedFromStreamPost(QString photoId, QString albumId, QString ownerId);
 public slots:
 
 protected:
