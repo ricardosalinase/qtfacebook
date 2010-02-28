@@ -117,6 +117,8 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
         if (type == "album" || type == "photo")
         {
             GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment);
+            connect(pw, SIGNAL(photoSelected(QString,QString,QString)),
+                    this, SIGNAL(photoSelectedFromStreamPost(QString,QString,QString)));
             pw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
             m_contentLayout->addSpacing(10);
             m_contentLayout->addWidget(pw);

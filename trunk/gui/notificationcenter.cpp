@@ -167,6 +167,8 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
         StreamPostWidget *spw = new StreamPostWidget(sp, m_userInfo);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
+        connect(spw, SIGNAL(photoSelectedFromStreamPost(QString,QString,QString)),
+                this, SLOT(photoSelectedInStreamPost(QString,QString,QString)));
         spw->show();
 
     }
@@ -432,6 +434,8 @@ void NotificationCenter::linkActivated(QString url) {
         StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId], m_userInfo);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
+        connect(spw, SIGNAL(photoSelectedFromStreamPost(QString,QString,QString)),
+                this, SLOT(photoSelectedInStreamPost(QString,QString,QString)));
         spw->show();
 
     }
@@ -462,6 +466,10 @@ void NotificationCenter::closeEvent(QCloseEvent *event) {
     settings.setValue("NotificationCenter", saveGeometry());
     settings.endGroup();
     event->accept();
+}
+
+void NotificationCenter::photoSelectedInStreamPost(QString photoId, QString albumId, QString ownerId) {
+    qDebug() << "Photo: " << photoId << " album: " << albumId << " owner: " << ownerId;
 }
 
 

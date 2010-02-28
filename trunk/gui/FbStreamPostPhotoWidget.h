@@ -6,8 +6,10 @@
 #include <QVBoxLayout>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QPair>
 
 #include "data/FbStreamAttachment.h"
+#include "data/FbPhoto.h"
 
 namespace GUI {
 
@@ -20,16 +22,20 @@ public:
 
 
 signals:
-
+    void photoSelected(QString photoId, QString albumId, QString ownerId);
 public slots:
 
 private slots:
     void gotNetworkReply(QNetworkReply *);
+    void userClickedImage(QString pid);
 
 private:
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_photoLayout;
     QNetworkAccessManager *m_nam;
+    QMap<QNetworkReply *, DATA::FbPhoto> m_outstandingNetworkRequests;
+    QMap<QString, DATA::FbPhoto> m_photoMap;
+
 
 };
 

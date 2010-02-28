@@ -59,6 +59,7 @@ private slots:
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
     void newStreamPosts(QList<DATA::StreamPost *> *pList);
     void streamPostClosed(GUI::StreamPostWidget *);
+    void photoSelectedInStreamPost(QString photoId, QString albumId, QString ownerId);
 
 protected:
     void closeEvent ( QCloseEvent * event );
