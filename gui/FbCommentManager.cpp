@@ -32,7 +32,7 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
     connect(m_commentTimer, SIGNAL(timeout()),
             this, SLOT(getComments()));
 
-    setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
+    //setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->setMargin(0);
@@ -47,7 +47,7 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
     m_commentScrollArea->setVisible(false);
     m_commentScrollArea->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::MinimumExpanding);
     mainLayout->addWidget(m_commentScrollArea,2);
-
+    mainLayout->addStretch();
     m_progressWidget = new QWidget();
     QHBoxLayout *progressWidgetLayout = new QHBoxLayout();
     progressWidgetLayout->setMargin(0);
