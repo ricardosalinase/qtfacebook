@@ -2,11 +2,19 @@
 
 namespace GUI {
 
-FbPhotoViewWidget::FbPhotoViewWidget(const DATA::FbPhoto *photo, const UserInfo *info, QWidget *parent) :
+FbPhotoViewWidget::FbPhotoViewWidget(DATA::FbPhoto *photo, UserInfo *info, QWidget *parent) :
     QWidget(parent),
     m_photo(photo),
-    m_info(info)
+    m_info(info),
+    m_isOwner(false)
 {
+
+    if (m_info->getUID() == photo->getOwnerId())
+        m_isOwner = true;
+
+
+
+
 }
 
 } // namespace GUI

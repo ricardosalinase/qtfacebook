@@ -142,11 +142,6 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
 StreamPostWidget::~StreamPostWidget() {
 
-
-    // Also deletes any outstanding network requests.
-    delete m_nam;
-
-
 }
 
 void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {

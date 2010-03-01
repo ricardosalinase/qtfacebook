@@ -14,7 +14,7 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
     m_id(id),
     m_isOwner(isOwner)
 {
-    m_factory = new API::Factory(info);
+    m_factory = new API::Factory(info,this);
     connect(m_factory, SIGNAL(apiStreamAddComment(API::Stream::AddComment*)),
            this, SLOT(apiStreamAddComment(API::Stream::AddComment*)));
     connect(m_factory, SIGNAL(apiStreamAddCommentFailed(API::Stream::AddComment*)),
@@ -28,7 +28,7 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
     connect(m_factory, SIGNAL(apiStreamRemoveCommentFailed(API::Stream::RemoveComment*)),
             this, SLOT(apiStreamRemoveCommentFailed(API::Stream::RemoveComment*)));
 
-    m_commentTimer = new QTimer();
+    m_commentTimer = new QTimer(this);
     connect(m_commentTimer, SIGNAL(timeout()),
             this, SLOT(getComments()));
 
@@ -92,6 +92,18 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
 
     setLayout(mainLayout);
     getComments();
+
+
+}
+
+FbCommentManager::~FbCommentManager() {
+
+    while (!m_commentList.empty())
+    {
+        DATA::StreamComment *c = m_commentList.takeFirst();
+        delete c;
+    }
+
 
 
 }

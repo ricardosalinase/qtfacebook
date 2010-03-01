@@ -24,6 +24,7 @@ public:
     enum FbType { PostId, ObjectId };
     FbCommentManager(const QString& id, FbType type, bool isOwner,
                           UserInfo *info, QWidget *parent = 0);
+    ~FbCommentManager();
 
 signals:
     void updatedComments();
