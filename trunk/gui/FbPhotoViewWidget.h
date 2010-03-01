@@ -12,15 +12,16 @@ class FbPhotoViewWidget : public QWidget
 {
 Q_OBJECT
 public:
-    FbPhotoViewWidget(const DATA::FbPhoto *photo, const UserInfo *info, QWidget *parent = 0);
+    FbPhotoViewWidget(DATA::FbPhoto *photo, UserInfo *info, QWidget *parent = 0);
 
 signals:
 
 public slots:
 
 private:
-    const DATA::FbPhoto *m_photo;
-    const UserInfo *m_info;
+    DATA::FbPhoto *m_photo;
+    UserInfo *m_info;
+    bool m_isOwner;
 };
 
 } // namespace GUI
