@@ -251,9 +251,15 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_parseState = STREAMMEDIA;
         }
         else if (qName == "aid")
+        {
             m_currentPhoto->setAlbumId(m_currentText);
+            m_currentStreamMedia->getMediaDetail().insert("aid", m_currentText);
+        }
         else if (qName == "pid")
+        {
             m_currentPhoto->setPhotoId(m_currentText);
+            m_currentStreamMedia->getMediaDetail().insert("pid", m_currentText);
+        }
         else if (qName == "owner")
             m_currentPhoto->setOwnerId(m_currentText);
         break;

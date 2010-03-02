@@ -12,6 +12,7 @@ class FbPhotoLabel : public QLabel
     Q_OBJECT
 public:
     explicit FbPhotoLabel(const QString& pid, QWidget *parent = 0);
+    QString& getPid();
 
 signals:
     void userClickedImage(QString pid);

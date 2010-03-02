@@ -41,8 +41,6 @@ SOURCES += main.cpp \
     data/FbStreamAttachment.cpp \
     data/FbStreamMedia.cpp \
     data/FbStreamAttachmentProperty.cpp \
-    gui/FbStreamPostPhotoWidget.cpp \
-    gui/FbStreamPostContentWidget.cpp \
     api/fql_GetComments.cpp \
     api/stream_RemoveComment.cpp \
     api/stream_AddComment.cpp \
@@ -51,7 +49,7 @@ SOURCES += main.cpp \
     gui/FbPhotoLabel.cpp \
     gui/FbPhotoViewWidget.cpp \
     gui/FbCommentManager.cpp \
-    gui/FbStreamPostAttachmentWidget.cpp
+    gui/FbAttachmentWidget.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -94,8 +92,6 @@ HEADERS += fbconnectwizard.h \
     data/FbStreamAttachment.h \
     data/FbStreamMedia.h \
     data/FbStreamAttachmentProperty.h \
-    gui/FbStreamPostPhotoWidget.h \
-    gui/FbStreamPostContentWidget.h \
     api/fql_GetComments.h \
     api/stream_RemoveComment.h \
     api/stream_AddComment.h \
@@ -104,7 +100,7 @@ HEADERS += fbconnectwizard.h \
     gui/FbPhotoLabel.h \
     gui/FbPhotoViewWidget.h \
     gui/FbCommentManager.h \
-    gui/FbStreamPostAttachmentWidget.h
+    gui/FbAttachmentWidget.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

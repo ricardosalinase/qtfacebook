@@ -4,6 +4,7 @@
 #include <QUrl>
 #include <QString>
 #include <QVariant>
+#include <QMap>
 
 
 namespace DATA {
@@ -23,7 +24,8 @@ public:
     QUrl& getSrc();
     void setMedia(QVariant *media);
     QVariant * getMedia();
-
+    void setMediaDetail(const QString& key, const QString& value);
+    QMap<QString, QString>& getMediaDetail();
 
 protected:
     QString m_type;
@@ -31,6 +33,7 @@ protected:
     QUrl m_href;
     QUrl m_src;
     QVariant *m_media;
+    QMap<QString, QString> m_mediaDetail;
 };
 
 } // namespace DATA
