@@ -50,4 +50,12 @@ QVariant * FbStreamMedia::getMedia() {
     return m_media;
 }
 
+void FbStreamMedia::setMediaDetail(const QString &key, const QString &value) {
+    m_mediaDetail.insert(key,value);
+}
+
+QMap<QString, QString>& FbStreamMedia::getMediaDetail() {
+    return m_mediaDetail;
+}
+
 } // namespace DATA

@@ -33,7 +33,6 @@ public:
 
 signals:
     void closed(GUI::StreamPostWidget*);
-    void photoSelectedFromStreamPost(QString photoId, QString albumId, QString ownerId);
 public slots:
 
 protected:
@@ -42,6 +41,7 @@ protected:
 private slots:
     void gotNetworkReply(QNetworkReply *reply);
     void gotContentUpdate();
+    void contentClicked(QString url);
 
 private:
     void getPosterPixmap();

@@ -12,4 +12,8 @@ void FbPhotoLabel::mousePressEvent( QMouseEvent */*ev*/ ) {
     emit userClickedImage(m_pid);
 }
 
+QString& FbPhotoLabel::getPid() {
+    return m_pid;
+}
+
 } // namespace GUI

@@ -18,9 +18,8 @@
 #include "commentwidget.h"
 #include "util/fbuserpiccache.h"
 #include "data/FbStreamAttachment.h"
-#include "gui/FbStreamPostPhotoWidget.h"
-#include "gui/FbStreamPostContentWidget.h"
 #include "gui/FbCommentManager.h"
+#include "gui/FbAttachmentWidget.h"
 
 
 namespace GUI {
@@ -95,28 +94,11 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
     if (!post->getAttachment()->isEmpty())
     {
         DATA::FbStreamAttachment *attachment = post->getAttachment();
-        QString type = attachment->getFbObjectType();
-
-        if (type == "album" || type == "photo")
-        {
-            GUI::FbStreamPostPhotoWidget *pw = new GUI::FbStreamPostPhotoWidget(attachment);
-            connect(pw, SIGNAL(photoSelected(QString,QString,QString)),
-                    this, SIGNAL(photoSelectedFromStreamPost(QString,QString,QString)));
-            pw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-            m_contentLayout->addSpacing(10);
-            m_contentLayout->addWidget(pw);
-
-        }
-        //else if (type == "event") {}
-        else // if (type == "") // No FbObjectType specified in the attachment
-        {
-            GUI::FbStreamPostContentWidget *cw = new GUI::FbStreamPostContentWidget(attachment);
-            cw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-            connect(cw, SIGNAL(contentLoaded()),
-                    this, SLOT(gotContentUpdate()));
-            m_contentLayout->addSpacing(10);
-            m_contentLayout->addWidget(cw);
-        }
+        FbAttachmentWidget *aw = new FbAttachmentWidget(attachment);
+        aw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        connect(aw, SIGNAL(userClickedImage(QString)),
+                this, SLOT(contentClicked(QString)));
+        m_contentLayout->addWidget(aw);
     }
 
     m_contentLayout->addLayout(m_ageLineLayout,0);
@@ -142,6 +124,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
 StreamPostWidget::~StreamPostWidget() {
 
+}
+
+void StreamPostWidget::contentClicked(QString url) {
+    qDebug() << "StreamPostWidget::contentClicked(); URL: " << url;
 }
 
 void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {
