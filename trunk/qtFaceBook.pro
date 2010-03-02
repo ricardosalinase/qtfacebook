@@ -50,7 +50,8 @@ SOURCES += main.cpp \
     util/FbPhotoCache.cpp \
     gui/FbPhotoLabel.cpp \
     gui/FbPhotoViewWidget.cpp \
-    gui/FbCommentManager.cpp
+    gui/FbCommentManager.cpp \
+    gui/FbStreamPostAttachmentWidget.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -102,7 +103,8 @@ HEADERS += fbconnectwizard.h \
     util/FbPhotoCache.h \
     gui/FbPhotoLabel.h \
     gui/FbPhotoViewWidget.h \
-    gui/FbCommentManager.h
+    gui/FbCommentManager.h \
+    gui/FbStreamPostAttachmentWidget.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
