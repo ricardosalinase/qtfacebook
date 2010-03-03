@@ -78,6 +78,14 @@ FbUserInfo & StreamPost::getPoster() {
     return m_poster;
 }
 
+void StreamPost::setTarget(FbUserInfo *target) {
+    m_target = *target;
+}
+
+FbUserInfo& StreamPost::getTarget() {
+    return m_target;
+}
+
 void StreamPost::setPage(FbPageInfo *page) {
     m_isFromUser = false;
     m_page = *page;

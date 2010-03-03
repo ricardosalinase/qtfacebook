@@ -92,6 +92,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_postMap.insert(m_currentStreamPost->getPostId(), m_currentStreamPost);
             m_postMap.insertMulti(m_currentStreamPost->getActorId(), m_currentStreamPost);
             m_appToPostMap.insertMulti(m_currentStreamPost->getAppId(), m_currentStreamPost);
+            if (m_currentStreamPost->getTargetId().compare("") != 0)
+                m_targetToPostMap.insertMulti(m_currentStreamPost->getTargetId(), m_currentStreamPost);
             m_currentStreamPost = 0;
         }
         else if (qName == "fql_result")
@@ -130,6 +132,12 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             for (int i = 0; i < pList.size(); i++)
             {
                 pList.at(i)->setPoster(m_currentPoster);
+            }
+            pList.clear();
+            pList = m_targetToPostMap.values(m_currentPoster->getUID());
+            for (int i = 0; i < pList.size(); i++)
+            {
+                pList.at(i)->setTarget(m_currentPoster);
             }
             delete m_currentPoster;
             m_currentPoster = 0;
@@ -295,7 +303,7 @@ bool GetStreamPosts::prepare() {
 
 
     fql.append("\",\"poster_info\":\"SELECT uid, name, pic_square, pic, pic_big FROM user WHERE uid "
-              "IN (SELECT actor_id FROM #posts)\","
+               "IN (SELECT actor_id FROM #posts) OR uid IN (SELECT target_id FROM #posts)\","
               "\"page_info\":\"SELECT page_id, name, pic, pic_square, pic_big FROM page WHERE page_id "
               "IN (SELECT actor_id FROM #posts)\","
               "\"app_icons\":\"SELECT app_id, icon_url FROM application "
