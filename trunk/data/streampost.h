@@ -42,6 +42,8 @@ public:
     StreamCommentList * getCommentList();
     void setPoster(FbUserInfo *poster);
     FbUserInfo& getPoster();
+    void setTarget(FbUserInfo *target);
+    FbUserInfo& getTarget();
     void setPage(FbPageInfo *page);
     FbPageInfo& getPage();
     bool isFromUser();
@@ -76,6 +78,7 @@ private:
     // StreamAttachment m_attachment;
     StreamCommentList *m_commentList;
     FbUserInfo m_poster;
+    FbUserInfo m_target;
     FbPageInfo m_page;
     bool m_isFromUser;
     bool m_hasAttachment;

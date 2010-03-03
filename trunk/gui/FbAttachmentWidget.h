@@ -19,7 +19,8 @@ public:
                                  QWidget *parent = 0);
     QSize minimumSizeHint() const;
 signals:
-    void userClickedImage(QString link);
+    void userClickedUrl(QString link);
+
 public slots:
     void gotNetworkReply(QNetworkReply *);
 

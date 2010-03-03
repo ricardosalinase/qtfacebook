@@ -36,6 +36,7 @@ private:
     QMap<QString, DATA::StreamPost* > m_postMap;
     QMap<QString, DATA::StreamPost* > m_appToPostMap;
     QMap<QString, DATA::StreamComment* > m_commentMap;
+    QMap<QString, DATA::StreamPost* > m_targetToPostMap;
     QList<DATA::StreamPost *> *m_streamPosts;
     DATA::StreamPost *m_currentStreamPost;
     DATA::StreamComment *m_currentStreamComment;

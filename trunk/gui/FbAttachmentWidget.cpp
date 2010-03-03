@@ -50,7 +50,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
                 //QString aid = sm->getMediaDetail().value("aid");
                 GUI::FbPhotoLabel *l = new GUI::FbPhotoLabel("pid:" + pid);
                 connect(l, SIGNAL(userClickedImage(QString)),
-                        this, SIGNAL(userClickedImage(QString)));
+                        this, SIGNAL(userClickedUrl(QString)));
 
                 QPixmap *p = cache->getPixmap(pid, UTIL::FbPhotoCache::Pic,
                                               sm->getSrc());
@@ -77,7 +77,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
             {
                 GUI::FbPhotoLabel *l = new GUI::FbPhotoLabel(sm->getHref().toString());
                 connect(l, SIGNAL(userClickedImage(QString)),
-                        this, SIGNAL(userClickedImage(QString)));
+                        this, SIGNAL(userClickedUrl(QString)));
                 QUrl url(sm->getSrc());
                 QNetworkRequest nr;
                 nr.setUrl(url);
@@ -98,7 +98,8 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     {
         QLabel *name = new QLabel("<a href=\"" + attachment->getHref().toString() + "\">" +
                               attachment->getName() + "</a>");
-
+        connect(name, SIGNAL(linkActivated(QString)),
+                this, SIGNAL(userClickedUrl(QString)));
         name->setWordWrap(true);
         vLayout->addWidget(name,0,Qt::AlignTop);
 
@@ -107,6 +108,8 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     if (attachment->getCaption() != "")
     {
         QLabel *caption = new QLabel(attachment->getCaption());
+        connect(caption, SIGNAL(linkActivated(QString)),
+                this, SIGNAL(userClickedUrl(QString)));
         caption->setWordWrap(true);
         vLayout->addWidget(caption);
     }
@@ -114,6 +117,8 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     if (attachment->getDescription() != "")
     {
         QLabel *description = new QLabel(attachment->getDescription());
+        connect(description, SIGNAL(linkActivated(QString)),
+                this, SIGNAL(userClickedUrl(QString)));
         description->setWordWrap(true);
         vLayout->addWidget(description,1);
     }
@@ -122,8 +127,20 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
 
     for (int i = 0; i < pList.size(); i++)
     {
-        vLayout->addWidget(new QLabel(pList.at(i)->getName() + ": " +
-                                             pList.at(i)->getText()));
+        QString text = pList.at(i)->getName() + ": ";
+
+        if (pList.at(i)->getHref().toString() != "")
+            text.append("<a href=\"" + pList.at(i)->getHref().toString() + "\">");
+
+        text.append(pList.at(i)->getText());
+        if (pList.at(i)->getHref().toString() != "")
+            text.append("</a>");
+
+        QLabel *property = new QLabel(text);
+        connect(property, SIGNAL(linkActivated(QString)),
+                this, SIGNAL(userClickedUrl(QString)));
+        vLayout->addWidget(property);
+
     }
 
     vLayout->addStretch();
@@ -154,6 +171,8 @@ void FbAttachmentWidget::gotNetworkReply(QNetworkReply *reply) {
     {
         QPixmap p;
         p.loadFromData(reply->readAll());
+        if (p.width() > 130)
+            p.scaledToWidth(130);
         pl->setPixmap(p);
         pl->setMinimumHeight(p.height());
 

@@ -50,9 +50,13 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
     else
         this->setWindowTitle(post->getPage().getName());
 
-    if (post->getMessage() != "")
+    if (post->getMessage() != "" || (post->getTargetId().compare("") != 0))
     {
-        QLabel *message = new QLabel(post->getMessage());
+        QLabel *message = new QLabel();
+        QString text = post->getMessage();
+        if (post->getTargetId().compare("") != 0)
+            text.prepend("-> " + post->getTarget().getName() + ": ");
+        message->setText(text);
         message->setTextInteractionFlags(Qt::TextBrowserInteraction);
         message->setWordWrap(true);
         message->setMinimumWidth(450);
@@ -96,7 +100,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
         DATA::FbStreamAttachment *attachment = post->getAttachment();
         FbAttachmentWidget *aw = new FbAttachmentWidget(attachment);
         aw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-        connect(aw, SIGNAL(userClickedImage(QString)),
+        connect(aw, SIGNAL(userClickedUrl(QString)),
                 this, SLOT(contentClicked(QString)));
         m_contentLayout->addWidget(aw);
     }
