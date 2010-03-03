@@ -16,6 +16,7 @@
 #include "stream_AddComment.h"
 #include "fql_GetComments.h"
 #include "stream_RemoveComment.h"
+#include "fql_GetPhotos.h"
 
 
 // Simple factory
@@ -103,7 +104,11 @@ signals:
      */
     void apiStreamRemoveComment(API::Stream::RemoveComment *method);
     void apiStreamRemoveCommentFailed(API::Stream::RemoveComment *method);
-
+    /*!
+     * This signal is emitted whenever a API::FQL::GetPhotos method has completed
+     */
+    void apiFqlGetPhotos(API::FQL::GetPhotos *method);
+    void apiFqlGetPhotosFailed(API::FQL::GetPhotos *method);
 
 public slots:
     void dispatch(API::Method *);

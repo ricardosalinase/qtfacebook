@@ -42,6 +42,8 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new API::FQL::GetComments());
     else if (method.compare("stream.removeComment", Qt::CaseInsensitive) == 0)
         return prepareMethod(new API::Stream::RemoveComment());
+    else if (method.compare("fql.multiquery.getPhotos", Qt::CaseInsensitive) == 0)
+        return prepareMethod(new API::FQL::GetPhotos());
     else
         return 0;
 }
@@ -81,6 +83,8 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiFqlGetCommentsFailed((API::FQL::GetComments *)method);
     else if (method->getMethodName().compare("stream.removeComment", Qt::CaseInsensitive) == 0)
         emit apiStreamRemoveCommentFailed((API::Stream::RemoveComment*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getPhotos", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetPhotosFailed((API::FQL::GetPhotos *)method);
 }
 
 void Factory::dispatch(API::Method *method) {
@@ -105,6 +109,8 @@ void Factory::dispatch(API::Method *method) {
         emit apiFqlGetComments((API::FQL::GetComments *)method);
     else if (method->getMethodName().compare("stream.removeComment", Qt::CaseInsensitive) == 0)
             emit apiStreamRemoveComment((API::Stream::RemoveComment*)method);
+    else if (method->getMethodName().compare("fql.multiquery.getPhotos", Qt::CaseInsensitive) == 0)
+                emit apiFqlGetPhotos((API::FQL::GetPhotos *)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {

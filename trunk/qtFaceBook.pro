@@ -49,7 +49,9 @@ SOURCES += main.cpp \
     gui/FbPhotoLabel.cpp \
     gui/FbPhotoViewWidget.cpp \
     gui/FbCommentManager.cpp \
-    gui/FbAttachmentWidget.cpp
+    gui/FbAttachmentWidget.cpp \
+    api/fql_GetPhotos.cpp \
+    data/FbAlbum.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -100,7 +102,9 @@ HEADERS += fbconnectwizard.h \
     gui/FbPhotoLabel.h \
     gui/FbPhotoViewWidget.h \
     gui/FbCommentManager.h \
-    gui/FbAttachmentWidget.h
+    gui/FbAttachmentWidget.h \
+    api/fql_GetPhotos.h \
+    data/FbAlbum.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
