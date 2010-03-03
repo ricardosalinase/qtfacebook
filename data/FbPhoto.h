@@ -5,6 +5,8 @@
 #include <QUrl>
 
 #include "FbStreamMedia.h"
+#include "data/fbuserinfo.h"
+#include "data/FbPageInfo.h"
 
 namespace DATA {
 
@@ -13,39 +15,45 @@ class FbPhoto
 public:
     FbPhoto();
 
-    void setPhotoId(QString& pid);
+    void setPhotoId(const QString& pid);
     QString& getPhotoId();
-    void setAlbumId(QString& aid);
+    void setAlbumId(const QString& aid);
     QString& getAlbumId();
-    void setOwnerId(QString& id);
+    void setOwnerId(const QString& id);
     QString& getOwnerId();
-    void setSrcSmall(QString& ss);
+    void setUserInfo(const FbUserInfo *info);
+    FbUserInfo& getUserInfo();
+    void setPageInfo(const FbPageInfo *info);
+    FbPageInfo& getPageInfo();
+    void setSrcSmall(const QString& ss);
     QUrl& getSrcSmall();
     void setSrcSmallHeight(int h);
     int getSrcSmallHeight();
     void setSrcSmallWidth(int w);
     int getSrcSmallWidth();
-    void setSrcBig(QString& sb);
+    void setSrcBig(const QString& sb);
     QUrl& getSrcBig();
     void setSrcBigHeight(int h);
     int getSrcBigHeight();
     void setSrcBigWidth(int w);
     int getSrcBigWidth();
-    void setSrc(QString& s);
+    void setSrc(const QString& s);
     QUrl& getSrc();
     void setSrcHeight(int h);
     int getSrcHeight();
     void setSrcWidth(int w);
     int getSrcWidth();
-    void setCaption(QString& caption);
+    void setCaption(const QString& caption);
     QString& getCaption();
-    void setCreatedTime(QString& t);
+    void setCreatedTime(const QString& t);
     QString& getCreatedTime();
-    void setModifiedTime(QString& t);
+    void setModifiedTime(const QString& t);
     QString& getModifiedTime();
-    void setObjectId(QString& oid);
+    void setObjectId(const QString& oid);
     QString& getObjectId();
-
+    bool isUserOwned();
+    void setAlbumName(const QString& name);
+    QString& getAlbumName();
 
 private:
     QString m_pid;
@@ -64,6 +72,11 @@ private:
     QString m_createdTime;
     QString m_modifiedTime;
     QString m_objectId;
+    QString m_albumName;
+    FbUserInfo m_userOwnerInfo;
+    FbPageInfo m_pageOwnerInfo;
+    bool m_isOwnedByUser;
+    
 
 };
 

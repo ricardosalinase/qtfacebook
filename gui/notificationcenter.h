@@ -55,11 +55,13 @@ private slots:
     void notificationGetFailed(API::FQL::GetNewNotifications *method);
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts*);
     void getStreamPostsFailed(API::FQL::GetStreamPosts*);
+    void apiFqlGetPhotos(API::FQL::GetPhotos*);
+    void getPhotosFailed(API::FQL::GetPhotos*);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
     void newStreamPosts(QList<DATA::StreamPost *> *pList);
     void streamPostClosed(GUI::StreamPostWidget *);
-    void photoSelectedInStreamPost(QString photoId, QString albumId, QString ownerId);
+    void contentClicked(QString url);
 
 protected:
     void closeEvent ( QCloseEvent * event );

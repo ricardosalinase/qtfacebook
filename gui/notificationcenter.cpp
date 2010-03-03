@@ -15,6 +15,7 @@
 #include "notificationlabel.h"
 #include "notificationcenterwidget.h"
 #include "streampostwidget.h"
+#include "gui/FbPhotoViewWidget.h"
 
 
 namespace GUI {
@@ -60,6 +61,11 @@ NotificationCenter::NotificationCenter(UserInfo *userInfo, QWidget *parent) :
             this,SLOT(notificationsMarkedAsRead(API::Notifications::MarkRead*)));
     connect(m_factory, SIGNAL(apiNotificationsMarkReadFailed(API::Notifications::MarkRead*)),
             this,SLOT(notificationsMarkedAsReadFailed(API::Notifications::MarkRead*)));
+    connect(m_factory, SIGNAL(apiFqlGetPhotos(API::FQL::GetPhotos *)),
+            this, SLOT(apiFqlGetPhotos(API::FQL::GetPhotos*)));
+    connect(m_factory, SIGNAL(apiFqlGetPhotosFailed(API::FQL::GetPhotos*)),
+            this, SLOT(getPhotosFailed(API::FQL::GetPhotos*)));
+
 
     m_nam = new QNetworkAccessManager();
     QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
@@ -167,8 +173,8 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
         StreamPostWidget *spw = new StreamPostWidget(sp, m_userInfo);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
-        connect(spw, SIGNAL(photoSelectedFromStreamPost(QString,QString,QString)),
-                this, SLOT(photoSelectedInStreamPost(QString,QString,QString)));
+        connect(spw, SIGNAL(contentClicked(QString)),
+                this, SLOT(contentClicked(QString)));
         spw->show();
 
     }
@@ -434,8 +440,8 @@ void NotificationCenter::linkActivated(QString url) {
         StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId], m_userInfo);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
-        connect(spw, SIGNAL(photoSelectedFromStreamPost(QString,QString,QString)),
-                this, SLOT(photoSelectedInStreamPost(QString,QString,QString)));
+        connect(spw, SIGNAL(contentClicked(QString)),
+                this, SLOT(contentClicked(QString)));
         spw->show();
 
     }
@@ -468,8 +474,44 @@ void NotificationCenter::closeEvent(QCloseEvent *event) {
     event->accept();
 }
 
-void NotificationCenter::photoSelectedInStreamPost(QString photoId, QString albumId, QString ownerId) {
-    qDebug() << "Photo: " << photoId << " album: " << albumId << " owner: " << ownerId;
+void NotificationCenter::contentClicked(QString url) {
+    qDebug() << "URL: " << url;
+
+    if (url.startsWith("pid:"))
+    {
+        QString pid = url.split(":").at(1);
+        API::Method *method = m_factory->createMethod("fql.multiquery.getPhotos");
+        method->setArgument("pid",pid);
+        bool rc = method->execute();
+        if (!rc)
+        {
+            qDebug() << "NotificationCenter::contentClicked(); "
+                    "fql.multiquery.getPhotos failed:  " << method->errorString();
+            delete method;
+        }
+
+
+    }
+
+}
+
+void NotificationCenter::apiFqlGetPhotos(API::FQL::GetPhotos *method) {
+
+
+    QList<DATA::FbPhoto *> *pList = method->getPhotos();
+    if (pList->size())
+    {
+        GUI::FbPhotoViewWidget *fvw = new GUI::FbPhotoViewWidget(pList->at(0),
+                                                             m_userInfo);
+        fvw->show();
+    }
+    delete method;
+}
+
+void NotificationCenter::getPhotosFailed(API::FQL::GetPhotos *method) {
+
+
+    delete method;
 }
 
 

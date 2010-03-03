@@ -214,9 +214,29 @@ void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 
 void QtFacebook::showNotifications(bool showBalloonMessage)
 {
-    QString s = "You have " + QString::number(m_totalNotifications) + " new notifications.";
+    QString s = "You have ";
+
+    if (m_standardNotifications)
+    {
+        s.append(QString::number(m_standardNotifications) + " new notifications");
+
+        if (m_streamPostNotifications)
+            s.append(" and\n");
+        else
+            s.append(".");
+    }
+
+    if (m_streamPostNotifications)
+    {
+        s.append(QString::number(m_streamPostNotifications) + " new stream posts.");
+    }
+
     m_notificationCountMenuAction->setText(s);
-    m_trayIcon->setToolTip(s);
+
+    if (m_streamPostNotifications || m_standardNotifications)
+        m_trayIcon->setToolTip(s);
+    else
+        m_trayIcon->setToolTip("You have no new notifications");
 
     if (showBalloonMessage)
         m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);

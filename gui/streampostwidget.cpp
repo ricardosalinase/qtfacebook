@@ -13,6 +13,8 @@
 #include <QCoreApplication>
 #include <QFrame>
 #include <QPushButton>
+#include <QDesktopWidget>
+#include <QApplication>
 
 #include "util/agestring.h"
 #include "commentwidget.h"
@@ -101,7 +103,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
         FbAttachmentWidget *aw = new FbAttachmentWidget(attachment);
         aw->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
         connect(aw, SIGNAL(userClickedUrl(QString)),
-                this, SLOT(contentClicked(QString)));
+                this, SIGNAL(contentClicked(QString)));
         m_contentLayout->addWidget(aw);
     }
 
@@ -123,6 +125,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     getPosterPixmap();
 
+    QDesktopWidget *dw = QApplication::desktop();
+    QRect r = dw->screenGeometry();
+    move(r.width() - 240, 40);
+
 
 }
 
@@ -130,9 +136,7 @@ StreamPostWidget::~StreamPostWidget() {
 
 }
 
-void StreamPostWidget::contentClicked(QString url) {
-    qDebug() << "StreamPostWidget::contentClicked(); URL: " << url;
-}
+
 
 void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {
 
