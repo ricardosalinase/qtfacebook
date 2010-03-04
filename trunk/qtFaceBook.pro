@@ -51,7 +51,9 @@ SOURCES += main.cpp \
     gui/FbCommentManager.cpp \
     gui/FbAttachmentWidget.cpp \
     api/fql_GetPhotos.cpp \
-    data/FbAlbum.cpp
+    data/FbAlbum.cpp \
+    api/comments_Add.cpp \
+    api/comments_Remove.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -104,7 +106,9 @@ HEADERS += fbconnectwizard.h \
     gui/FbCommentManager.h \
     gui/FbAttachmentWidget.h \
     api/fql_GetPhotos.h \
-    data/FbAlbum.h
+    data/FbAlbum.h \
+    api/comments_Add.h \
+    api/comments_Remove.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
