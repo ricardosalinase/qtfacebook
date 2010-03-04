@@ -27,6 +27,14 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
             this, SLOT(apiStreamRemoveComment(API::Stream::RemoveComment*)));
     connect(m_factory, SIGNAL(apiStreamRemoveCommentFailed(API::Stream::RemoveComment*)),
             this, SLOT(apiStreamRemoveCommentFailed(API::Stream::RemoveComment*)));
+    connect(m_factory, SIGNAL(apiCommentsAdd(API::Comments::Add*)),
+            this, SLOT(apiCommentsAdd(API::Comments::Add*)));
+    connect(m_factory, SIGNAL(apiCommentsAddFailed(API::Comments::Add*)),
+            this, SLOT(apiCommentsAddFailed(API::Comments::Add*)));
+    connect(m_factory, SIGNAL(apiCommentsRemove(API::Comments::Remove*)),
+            this, SLOT(apiCommentsRemove(API::Comments::Remove*)));
+    connect(m_factory, SIGNAL(apiCommentsRemoveFailed(API::Comments::Remove*)),
+            this, SLOT(apiCommentsRemoveFailed(API::Comments::Remove*)));
 
     m_commentTimer = new QTimer(this);
     connect(m_commentTimer, SIGNAL(timeout()),
@@ -121,7 +129,7 @@ void FbCommentManager::getComments()
     bool rc = method->execute();
     if (!rc)
     {
-        qDebug() << "fql.multiquery.getComments failed to execute: " << method->errorString();
+        qDebug() << "FbCommentManager::getComments(); fql.multiquery.getComments failed to execute: " << method->errorString();
         delete method;
     }
 
@@ -219,6 +227,14 @@ void FbCommentManager::commentButtonClicked() {
         else
         {
             // have to use a different API method. Annoying.
+            API::Method *method = m_factory->createMethod("comments.add");
+            method->setArgument("object_id", m_id);
+            method->setArgument("text", comment);
+            if (!method->execute())
+            {
+                qDebug() << "comments.add failed to execute: " << method->errorString();
+                delete method;
+            }
         }
     }
     else
@@ -245,6 +261,16 @@ void FbCommentManager::userDeletedComment(GUI::CommentWidget *commentWidget) {
     else
     {
         // Have to use a different API method. Annoying.
+        API::Method *method = m_factory->createMethod("comments.remove");
+
+        method->setArgument("comment_id",commentWidget->getComment()->getCommentId());
+        method->setArgument("object_id", m_id);
+        if(!method->execute())
+        {
+            qDebug() << "API::Comments::Remove failed to execute: " << method->getErrorStr();
+            delete method;
+        }
+
     }
 
 }
@@ -264,6 +290,21 @@ void FbCommentManager::apiStreamAddCommentFailed(API::Stream::AddComment *method
     delete method;
 }
 
+void FbCommentManager::apiCommentsAdd(API::Comments::Add *method) {
+    qDebug() << "Added Comment";
+    m_commentEdit->clear();
+    m_addCommentButton->setEnabled(true);
+    delete method;
+    getComments();
+
+}
+
+void FbCommentManager::apiCommentsAddFailed(API::Comments::Add *method) {
+    qDebug() << "Failed to add Comment";
+    m_addCommentButton->setEnabled(true);
+    delete method;
+}
+
 void FbCommentManager::apiStreamRemoveComment(API::Stream::RemoveComment *method) {
 
     qDebug() << "Removed Comment";
@@ -277,4 +318,16 @@ void FbCommentManager::apiStreamRemoveCommentFailed(API::Stream::RemoveComment *
     delete method;
 }
 
+void FbCommentManager::apiCommentsRemove(API::Comments::Remove *method) {
+
+    qDebug() << "Removed Comment";
+    delete method;
+    getComments();
+
+}
+
+void FbCommentManager::apiCommentsRemoveFailed(API::Comments::Remove *method) {
+    qDebug() << "Failed to remove comment";
+    delete method;
+}
 } // namespace GUI

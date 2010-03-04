@@ -44,6 +44,10 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new API::Stream::RemoveComment());
     else if (method.compare("fql.multiquery.getPhotos", Qt::CaseInsensitive) == 0)
         return prepareMethod(new API::FQL::GetPhotos());
+    else if (method.compare("comments.add", Qt::CaseInsensitive) == 0)
+        return prepareMethod(new API::Comments::Add());
+    else if (method.compare("comments.remove", Qt::CaseInsensitive) == 0)
+            return prepareMethod(new API::Comments::Remove());
     else
         return 0;
 }
@@ -85,6 +89,10 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiStreamRemoveCommentFailed((API::Stream::RemoveComment*)method);
     else if (method->getMethodName().compare("fql.multiquery.getPhotos", Qt::CaseInsensitive) == 0)
         emit apiFqlGetPhotosFailed((API::FQL::GetPhotos *)method);
+    else if (method->getMethodName().compare("comments.add", Qt::CaseInsensitive) == 0)
+        emit apiCommentsAddFailed((API::Comments::Add *)method);
+    else if (method->getMethodName().compare("comments.remove", Qt::CaseInsensitive) == 0)
+        emit apiCommentsRemoveFailed((API::Comments::Remove *)method);
 }
 
 void Factory::dispatch(API::Method *method) {
@@ -110,7 +118,11 @@ void Factory::dispatch(API::Method *method) {
     else if (method->getMethodName().compare("stream.removeComment", Qt::CaseInsensitive) == 0)
             emit apiStreamRemoveComment((API::Stream::RemoveComment*)method);
     else if (method->getMethodName().compare("fql.multiquery.getPhotos", Qt::CaseInsensitive) == 0)
-                emit apiFqlGetPhotos((API::FQL::GetPhotos *)method);
+            emit apiFqlGetPhotos((API::FQL::GetPhotos *)method);
+    else if (method->getMethodName().compare("comments.add", Qt::CaseInsensitive) == 0)
+            emit apiCommentsAdd((API::Comments::Add *)method);
+    else if (method->getMethodName().compare("comments.remove", Qt::CaseInsensitive) == 0)
+            emit apiCommentsRemove((API::Comments::Remove *)method);
 }
 
 void Factory::setUserInfo(UserInfo *userInfo) {

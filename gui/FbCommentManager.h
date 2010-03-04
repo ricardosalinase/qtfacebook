@@ -40,6 +40,10 @@ private slots:
     void userDeletedComment(GUI::CommentWidget *commentWidget);
     void apiStreamRemoveComment(API::Stream::RemoveComment *method);
     void apiStreamRemoveCommentFailed(API::Stream::RemoveComment *method);
+    void apiCommentsAdd(API::Comments::Add *method);
+    void apiCommentsAddFailed(API::Comments::Add *method);
+    void apiCommentsRemove(API::Comments::Remove *method);
+    void apiCommentsRemoveFailed(API::Comments::Remove *method);
 
 private:
     UserInfo *m_userInfo;

@@ -124,13 +124,15 @@ QList<DATA::StreamComment *> GetComments::getCommentList()
 
 bool GetComments::prepare() {
 
-    QString fql("{\"comments\":\"SELECT post_id, object_id, fromid, time, text, id FROM comment WHERE post_id='");
+    QString fql("{\"comments\":\"SELECT post_id, object_id, fromid, time, text, id FROM comment WHERE ");
 
     if (m_argMap.contains("post_id"))
-        fql.append(m_argMap.take("post_id").toString());
+        fql.append("post_id='" + m_argMap.take("post_id").toString());
+    else if (m_argMap.contains("object_id"))
+        fql.append("object_id='" + m_argMap.take("object_id").toString());
     else
     {
-        m_errStr = "post_id not supplied";
+        m_errStr = "post_id or object_id not supplied";
         return false;
     }
 

@@ -25,8 +25,8 @@ FbPhotoViewWidget::FbPhotoViewWidget(DATA::FbPhoto *photo, UserInfo *info, QWidg
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
 
-    FbCommentManager *cm = new FbCommentManager(m_photo->getPhotoId(),
-                                                FbCommentManager::PostId,
+    FbCommentManager *cm = new FbCommentManager(m_photo->getObjectId(),
+                                                FbCommentManager::ObjectId,
                                                 m_isOwner,
                                                 m_info);
     mainLayout->addWidget(cm);
