@@ -503,6 +503,9 @@ void NotificationCenter::apiFqlGetPhotos(API::FQL::GetPhotos *method) {
     {
         GUI::FbPhotoViewWidget *fvw = new GUI::FbPhotoViewWidget(pList->at(0),
                                                              m_userInfo);
+        m_openPhotos.insert(fvw, pList->at(0));
+        connect(fvw, SIGNAL(closed(GUI::FbPhotoViewWidget*)),
+                this, SLOT(photoViewClosed(GUI::FbPhotoViewWidget*)));
         fvw->show();
     }
     delete method;
@@ -514,5 +517,10 @@ void NotificationCenter::getPhotosFailed(API::FQL::GetPhotos *method) {
     delete method;
 }
 
+void NotificationCenter::photoViewClosed(GUI::FbPhotoViewWidget *fvw) {
+    DATA::FbPhoto *photo = m_openPhotos.take(fvw);
+    delete fvw;
+    delete photo;
+}
 
 } // namespace GUI

@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include "FbCommentManager.h"
+#include "util/FbPhotoCache.h"
 
 namespace GUI {
 
@@ -32,10 +33,25 @@ FbPhotoViewWidget::FbPhotoViewWidget(DATA::FbPhoto *photo, UserInfo *info, QWidg
 
     setLayout(mainLayout);
 
-    QNetworkRequest nr;
-    nr.setUrl(photo->getSrcBig());
-    m_nam->get(nr);
+    UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
 
+    QPixmap *p = cache->getPixmap(m_photo->getPhotoId(), UTIL::FbPhotoCache::PicBig,
+                                  photo->getSrcBig());
+
+    if (p == 0)
+    {
+        QNetworkRequest nr;
+        nr.setUrl(photo->getSrcBig());
+        m_nam->get(nr);
+    }
+    else
+    {
+        QLabel *l = new QLabel();
+        l->setPixmap(*p);
+        l->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        ((QVBoxLayout*)layout())->insertWidget(0,l);
+        delete p;
+    }
 
 }
 
@@ -50,6 +66,10 @@ void FbPhotoViewWidget::gotNetworkReply(QNetworkReply *reply) {
         l->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         ((QVBoxLayout*)layout())->insertWidget(0,l);
 
+        UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
+        cache->cachePixmap(m_photo->getPhotoId(), UTIL::FbPhotoCache::PicBig,
+                           m_photo->getSrcBig(), p);
+
     }
     else
     {
@@ -60,5 +80,9 @@ void FbPhotoViewWidget::gotNetworkReply(QNetworkReply *reply) {
 
 }
 
+void FbPhotoViewWidget::closeEvent(QCloseEvent *event) {
+    emit closed(this);
+    event->accept();
+}
 
 } // namespace GUI
