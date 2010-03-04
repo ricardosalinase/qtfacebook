@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QNetworkAccessManager>
+#include <QCloseEvent>
 
 #include "userinfo.h"
 #include "data/FbPhoto.h"
@@ -24,7 +25,7 @@ private slots:
     void gotNetworkReply(QNetworkReply *reply);
 
 private:
-    //void closeEvent ( QCloseEvent * event );
+    void closeEvent ( QCloseEvent * event );
     DATA::FbPhoto *m_photo;
     UserInfo *m_info;
     bool m_isOwner;

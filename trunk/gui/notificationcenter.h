@@ -18,6 +18,7 @@
 #include "util/fbuserpiccache.h"
 #include "gui/streampostwidget.h"
 #include "data/FbPageInfo.h"
+#include "gui/FbPhotoViewWidget.h"
 
 
 namespace GUI {
@@ -62,6 +63,7 @@ private slots:
     void newStreamPosts(QList<DATA::StreamPost *> *pList);
     void streamPostClosed(GUI::StreamPostWidget *);
     void contentClicked(QString url);
+    void photoViewClosed(GUI::FbPhotoViewWidget *);
 
 protected:
     void closeEvent ( QCloseEvent * event );
@@ -81,7 +83,7 @@ private:
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
     QMap<QString, DATA::StreamPost *> m_streamPosts;
-
+    QMap<GUI::FbPhotoViewWidget *, DATA::FbPhoto *> m_openPhotos;
 
     // UI componenets
     QScrollArea *m_scrollArea;
