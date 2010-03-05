@@ -7,6 +7,7 @@
 
 #include "userinfo.h"
 #include "data/FbPhoto.h"
+#include "gui/LoadingProgressWidget.h"
 
 namespace GUI {
 
@@ -18,6 +19,7 @@ public:
 
 signals:
     void closed(GUI::FbPhotoViewWidget*);
+    void userClickedLink(QString link);
 
 public slots:
 
@@ -30,7 +32,11 @@ private:
     UserInfo *m_info;
     bool m_isOwner;
     QNetworkAccessManager *m_nam;
+    LoadingProgressWidget *m_progress;
 };
+
+
+
 
 } // namespace GUI
 
