@@ -46,23 +46,32 @@ namespace UTIL {
             QString unit;
             uint time_t_create = createTime.toTime_t();
             uint time_t_now = now.toTime_t();
-            uint diff = time_t_now - time_t_create;
 
-            if (diff < 60)
-                unit = " seconds ago";
-            else if (diff < 3600)
+            // If the user's computer's clock is behind the time at
+            // facebook, we need to deal with that
+            if (time_t_create > time_t_now)
             {
-                diff = diff / 60;
-                diff > 1 ? unit = " minutes ago" : unit = " minute ago";
+                postedTime.append("Posted from the future! Spooky.");
             }
             else
             {
-                diff = diff / 3600;
-                diff > 1 ? unit = " hours ago" : unit = " hour ago";
+                uint diff = time_t_now - time_t_create;
+
+                if (diff < 60)
+                    unit = " seconds ago";
+                else if (diff < 3600)
+                {
+                    diff = diff / 60;
+                    diff > 1 ? unit = " minutes ago" : unit = " minute ago";
+                }
+                else
+                {
+                    diff = diff / 3600;
+                    diff > 1 ? unit = " hours ago" : unit = " hour ago";
+                }
+
+                postedTime.append(QString::number(diff) + unit);
             }
-
-            postedTime.append(QString::number(diff) + unit);
-
         }
 
         return postedTime;
