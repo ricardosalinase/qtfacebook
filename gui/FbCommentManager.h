@@ -9,8 +9,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-
-#include "userinfo.h"
 #include "api/factory.h"
 #include "gui/commentwidget.h"
 
@@ -22,8 +20,7 @@ class FbCommentManager : public QWidget
 Q_OBJECT
 public:
     enum FbType { PostId, ObjectId };
-    FbCommentManager(const QString& id, FbType type, bool isOwner,
-                          UserInfo *info, QWidget *parent = 0);
+    FbCommentManager(const QString& id, FbType type, bool isOwner, QWidget *parent = 0);
     ~FbCommentManager();
 
 signals:
@@ -46,7 +43,6 @@ private slots:
     void apiCommentsRemoveFailed(API::Comments::Remove *method);
 
 private:
-    UserInfo *m_userInfo;
     FbType m_idType;
     QString m_id;
     API::Factory *m_factory;

@@ -13,8 +13,7 @@
 #include <QThreadStorage>
 #include <QCache>
 
-
-#include "userinfo.h"
+#include "util/OurUserInfo.h"
 #include "api/factory.h"
 #include "notifications_widget.h"
 
@@ -28,7 +27,7 @@ public:
 
     enum mode { ALL, RECENT, NEW };
 
-    ListView(UserInfo *userInfo, QWidget *parent = 0);
+    explicit ListView(QWidget *parent = 0);
 
     void restoreWindow();
     void reload(mode m);
@@ -49,7 +48,7 @@ private:
     void getPixmaps();
     void cachePixmap(const QString &key, QPixmap *object);
     bool getPixmapFromCache(const QString &key, QPixmap **pm);
-    UserInfo *m_userInfo;
+    UTIL::OurUserInfo *m_userInfo;
     API::Factory *m_factory;
     QMap<QString, DATA::Notification> nMap;
     QMap<QString, QPixmap *> m_pixmapCache;

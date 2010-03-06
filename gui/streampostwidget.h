@@ -16,7 +16,6 @@
 
 #include "data/streampost.h"
 #include "api/factory.h"
-#include "userinfo.h"
 #include "gui/commentwidget.h"
 
 
@@ -28,7 +27,7 @@ class StreamPostWidget : public QWidget
 Q_OBJECT
 public:
     enum RequestType { PosterPixmap, AppIcon };
-    explicit StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidget *parent = 0);
+    explicit StreamPostWidget(DATA::StreamPost *post, QWidget *parent = 0);
     ~StreamPostWidget();
 
 signals:
@@ -57,7 +56,6 @@ private:
     QLabel *m_postLabel;
     bool m_triedBothIcons;
     QMap<QNetworkReply*, RequestType> m_outstandingNetworkRequests;
-    UserInfo *m_userInfo;
 };
 
 } // namespace GUI

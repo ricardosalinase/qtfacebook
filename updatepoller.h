@@ -4,7 +4,6 @@
 #include <QTimer>
 #include <QList>
 
-#include "userinfo.h"
 #include "util/worker.h"
 #include "api/factory.h"
 #include "data/notification.h"
@@ -16,7 +15,7 @@ class UpdatePoller : public UTIL::Worker
 {
     Q_OBJECT
 public:
-    UpdatePoller(UserInfo *info, QObject *parent = 0);
+    explicit UpdatePoller(QObject *parent = 0);
     void init();
     void setStreamPostInterval(int updateTime);
     void setNotificationInterval(int updateTime);
@@ -36,7 +35,6 @@ private slots:
     void gotNewStreamPostsFailed(API::FQL::GetStreamPosts *method);
 
 private:
-    UserInfo *m_userInfo;
     API::Factory *m_factory;
     QTimer *m_notificationTimer;
     QTimer *m_streamPostTimer;

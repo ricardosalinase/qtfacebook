@@ -15,7 +15,7 @@
 #include <QXmlDefaultHandler>
 #include <QNetworkReply>
 
-#include <userinfo.h>
+#include "util/OurUserInfo.h"
 
 
 namespace API
@@ -35,16 +35,13 @@ namespace API
 
     public:
         explicit Method(QObject *parent = 0);
+
         virtual ~Method();
 
         /*!
          * Sets the QNetworkAccessManager to be used for this API call
          */
         void setAccessManager(QNetworkAccessManager *manager);
-        /*!
-         * Sets the UserInfo object to be used for this API call
-         */
-        void setUserInfo(UserInfo *userInfo);
         /*!
          * Returns a list (as a QString) of parameters required for this API call
          */
@@ -146,7 +143,7 @@ namespace API
         /*!
          * The UserInfo object
          */
-        UserInfo *m_userInfo;
+        UTIL::OurUserInfo *m_userInfo;
         /*!
          * The list that contains the parameters and values that will be passed to the API call
          */

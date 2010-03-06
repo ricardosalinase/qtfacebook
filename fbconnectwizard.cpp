@@ -1,15 +1,15 @@
 #include "fbconnectwizard.h"
 #include "webview.h"
 #include "util/cookiejar.h"
+#include "util/OurUserInfo.h"
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QPixmap>
 #include <QDebug>
 #include <QPushButton>
 
-FBConnectWizard::FBConnectWizard(UserInfo *info, QString appName, bool firstTime) :
-        QWizard(),
-        m_userInfo(info),
+FBConnectWizard::FBConnectWizard(QString appName, bool firstTime, QWidget *parent) :
+        QWizard(parent),
         m_appName(appName),
         m_firstTime(firstTime)
 {
@@ -57,7 +57,7 @@ QWizardPage* FBConnectWizard::createIntroPage() {
 }
 
 QWizardPage* FBConnectWizard::createConnectPage() {
-    ConnectPage *cp = new ConnectPage(m_userInfo);
+    ConnectPage *cp = new ConnectPage();
 
     connect(cp, SIGNAL(userAuthenticated()),
             this, SIGNAL(userHasAuthenticated()));
@@ -78,15 +78,15 @@ QWizardPage* FBConnectWizard::createConclusionPage() {
 }
 
 
-ConnectPage::ConnectPage(UserInfo *info, QWidget *parent) :
+ConnectPage::ConnectPage(QWidget *parent) :
         QWizardPage(parent),
-        m_userInfo(info),
         m_isComplete(false),
         m_gotAuth(false)
 {
     m_view = new WebView(this);
 
-    m_facebookUrl = "http://www.facebook.com/login.php?api_key=" + m_userInfo->getApiKey()
+    m_facebookUrl = "http://www.facebook.com/login.php?api_key=" +
+            UTIL::OurUserInfo::getInstance()->getApiKey() +
              + "&connect_display=popup&v=1.0&"
              "next=http://www.facebook.com/connect/login_success.html"
              "&cancel_url=http://www.facebook.com/connect/login_failure.html"
@@ -137,9 +137,9 @@ void ConnectPage::gotAuth() {
     {
         initializePage();
 
-        m_userInfo->setSessionKey(m_view->getSessionKey());
-        m_userInfo->setSecret(m_view->getSecret());
-        m_userInfo->setUID(m_view->getUID());
+        UTIL::OurUserInfo::getInstance()->setSessionKey(m_view->getSessionKey());
+        UTIL::OurUserInfo::getInstance()->setSecret(m_view->getSecret());
+        UTIL::OurUserInfo::getInstance()->setUID(m_view->getUID());
 
         emit userAuthenticated();
 

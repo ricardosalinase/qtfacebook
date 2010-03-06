@@ -14,7 +14,7 @@ namespace API {
 Method::Method(QObject *parent) :
     QObject(parent)
 {
-
+    m_userInfo = UTIL::OurUserInfo::getInstance();
 }
 
 Method::~Method() {
@@ -23,10 +23,6 @@ Method::~Method() {
 
 void Method::setAccessManager(QNetworkAccessManager *manager) {
     m_manager = manager;
-}
-
-void Method::setUserInfo(UserInfo *userInfo) {
-    m_userInfo = userInfo;
 }
 
 QString Method::getErrorStr() {

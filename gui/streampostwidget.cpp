@@ -26,11 +26,10 @@
 
 namespace GUI {
 
-StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidget *parent) :
+StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     QWidget(parent),
     m_post(post),
-    m_triedBothIcons(false),
-    m_userInfo(info)
+    m_triedBothIcons(false)
 {
 
     m_nam = new QNetworkAccessManager(this);
@@ -114,8 +113,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, UserInfo *info, QWidg
 
     GUI::FbCommentManager *manager = new FbCommentManager(m_post->getPostId(),
                                                           FbCommentManager::PostId,
-                                                          m_post->getCommentList()->canRemove(),
-                                                          m_userInfo);
+                                                          m_post->getCommentList()->canRemove());
     m_contentLayout->addWidget(manager,2);
 
 
