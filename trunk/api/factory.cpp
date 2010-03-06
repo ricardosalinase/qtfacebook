@@ -1,17 +1,15 @@
 #include "factory.h"
 
-
+#include "util/OurUserInfo.h"
 
 
 namespace API {
 
-
-
-Factory::Factory(UserInfo *userInfo, QObject *parent) :
+Factory::Factory(QObject *parent) :
     QObject(parent)
 {
     m_manager = new QNetworkAccessManager();
-    m_userInfo = userInfo;
+    m_userInfo = UTIL::OurUserInfo::getInstance();
 }
 
 Factory::~Factory() {
@@ -55,7 +53,7 @@ Method * Factory::createMethod(QString method) {
 Method * Factory::prepareMethod(Method *m) {
 
     m->setAccessManager(m_manager);
-    m->setUserInfo(m_userInfo);
+    //m->setUserInfo(m_userInfo);
 
     connect(m,SIGNAL(methodComplete(API::Method*)),
             this, SLOT(dispatch(API::Method*)));
@@ -125,8 +123,6 @@ void Factory::dispatch(API::Method *method) {
             emit apiCommentsRemove((API::Comments::Remove *)method);
 }
 
-void Factory::setUserInfo(UserInfo *userInfo) {
-    m_userInfo = userInfo;
-}
+
 
 } // namespace API

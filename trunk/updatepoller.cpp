@@ -4,20 +4,16 @@
 #include <QList>
 #include <QDateTime>
 
-UpdatePoller::UpdatePoller(UserInfo *info, QObject *parent) :
+UpdatePoller::UpdatePoller(QObject *parent) :
         Worker(parent),
-        m_userInfo(info),
         m_notificationUpdateInterval(1),
         m_streamPostUpdateInterval(1)
 {
 }
 
-
-
-
 void UpdatePoller::init() {
 
-    m_factory = new API::Factory(m_userInfo, this);
+    m_factory = new API::Factory(this);
 
     connect(m_factory, SIGNAL(apiFqlGetNewNotifications(API::FQL::GetNewNotifications*)),
             this, SLOT(gotNewNotifications(API::FQL::GetNewNotifications*)));

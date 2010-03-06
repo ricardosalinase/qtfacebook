@@ -13,12 +13,13 @@
 namespace GUI {
 namespace Notifications {
 
- ListView::ListView(UserInfo *userInfo, QWidget *parent) :
+ ListView::ListView(QWidget *parent) :
             QWidget(parent),
-            m_userInfo(userInfo),
             m_showHidden(false)
 {
-    m_factory = new API::Factory(userInfo);
+
+    m_userInfo = UTIL::OurUserInfo::getInstance();
+    m_factory = new API::Factory(this);
 
     connect(m_factory, SIGNAL(apiNotificationsGetList(API::Notifications::GetList*)),
              this, SLOT(apiNotificationsGetList(API::Notifications::GetList*)));
@@ -38,14 +39,6 @@ namespace Notifications {
     m_scrollArea->setWidget(m_nContainer);
     m_scrollArea->setStyleSheet("background: #e5e5e5");
     QVBoxLayout *mainLayout = new QVBoxLayout();
-
-    //m_webView = new QWebView();
-    //QWebPage *wp = m_webView->page();
-    //wp->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-
-    //connect(wp, SIGNAL(linkClicked(QUrl)),
-    //        this, SLOT(navigate(QUrl)));
-
 
     QVBoxLayout *bottomLayout = new QVBoxLayout();
     bottomLayout->addWidget(m_scrollArea);

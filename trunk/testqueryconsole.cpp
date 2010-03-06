@@ -15,13 +15,13 @@
 #include <QDateTime>
 
 
-TestQueryConsole::TestQueryConsole(UserInfo *userInfo, QWidget *parent) :
+TestQueryConsole::TestQueryConsole(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TestQueryConsole)
 {
 
     ui->setupUi(this);
-    m_userInfo = userInfo;
+    m_userInfo = UTIL::OurUserInfo::getInstance();
     m_apiKey = m_userInfo->getApiKey();
 
     connect(ui->addButton, SIGNAL(clicked()),

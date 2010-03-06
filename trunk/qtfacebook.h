@@ -6,7 +6,6 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 
-#include "userinfo.h"
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/notifications_MarkRead.h"
@@ -47,7 +46,6 @@ private:
     void viewNotifications(GUI::Notifications::ListView::mode m);
     void showNotifications(bool showBalloonMessage);
     bool loadUserInfo();
-    UserInfo *m_userInfo;
     FBConnectWizard *m_wizard;
     TestQueryConsole *m_testConsole;
     GUI::NotificationCenter *m_notificationCenter;

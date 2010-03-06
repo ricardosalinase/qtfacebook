@@ -12,7 +12,6 @@
 #include <QNetworkAccessManager>
 
 
-#include "userinfo.h"
 #include "api/factory.h"
 #include "notificationcenterwidget.h"
 #include "util/fbuserpiccache.h"
@@ -34,7 +33,7 @@ class NotificationCenter : public QWidget
 Q_OBJECT
 public:
 
-    NotificationCenter(UserInfo *userInfo, QWidget *parent = 0);
+    explicit NotificationCenter(QWidget *parent = 0);
 
 signals:
     void receivedNewNotifications(int numNew);
@@ -56,8 +55,6 @@ private slots:
     void notificationGetFailed(API::FQL::GetNewNotifications *method);
     void apiFqlGetStreamPosts(API::FQL::GetStreamPosts*);
     void getStreamPostsFailed(API::FQL::GetStreamPosts*);
-    void apiFqlGetPhotos(API::FQL::GetPhotos*);
-    void getPhotosFailed(API::FQL::GetPhotos*);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
     void newStreamPosts(QList<DATA::StreamPost *> *pList);
@@ -75,7 +72,6 @@ private:
     void getPixmap(QLabel *, DATA::FbPageInfo& fbp);
     void getInitialNotifications();
     QNetworkAccessManager *m_nam;
-    UserInfo *m_userInfo;
     QMap<QNetworkReply *, QPair<QString, QLabel *> > m_tmpMap;
     QMap<QString, QPixmap> m_iconPixmapCache;
     bool m_showHiddenNotifications;
@@ -83,7 +79,6 @@ private:
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
     QMap<QString, DATA::StreamPost *> m_streamPosts;
-    QMap<GUI::FbPhotoViewWidget *, DATA::FbPhoto *> m_openPhotos;
 
     // UI componenets
     QScrollArea *m_scrollArea;

@@ -5,7 +5,7 @@
 #include <QString>
 #include <QNetworkReply>
 
-#include "userinfo.h"
+#include "util/OurUserInfo.h"
 #include "api/apimethod.h"
 #include "api/friends_get.h"
 #include "api/notifications_getlist.h"
@@ -17,7 +17,7 @@ namespace Ui {
 class TestQueryConsole : public QWidget {
     Q_OBJECT
 public:
-    TestQueryConsole(UserInfo *userInfo, QWidget *parent = 0);
+    explicit TestQueryConsole(QWidget *parent = 0);
     ~TestQueryConsole();
 
 
@@ -27,7 +27,7 @@ protected:
 
 private:
     Ui::TestQueryConsole *ui;
-    UserInfo *m_userInfo;
+    UTIL::OurUserInfo *m_userInfo;
     QString m_apiKey;
     QNetworkAccessManager *m_manager;
 

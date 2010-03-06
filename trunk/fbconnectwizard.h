@@ -2,7 +2,7 @@
 #define FBCONNECTWIZARD_H
 
 #include <QWizard>
-#include "userinfo.h"
+
 
 class WebView;
 
@@ -12,7 +12,7 @@ class FBConnectWizard : public QWizard
 
 
 public:
-    FBConnectWizard(UserInfo *info, QString appName, bool firstTime = true);
+    FBConnectWizard(QString appName, bool firstTime = true, QWidget *parent = 0);
     enum { Page_Intro, Page_Connect, Page_Conclusion, Page_Error };
 
 
@@ -30,7 +30,6 @@ private:
 
 
 
-    UserInfo *m_userInfo;
     QString m_appName;
     bool m_firstTime;
     WebView *m_view;
@@ -43,7 +42,7 @@ class ConnectPage : public QWizardPage
     Q_OBJECT
 
 public:
-    ConnectPage(UserInfo *info, QWidget *parent = 0);
+    explicit ConnectPage(QWidget *parent = 0);
     void initializePage();
     bool isComplete() const;
     bool hasCompletedAuth();
@@ -59,7 +58,6 @@ public slots:
 
 private:
     WebView *m_view;
-    UserInfo * m_userInfo;
     bool m_isComplete;
     bool m_gotAuth;
     QString m_facebookUrl;

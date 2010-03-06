@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 
-#include "userinfo.h"
+#include "util/OurUserInfo.h"
 #include "apimethod.h"
 #include "friends_get.h"
 #include "notifications_getlist.h"
@@ -39,13 +39,8 @@ public:
     /*!
      * Constructs a factory which will use the data in the supplied UserInfo object for making API calls to facebook
      */
-    Factory(UserInfo *userInfo, QObject *parent = 0);
+    explicit Factory(QObject *parent = 0);
     ~Factory();
-    /**
-    * @brief Sets the UserInfo property of the factory, replacing the existing one
-    * @param userInfo
-    */
-    void setUserInfo(UserInfo *userInfo);
 
     /**
     * @brief Returns a pointer to the requested API call, cast as the base API::Method class.
@@ -139,7 +134,7 @@ private:
     *
     * @var m_userInfo
     */
-    UserInfo *m_userInfo;
+    UTIL::OurUserInfo *m_userInfo;
     /**
     * @brief Private method that sets the UserInfo and QNetworkManager or the produced API::Method
     *

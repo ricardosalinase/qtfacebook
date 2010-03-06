@@ -5,16 +5,18 @@
 #include <QProgressBar>
 #include <QDebug>
 
+#include "util/OurUserInfo.h"
+
 namespace GUI {
 
-FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner, UserInfo *info, QWidget *parent) :
+FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner, QWidget *parent) :
     QWidget(parent),
-    m_userInfo(info),
     m_idType(type),
     m_id(id),
     m_isOwner(isOwner)
 {
-    m_factory = new API::Factory(info,this);
+
+    m_factory = new API::Factory(this);
     connect(m_factory, SIGNAL(apiStreamAddComment(API::Stream::AddComment*)),
            this, SLOT(apiStreamAddComment(API::Stream::AddComment*)));
     connect(m_factory, SIGNAL(apiStreamAddCommentFailed(API::Stream::AddComment*)),
@@ -163,7 +165,7 @@ void FbCommentManager::gotComments(API::FQL::GetComments *method) {
         m_commentList.append(c);
 
         bool canDelete = false;
-        if(m_isOwner || c->getFromId() == m_userInfo->getUID())
+        if(m_isOwner || c->getFromId() == UTIL::OurUserInfo::getInstance()->getUID())
         {
             canDelete = true;
         }

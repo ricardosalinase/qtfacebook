@@ -11,6 +11,7 @@
 #include <QDateTime>
 
 #include "qtfacebook.h"
+#include "util/OurUserInfo.h"
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/factory.h"
@@ -33,7 +34,7 @@ QtFacebook::QtFacebook(QObject *parent) :
 {
 
     QApplication::setQuitOnLastWindowClosed(false);
-    m_userInfo = new UserInfo(API_KEY);
+    UTIL::OurUserInfo::getInstance()->setApiKey(API_KEY);
 
     // load session_key, uid, and secret
     if (loadUserInfo()) {
@@ -43,7 +44,7 @@ QtFacebook::QtFacebook(QObject *parent) :
         fbWizardComplete();
      } else {
 
-        m_wizard = new FBConnectWizard(m_userInfo, "qtFacebook");
+        m_wizard = new FBConnectWizard("qtFacebook");
 
         connect(m_wizard, SIGNAL(userHasAuthenticated()),
                 this, SLOT(saveUserInfo()));
@@ -61,16 +62,11 @@ QtFacebook::QtFacebook(QObject *parent) :
 
 void QtFacebook::saveUserInfo() {
 
-
-    qDebug() << "Session Key: " << m_userInfo->getSessionKey() <<
-            "Secret: " << m_userInfo->getSecret() <<
-            "UID" << m_userInfo->getUID();
-
     QSettings settings("qtFacebook","qtFacebook");
     settings.beginGroup("userInfo");
-    settings.setValue("SessionKey",m_userInfo->getSessionKey());
-    settings.setValue("UID", m_userInfo->getUID());
-    settings.setValue("Secret", m_userInfo->getSecret());
+    settings.setValue("SessionKey",UTIL::OurUserInfo::getInstance()->getSessionKey());
+    settings.setValue("UID", UTIL::OurUserInfo::getInstance()->getUID());
+    settings.setValue("Secret", UTIL::OurUserInfo::getInstance()->getSecret());
     settings.endGroup();
 
 
@@ -97,10 +93,9 @@ bool QtFacebook::loadUserInfo() {
             secret.compare("") == 0)
         return false;
 
-
-    m_userInfo->setSessionKey(sKey);
-    m_userInfo->setUID(uid);
-    m_userInfo->setSecret(secret);
+    UTIL::OurUserInfo::getInstance()->setSessionKey(sKey);
+    UTIL::OurUserInfo::getInstance()->setUID(uid);
+    UTIL::OurUserInfo::getInstance()->setSecret(secret);
 
     return true;
 
@@ -158,7 +153,7 @@ void QtFacebook::fbWizardComplete() {
     m_trayIcon->setContextMenu(menu);
     m_trayIcon->show();
 
-    m_notificationCenter = new GUI::NotificationCenter(m_userInfo);
+    m_notificationCenter = new GUI::NotificationCenter();
     connect(ncr, SIGNAL(triggered()),
             m_notificationCenter, SLOT(showYourself()));
     connect(m_notificationCenter, SIGNAL(receivedNewNotifications(int)),
@@ -168,7 +163,7 @@ void QtFacebook::fbWizardComplete() {
     connect(m_notificationCenter, SIGNAL(receivedNewStreamPosts(int)),
             this, SLOT(receivedNewStreamPosts(int)));
 
-    m_updatePoller = new UpdatePoller(m_userInfo);
+    m_updatePoller = new UpdatePoller();
     connect(m_updatePoller, SIGNAL(apiFqlGetNewNotifications(QList<DATA::Notification*>*)),
             m_notificationCenter, SLOT(newNotifications(QList<DATA::Notification*>*)),
             Qt::QueuedConnection);
@@ -285,7 +280,7 @@ void QtFacebook::exitMenuAction() {
 
 void QtFacebook::testQueryConsole() {
     if (m_testConsole == 0)
-        m_testConsole = new TestQueryConsole(m_userInfo);
+        m_testConsole = new TestQueryConsole();
     else if (m_testConsole->isMinimized())
         m_testConsole->showNormal();
 
@@ -343,7 +338,7 @@ void QtFacebook::viewRecentNotifications() {
 
 void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
     if (m_notificationListView == 0) {
-        m_notificationListView = new GUI::Notifications::ListView(m_userInfo);
+        m_notificationListView = new GUI::Notifications::ListView();
     } else if (m_notificationListView != 0 && m_notificationListView->isMinimized()) {
         m_notificationListView->showNormal();
         m_notificationListView->restoreWindow();

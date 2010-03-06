@@ -5,7 +5,6 @@ SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
     qtfacebook.cpp \
-    userinfo.cpp \
     testqueryconsole.cpp \
     api/apimethod.cpp \
     api/factory.cpp \
@@ -59,7 +58,6 @@ SOURCES += main.cpp \
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
-    userinfo.h \
     testqueryconsole.h \
     ui_testqueryconsole.h \
     api/factory.h \
