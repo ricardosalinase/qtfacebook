@@ -154,7 +154,19 @@ void FbPhotoViewWidget::apiFqlGetPhotos(API::FQL::GetPhotos *method) {
     }
     else // Facebook returned an empty result - hit bug
     {
-        // Display bug report message
+        QLabel *l = new QLabel("Unfortunately we are unable to retrieve this "
+                       "photo from Facebook.<BR><BR>There is currently a bug "
+                       "in their API that causes this to occur "
+                       "and we have opened "
+                       "a ticket in their bugzilla system.");
+        m_mainLayout->removeWidget(m_progress);
+        delete m_progress;
+        m_progress = 0;
+        l->setWordWrap(true);
+        l->setAlignment(Qt::AlignCenter);
+        l->resize(50,100);
+        m_mainLayout->insertWidget(0,l,0, Qt::AlignCenter);
+
     }
 
     delete pList;
