@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QCloseEvent>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 
 
 #include "data/FbPhoto.h"
@@ -41,7 +42,8 @@ private:
     LoadingProgressWidget *m_progress;
     bool m_destroyPhoto;
     API::Factory *m_factory;
-    QVBoxLayout *m_mainLayout;
+    QHBoxLayout *m_mainLayout;
+    QVBoxLayout *m_rightSideLayout;
 };
 
 

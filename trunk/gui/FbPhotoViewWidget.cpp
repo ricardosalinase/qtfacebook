@@ -6,6 +6,7 @@
 #include "FbCommentManager.h"
 #include "util/FbPhotoCache.h"
 #include "util/OurUserInfo.h"
+#include "util/agestring.h"
 
 namespace GUI {
 
@@ -19,17 +20,17 @@ FbPhotoViewWidget::FbPhotoViewWidget(const QString& photoId, QWidget *parent) :
     // in our destructor
     m_destroyPhoto = true;
 
-
-    resize(620,620);
+    resize(620,320);
     setStyleSheet("background : white;");
     setWindowTitle("Loading Photo ...");
 
-
-    m_mainLayout = new QVBoxLayout();
+    m_mainLayout = new QHBoxLayout();
+    m_mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_progress = new LoadingProgressWidget("Loading Photo");
-    m_mainLayout->addWidget(m_progress, 1, Qt::AlignCenter);
-    setLayout(m_mainLayout);
+    m_mainLayout->addWidget(m_progress, 2, Qt::AlignCenter);
 
+    setLayout(m_mainLayout);
+\
     m_factory = new API::Factory(this);
     connect(m_factory, SIGNAL(apiFqlGetPhotos(API::FQL::GetPhotos *)),
             this, SLOT(apiFqlGetPhotos(API::FQL::GetPhotos*)));
@@ -60,7 +61,8 @@ FbPhotoViewWidget::FbPhotoViewWidget(DATA::FbPhoto *photo, QWidget *parent) :
     resize(620,620);
     this->setStyleSheet("background : white;");
     setWindowTitle("Loading Photo ...");
-    m_mainLayout = new QVBoxLayout();
+    m_mainLayout = new QHBoxLayout();
+    m_mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     setLayout(m_mainLayout);
     buildDisplay();
 
@@ -87,15 +89,27 @@ void FbPhotoViewWidget::buildDisplay() {
     connect(m_nam, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
 
+    QFrame *f = new QFrame();
+    f->setMinimumWidth(10);
+    f->setFrameShape(QFrame::VLine);
+    m_mainLayout->insertWidget(1,f,0);
+    
+    m_rightSideLayout = new QVBoxLayout();
+    m_rightSideLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+
     QString s = "<style type=\"text/css\">a { text-decoration: none; }</style>"
                 "From " + this->windowTitle() + "'s album <a href=\"aid:" +
                 m_photo->getAlbumId() + "\">" + m_photo->getAlbumName() +
                 "</a>";
 
     QLabel *l = new QLabel(s);
+    l->setWordWrap(true);
     connect(l, SIGNAL(linkActivated(QString)),
             this, SIGNAL(userClickedLink(QString)));
-    m_mainLayout->insertWidget(0,l,0);
+    m_rightSideLayout->addWidget(l);
+
+    l = new QLabel("Uploaded: " + UTIL::ageString(m_photo->getCreatedTime()));
+    m_rightSideLayout->addWidget(l);
 
     UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
 
@@ -107,7 +121,7 @@ void FbPhotoViewWidget::buildDisplay() {
         if (m_progress == 0)
         {
             m_progress = new LoadingProgressWidget("Loading Photo");
-            m_mainLayout->insertWidget(1,m_progress, 1, Qt::AlignCenter);
+            m_mainLayout->insertWidget(0,m_progress, 1, Qt::AlignCenter);
         }
         QNetworkRequest nr;
         nr.setUrl(m_photo->getSrcBig());
@@ -122,23 +136,29 @@ void FbPhotoViewWidget::buildDisplay() {
             m_progress = 0;
         }
         QLabel *l = new QLabel();
+        if (p->height() > 604)
+            *p = p->scaledToHeight(604);
         l->setPixmap(*p);
+        l->setMinimumWidth(p->width());
         l->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        m_mainLayout->insertWidget(1,l);
+        m_mainLayout->insertWidget(0,l,0,Qt::AlignTop);
         delete p;
     }
 
     if (m_photo->getCaption() != "")
     {
         l = new QLabel("\"" + m_photo->getCaption() + "\"");
-        m_mainLayout->addWidget(l);
+        l->setWordWrap(true);
+        m_rightSideLayout->addWidget(l);
     }
+
+    m_rightSideLayout->addSpacing(20);
 
     FbCommentManager *cm = new FbCommentManager(m_photo->getObjectId(),
                                                 FbCommentManager::ObjectId,
                                                 m_isOwner);
-    m_mainLayout->addWidget(cm);
-
+    m_rightSideLayout->addWidget(cm,1);
+    m_mainLayout->addLayout(m_rightSideLayout,1);
 
 }
 
@@ -165,7 +185,7 @@ void FbPhotoViewWidget::apiFqlGetPhotos(API::FQL::GetPhotos *method) {
         l->setWordWrap(true);
         l->setAlignment(Qt::AlignCenter);
         l->resize(50,100);
-        m_mainLayout->insertWidget(0,l,0, Qt::AlignCenter);
+        m_mainLayout->insertWidget(0,l,0,Qt::AlignCenter);
 
     }
 
@@ -186,17 +206,24 @@ void FbPhotoViewWidget::gotNetworkReply(QNetworkReply *reply) {
     {
         QPixmap p;
         p.loadFromData(reply->readAll());
-        QLabel *l = new QLabel();
-        l->setPixmap(p);
-        l->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-        ((QVBoxLayout*)layout())->removeWidget(m_progress);
-        delete m_progress;
-        ((QVBoxLayout*)layout())->insertWidget(1,l);
-
         UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
         cache->cachePixmap(m_photo->getPhotoId(), UTIL::FbPhotoCache::PicBig,
                            m_photo->getSrcBig(), p);
+
+
+        QLabel *l = new QLabel();
+        if (p.height() > 604)
+            p = p.scaledToHeight(604);
+
+        l->setPixmap(p);
+        l->setMinimumWidth(p.width());
+        l->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+        m_mainLayout->removeWidget(m_progress);
+        delete m_progress;
+        m_mainLayout->insertWidget(0,l,0,Qt::AlignTop);
+
+
 
     }
     else
