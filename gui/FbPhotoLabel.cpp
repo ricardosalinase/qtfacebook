@@ -2,18 +2,18 @@
 
 namespace GUI {
 
-FbPhotoLabel::FbPhotoLabel(const QString& pid, QWidget *parent) :
-        QLabel(parent),
-        m_pid(pid)
+FbPhotoLabel::FbPhotoLabel(DATA::FbPhoto *photo, QWidget *parent) :
+    QLabel(parent),
+    m_photo(photo)
 {
 }
 
 void FbPhotoLabel::mousePressEvent( QMouseEvent */*ev*/ ) {
-    emit userClickedImage(m_pid);
+    emit userClickedImage(m_photo);
 }
 
-QString& FbPhotoLabel::getPid() {
-    return m_pid;
+DATA::FbPhoto * FbPhotoLabel::getPhoto() {
+    return m_photo;
 }
 
 } // namespace GUI

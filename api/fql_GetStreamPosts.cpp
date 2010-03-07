@@ -217,6 +217,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentAttachment->setIcon(m_currentText);
         else if (qName == "fb_object_type")
             m_currentAttachment->setFbObjectType(m_currentText);
+        else if (qName == "fb_object_id")
+            m_currentAttachment->setFbObjectId(m_currentText);
         break;
     case STREAMMEDIA:
         if (qName == "stream_media")

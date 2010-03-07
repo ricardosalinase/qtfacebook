@@ -3,6 +3,9 @@
 
 #include <QString>
 
+#include "data/fbuserinfo.h"
+#include "data/FbPageInfo.h"
+
 namespace DATA {
 
 class FbAlbum
@@ -27,8 +30,19 @@ public:
     const QString& getLocation();
     void setNumPhotos(const QString& numPhotos);
     int getNumPhotos();
+    void setModifiedMajorTime(const QString& modifiedTime);
+    const QString& getModifiedMajorTime();
+    void setAlbumType(const QString& type);
+    const QString& getAlbumType();
     void setObjectId(const QString& objectId);
     const QString& getObjectId();
+    void setUserInfo(const FbUserInfo *info);
+    FbUserInfo& getUserInfo();
+    void setPageInfo(const FbPageInfo *info);
+    FbPageInfo& getPageInfo();
+    FbUserInfo m_userOwnerInfo;
+    FbPageInfo m_pageOwnerInfo;
+    bool isUserOwned();
 
 
 private:
@@ -41,7 +55,11 @@ private:
     QString m_description;
     QString m_location;
     int m_numPhotos;
+    QString m_modifiedMajorTime;
+    QString m_albumType;
     QString m_objectId;
+    bool m_isOwnedByUser;
+
 
 
 };

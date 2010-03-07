@@ -16,6 +16,7 @@
 #include "notificationcenterwidget.h"
 #include "streampostwidget.h"
 #include "gui/FbPhotoViewWidget.h"
+#include "gui/FbAlbumViewWidget.h"
 
 
 namespace GUI {
@@ -479,7 +480,18 @@ void NotificationCenter::contentClicked(QString url) {
         GUI::FbPhotoViewWidget *fvw = new GUI::FbPhotoViewWidget(pid);
         connect(fvw, SIGNAL(closed(GUI::FbPhotoViewWidget*)),
                 this, SLOT(photoViewClosed(GUI::FbPhotoViewWidget*)));
+        connect(fvw, SIGNAL(userClickedLink(QString)),
+                this, SLOT(contentClicked(QString)));
         fvw->show();
+    }
+    else if (url.startsWith("aid"))
+    {
+        QString aid = url.split(":").at(1);
+        GUI::FbAlbumViewWidget *avw = new GUI::FbAlbumViewWidget(aid);
+        connect(avw, SIGNAL(closed(GUI::FbAlbumViewWidget*)),
+                this, SLOT(albumViewClosed(GUI::FbAlbumViewWidget*)));
+        avw->show();
+
     }
 
 }
@@ -489,6 +501,10 @@ void NotificationCenter::photoViewClosed(GUI::FbPhotoViewWidget *fvw) {
     //DATA::FbPhoto *photo = m_openPhotos.take(fvw);
     delete fvw;
     //delete photo;
+}
+
+void NotificationCenter::albumViewClosed(GUI::FbAlbumViewWidget *avw) {
+    delete avw;
 }
 
 } // namespace GUI

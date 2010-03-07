@@ -62,6 +62,14 @@ QString& FbStreamAttachment::getFbObjectType() {
     return m_objType;
 }
 
+void FbStreamAttachment::setFbObjectId(const QString &id) {
+    m_objId = id;
+}
+
+const QString& FbStreamAttachment::getFbObjectId() {
+    return m_objId;
+}
+
 void FbStreamAttachment::addMedia(DATA::FbStreamMedia *media) {
     m_media.append(media);
     m_attachmentIsEmpty = false;

@@ -54,7 +54,10 @@ SOURCES += main.cpp \
     api/comments_Add.cpp \
     api/comments_Remove.cpp \
     gui/LoadingProgressWidget.cpp \
-    util/OurUserInfo.cpp
+    util/OurUserInfo.cpp \
+    api/fql_GetAlbums.cpp \
+    gui/FbAlbumViewWidget.cpp \
+    gui/ImageLabel.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -110,7 +113,10 @@ HEADERS += fbconnectwizard.h \
     api/comments_Add.h \
     api/comments_Remove.h \
     gui/LoadingProgressWidget.h \
-    util/OurUserInfo.h
+    util/OurUserInfo.h \
+    api/fql_GetAlbums.h \
+    gui/FbAlbumViewWidget.h \
+    gui/ImageLabel.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \

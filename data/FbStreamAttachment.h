@@ -27,6 +27,8 @@ public:
     QUrl& getIcon();
     void setFbObjectType(QString& type);
     QString& getFbObjectType();
+    void setFbObjectId(const QString& id);
+    const QString& getFbObjectId();
     void addMedia(DATA::FbStreamMedia *media);
     QList<DATA::FbStreamMedia *>& getMedia();
     void addProperty(DATA::FbStreamAttachmentProperty *p);
@@ -40,6 +42,7 @@ private:
     QString m_caption;
     QUrl m_icon;
     QString m_objType;
+    QString m_objId;
     QList<DATA::FbStreamMedia *> m_media;
     QList<DATA::FbStreamAttachmentProperty *> m_properties;
     bool m_attachmentIsEmpty;

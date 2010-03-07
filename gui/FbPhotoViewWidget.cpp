@@ -43,7 +43,7 @@ FbPhotoViewWidget::FbPhotoViewWidget(const QString& photoId, QWidget *parent) :
 
     if (!rc)
     {
-        qDebug() << "NotificationCenter::contentClicked(); "
+        qDebug() << "FbPhotoViewWidget::FbPhotoViewWidget(); "
                 "fql.multiquery.getPhotos failed:  " << method->errorString();
         delete method;
     }
@@ -58,7 +58,7 @@ FbPhotoViewWidget::FbPhotoViewWidget(DATA::FbPhoto *photo, QWidget *parent) :
     m_destroyPhoto(false)
 {
 
-    resize(620,620);
+    resize(620,320);
     this->setStyleSheet("background : white;");
     setWindowTitle("Loading Photo ...");
     m_mainLayout = new QHBoxLayout();
@@ -184,7 +184,7 @@ void FbPhotoViewWidget::apiFqlGetPhotos(API::FQL::GetPhotos *method) {
         m_progress = 0;
         l->setWordWrap(true);
         l->setAlignment(Qt::AlignCenter);
-        l->resize(50,100);
+        l->setMinimumSize(400,100);
         m_mainLayout->insertWidget(0,l,0,Qt::AlignCenter);
 
     }

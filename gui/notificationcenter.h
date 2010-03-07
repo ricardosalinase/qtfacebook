@@ -18,6 +18,7 @@
 #include "gui/streampostwidget.h"
 #include "data/FbPageInfo.h"
 #include "gui/FbPhotoViewWidget.h"
+#include "gui/FbAlbumViewWidget.h"
 
 
 namespace GUI {
@@ -61,6 +62,7 @@ private slots:
     void streamPostClosed(GUI::StreamPostWidget *);
     void contentClicked(QString url);
     void photoViewClosed(GUI::FbPhotoViewWidget *);
+    void albumViewClosed(GUI::FbAlbumViewWidget *);
 
 protected:
     void closeEvent ( QCloseEvent * event );
