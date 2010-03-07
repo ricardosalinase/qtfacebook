@@ -19,6 +19,7 @@
 #include "fql_GetPhotos.h"
 #include "comments_Add.h"
 #include "comments_Remove.h"
+#include "api/fql_GetAlbums.h"
 
 
 // Simple factory
@@ -116,7 +117,11 @@ signals:
      */
     void apiCommentsRemove(API::Comments::Remove *method);
     void apiCommentsRemoveFailed(API::Comments::Remove *method);
-
+    /*!
+     * This signal is emitted whenever a API::FQL::GetAlbums method has completed
+     */
+    void apiFqlGetAlbums(API::FQL::GetAlbums *method);
+    void apiFqlGetAlbumsFailed(API::FQL::GetAlbums *method);
 
 public slots:
     void dispatch(API::Method *);

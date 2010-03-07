@@ -7,7 +7,7 @@
 #include <QPair>
 
 #include "data/FbStreamAttachment.h"
-#include "gui/FbPhotoLabel.h"
+#include "gui/ImageLabel.h"
 
 namespace GUI {
 
@@ -27,7 +27,7 @@ public slots:
 private:
     enum RequestType { Photo, Other };
     QNetworkAccessManager *m_nam;
-    QMap<QNetworkReply *, QPair<RequestType, GUI::FbPhotoLabel *> > m_outstandingRequests;
+    QMap<QNetworkReply *, QPair<RequestType, GUI::ImageLabel *> > m_outstandingRequests;
 
 };
 

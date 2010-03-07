@@ -3,7 +3,8 @@
 namespace DATA {
 
 FbAlbum::FbAlbum() :
-    m_numPhotos(0)
+    m_numPhotos(0),
+    m_isOwnedByUser(true)
 {
 }
 
@@ -79,6 +80,22 @@ int FbAlbum::getNumPhotos() {
     return m_numPhotos;
 }
 
+void FbAlbum::setModifiedMajorTime(const QString &modifiedTime) {
+    m_modifiedMajorTime = modifiedTime;
+}
+
+const QString& FbAlbum::getModifiedMajorTime() {
+    return m_modifiedMajorTime;
+}
+
+void FbAlbum::setAlbumType(const QString &type) {
+    m_albumType = type;
+}
+
+const QString& FbAlbum::getAlbumType() {
+    return m_albumType;
+}
+
 void FbAlbum::setObjectId(const QString &objectId) {
     m_objectId = objectId;
 }
@@ -87,8 +104,25 @@ const QString& FbAlbum::getObjectId() {
     return m_objectId;
 }
 
+void FbAlbum::setUserInfo(const FbUserInfo *info) {
+    m_userOwnerInfo = *info;
+}
 
+FbUserInfo& FbAlbum::getUserInfo() {
+    return m_userOwnerInfo;
+}
 
+void FbAlbum::setPageInfo(const FbPageInfo *info) {
+    m_pageOwnerInfo = *info;
+    m_isOwnedByUser = false;
+}
 
+FbPageInfo& FbAlbum::getPageInfo() {
+    return m_pageOwnerInfo;
+}
+
+bool FbAlbum::isUserOwned() {
+    return m_isOwnedByUser;
+}
 
 } // namespace DATA

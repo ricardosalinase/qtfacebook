@@ -4,7 +4,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 
-#include "gui/FbPhotoLabel.h"
+#include "gui/ImageLabel.h"
 #include "util/FbPhotoCache.h"
 
 namespace GUI {
@@ -48,7 +48,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
 
                 QString pid = sm->getMediaDetail().value("pid");
                 //QString aid = sm->getMediaDetail().value("aid");
-                GUI::FbPhotoLabel *l = new GUI::FbPhotoLabel("pid:" + pid);
+                GUI::ImageLabel *l = new GUI::ImageLabel("pid:" + pid);
                 connect(l, SIGNAL(userClickedImage(QString)),
                         this, SIGNAL(userClickedUrl(QString)));
 
@@ -60,7 +60,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
                     QNetworkRequest nr;
                     nr.setUrl(sm->getSrc());
                     QNetworkReply *reply = m_nam->get(nr);
-                    QPair<RequestType, GUI::FbPhotoLabel *> pair(Photo, l);
+                    QPair<RequestType, GUI::ImageLabel *> pair(Photo, l);
                     m_outstandingRequests.insert(reply, pair);
                 }
                 else
@@ -75,14 +75,14 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
             // else if ... // need to add link, mp3, flash, etc handlers.
             else
             {
-                GUI::FbPhotoLabel *l = new GUI::FbPhotoLabel(sm->getHref().toString());
+                GUI::ImageLabel *l = new GUI::ImageLabel(sm->getHref().toString());
                 connect(l, SIGNAL(userClickedImage(QString)),
                         this, SIGNAL(userClickedUrl(QString)));
                 QUrl url(sm->getSrc());
                 QNetworkRequest nr;
                 nr.setUrl(url);
                 QNetworkReply *reply = m_nam->get(nr);
-                QPair<RequestType, GUI::FbPhotoLabel *>  pair(Other, l);
+                QPair<RequestType, GUI::ImageLabel *>  pair(Other, l);
                 m_outstandingRequests.insert(reply,pair);
                 hLayout->addWidget(l,0,Qt::AlignTop);
 
@@ -96,7 +96,15 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
 
     if (attachment->getName() != "")
     {
-        QLabel *name = new QLabel("<a href=\"" + attachment->getHref().toString() + "\">" +
+        // This is a horrible hack that I need to do because the URLs
+        // for albums returned by FB are useless.
+        QString href;
+        if (attachment->getFbObjectType() == "album")
+            href = "aid:" + attachment->getFbObjectId();
+        else
+            href = attachment->getHref().toString();
+
+        QLabel *name = new QLabel("<a href=\"" + href + "\">" +
                               attachment->getName() + "</a>");
         connect(name, SIGNAL(linkActivated(QString)),
                 this, SIGNAL(userClickedUrl(QString)));
@@ -163,8 +171,8 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
 }
 
 void FbAttachmentWidget::gotNetworkReply(QNetworkReply *reply) {
-    QPair<RequestType, GUI::FbPhotoLabel *> pair = m_outstandingRequests.take(reply);
-    GUI::FbPhotoLabel *pl = pair.second;
+    QPair<RequestType, GUI::ImageLabel *> pair = m_outstandingRequests.take(reply);
+    GUI::ImageLabel *pl = pair.second;
     RequestType type = pair.first;
 
     if (reply->error() == QNetworkReply::NoError)
@@ -172,14 +180,14 @@ void FbAttachmentWidget::gotNetworkReply(QNetworkReply *reply) {
         QPixmap p;
         p.loadFromData(reply->readAll());
         if (p.width() > 130)
-            p.scaledToWidth(130);
+            p = p.scaledToWidth(130);
         pl->setPixmap(p);
         pl->setMinimumHeight(p.height());
 
         if (type == Photo)
         {
             UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
-            QString pid = pl->getPid().split(":").at(1);
+            QString pid = pl->getUrlString().split(":").at(1);
             cache->cachePixmap(pid, UTIL::FbPhotoCache::Pic,
                                reply->request().url(), p);
         }

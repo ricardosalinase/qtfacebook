@@ -11,14 +11,14 @@ class FbPhotoLabel : public QLabel
 {
     Q_OBJECT
 public:
-    explicit FbPhotoLabel(const QString& pid, QWidget *parent = 0);
-    QString& getPid();
+    explicit FbPhotoLabel(DATA::FbPhoto *photo, QWidget *parent = 0);
+    DATA::FbPhoto * getPhoto();
 
 signals:
-    void userClickedImage(QString pid);
+    void userClickedImage(DATA::FbPhoto *);
 
 private:
-    QString m_pid;
+    DATA::FbPhoto *m_photo;
 
 protected:
     virtual void mousePressEvent( QMouseEvent *ev);
