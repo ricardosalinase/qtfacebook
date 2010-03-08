@@ -24,6 +24,9 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     QList<DATA::FbStreamMedia *> mList = attachment->getMedia();
     int numMedia = mList.size();
 
+    // See hack description below where this is used.
+    QString savedAlbumId = "";
+
     if (numMedia != 0)
     {
         hLayout = new QHBoxLayout();
@@ -47,7 +50,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
                 UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
 
                 QString pid = sm->getMediaDetail().value("pid");
-                //QString aid = sm->getMediaDetail().value("aid");
+                savedAlbumId = sm->getMediaDetail().value("aid");
                 GUI::ImageLabel *l = new GUI::ImageLabel("pid:" + pid);
                 connect(l, SIGNAL(userClickedImage(QString)),
                         this, SIGNAL(userClickedUrl(QString)));
@@ -99,7 +102,9 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
         // This is a horrible hack that I need to do because the URLs
         // for albums returned by FB are useless.
         QString href;
-        if (attachment->getFbObjectType() == "album")
+        if (savedAlbumId != "")
+            href = "aid:" + savedAlbumId;
+        else if (attachment->getFbObjectType() == "album")
             href = "aid:" + attachment->getFbObjectId();
         else
             href = attachment->getHref().toString();
