@@ -5,12 +5,14 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QCloseEvent>
+#include <QPushButton>
 
 #include "data/FbAlbum.h"
 #include "data/FbPhoto.h"
 #include "api/factory.h"
 #include "gui/LoadingProgressWidget.h"
 #include "gui/FbPhotoLabel.h"
+#include "gui/FbPhotoViewWidget.h"
 
 namespace GUI {
 
@@ -34,6 +36,9 @@ private slots:
     void apiFqlGetPhotos(API::FQL::GetPhotos *method);
     void getPhotosFailed(API::FQL::GetPhotos *method);
     void userClickedPhoto(DATA::FbPhoto *photo);
+    void userClosedPhotoViewer(GUI::FbPhotoViewWidget*);
+    void userClickedPrev();
+    void userClickedNext();
 
 private:
     void closeEvent ( QCloseEvent * event );
@@ -44,12 +49,18 @@ private:
     bool m_destroyAlbum;
     API::Factory *m_factory;
     QHBoxLayout *m_mainLayout;
+    QVBoxLayout *m_photoPaneLayout;
     QGridLayout *m_thumbLayout;
     QNetworkAccessManager *m_nam;
     LoadingProgressWidget *m_progress;
     QMap<QNetworkReply *, GUI::FbPhotoLabel *> m_outstandingRequests;
     bool m_useSmallThumbs;
-
+    GUI::FbPhotoViewWidget *m_photoViewWidget;
+    QList<QWidget *> m_pages;
+    int m_currentPage;
+    QPushButton *m_prev;
+    QPushButton *m_next;
+    QLabel *m_pageReadout;
 
 
 };

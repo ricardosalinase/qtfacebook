@@ -420,38 +420,50 @@ void NotificationCenter::receiveIconPixmap(QNetworkReply *reply) {
 
 void NotificationCenter::linkActivated(QString url) {
 
+    // http://www.facebook.com/album.php?aid=5685&id=100000685644751&comments
+
     qDebug() << "Notification Center; Url: " + url;
 
     QString postId = "";
+    QString albumId;
 
     QRegExp rx1("v=feed&story_fbid=(\\d+)&id=(\\d+)");
     QRegExp rx2("streamPost:(\\d+_\\d+)");
+    QRegExp rx3("aid=(\\d+)&id=(\\d+)");
 
     if (rx1.indexIn(url) != -1)
         postId = rx1.cap(2) + "_" + rx1.cap(1);
     else if (rx2.indexIn(url) != -1)
         postId = rx2.cap(1);
+    else if (rx3.indexIn(url) != -1)
+        albumId = "aid:" + rx3.cap(2) + "_" + rx3.cap(1);
 
-    if (m_streamPosts.contains(postId))
+    if (postId != "")
     {
-        StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId]);
-        connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
-                this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
-        connect(spw, SIGNAL(contentClicked(QString)),
-                this, SLOT(contentClicked(QString)));
-        spw->show();
-
-    }
-    else
-    {
-       if (postId != "")
+        if (m_streamPosts.contains(postId))
         {
+            StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId]);
+            connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
+                    this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
+            connect(spw, SIGNAL(contentClicked(QString)),
+                    this, SLOT(contentClicked(QString)));
+            spw->show();
+
+        }
+        else
+        {
+
             API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
             method->setArgument("post_id", postId);
             bool rc = method->execute();
             if (!rc)
                 qDebug() << "Method fql.multiquery.getStreamPosts error: " << method->getErrorStr();
         }
+    }
+
+    if (albumId != "")
+    {
+        contentClicked(albumId);
     }
 
     qDebug() << postId;
