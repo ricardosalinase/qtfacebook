@@ -2,9 +2,11 @@
 
 #include <QLabel>
 #include <QDebug>
+#include <QPushButton>
 
 #include "util/FbPhotoCache.h"
-
+#include "util/agestring.h"
+#include "gui/FbCommentManager.h"
 
 namespace GUI {
 
@@ -12,7 +14,8 @@ FbAlbumViewWidget::FbAlbumViewWidget(const QString& albumId, QWidget *parent) :
     QWidget(parent),
     m_album(0),
     m_isOwner(false),
-    m_destroyAlbum(true)
+    m_destroyAlbum(true),
+    m_photoViewWidget(0)
 {
 
     resize(620,320);
@@ -54,7 +57,8 @@ FbAlbumViewWidget::FbAlbumViewWidget(DATA::FbAlbum *album, QWidget *parent) :
     QWidget(parent),
     m_album(album),
     m_isOwner(false),
-    m_destroyAlbum(false)
+    m_destroyAlbum(false),
+    m_photoViewWidget(0)
 {
 
     resize(620,320);
@@ -73,8 +77,15 @@ FbAlbumViewWidget::FbAlbumViewWidget(DATA::FbAlbum *album, QWidget *parent) :
 }
 
 FbAlbumViewWidget::~FbAlbumViewWidget() {
+
+    if (m_photoViewWidget != 0)
+        delete m_photoViewWidget;
+
+
     if (m_destroyAlbum && m_album != 0)
         delete m_album;
+
+
 }
 
 void FbAlbumViewWidget::apiFqlGetAlbums(API::FQL::GetAlbums *method) {
@@ -177,6 +188,31 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
     if (m_album->getNumPhotos() > 15)
         m_useSmallThumbs = true;
 
+    m_photoPaneLayout = new QVBoxLayout();
+
+    if (m_album->getNumPhotos() > 20)
+    {
+        m_currentPage = 0;
+        QHBoxLayout *layout = new QHBoxLayout();
+        m_prev = new QPushButton("Prev");
+        m_prev->setEnabled(false);
+        connect(m_prev, SIGNAL(clicked()),
+                this, SLOT(userClickedPrev()));
+        m_next = new QPushButton("Next");
+        connect(m_next, SIGNAL(clicked()),
+                this, SLOT(userClickedNext()));
+        m_pageReadout = new QLabel("1 - 20 of " + QString::number(m_album->getNumPhotos()));
+
+        layout->addWidget(m_prev,0,Qt::AlignLeft);
+        layout->addWidget(m_pageReadout,1,Qt::AlignCenter);
+        layout->addWidget(m_next,0,Qt::AlignRight);
+
+        m_photoPaneLayout->addLayout(layout,0);
+
+    }
+
+
+
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
@@ -185,20 +221,41 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
     delete m_progress;
     m_progress = 0;
 
+    m_mainLayout->insertLayout(0,m_photoPaneLayout);
+
+    QFrame *f = new QFrame();
+    f->setMinimumWidth(10);
+    f->setFrameShape(QFrame::VLine);
+    m_mainLayout->insertWidget(1,f,0);
+
+
     m_thumbLayout = new QGridLayout();
     m_thumbLayout->setSpacing(10);
-    m_mainLayout->insertLayout(0, m_thumbLayout);
+
+    QWidget *page = new QWidget();
+    page->setLayout(m_thumbLayout);
+    m_photoPaneLayout->addWidget(page,1);
     int row = 0;
+    m_pages.append(page);
 
     UTIL::FbPhotoCache *cache = UTIL::FbPhotoCache::getInstance();
 
-    for (int i = 0, rc = 0; i < photoList->size(); i++,rc++)
+    for (int i = photoList->size() - 1, rc = 0; i != -1; i--,rc++)
     {
         if ( (m_useSmallThumbs && (rc > 4)) ||
             (!m_useSmallThumbs && (rc > 3)) )
         {
-            row++;
             rc = 0;
+            row++;
+            if (row > 3)
+            {
+                page = new QWidget();
+                m_thumbLayout = new QGridLayout();
+                m_thumbLayout->setSpacing(10);
+                page->setLayout(m_thumbLayout);
+                m_pages.append(page);
+                row = 0;
+            }
         }
 
         DATA::FbPhoto *photo = photoList->at(i);
@@ -207,6 +264,8 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
 
         connect(pl, SIGNAL(userClickedImage(DATA::FbPhoto*)),
                 this, SLOT(userClickedPhoto(DATA::FbPhoto*)));
+
+        pl->setMinimumSize(50, 100);
 
         QPixmap *p;
 
@@ -233,12 +292,56 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
         else
         {
             pl->setPixmap(*p);
+            pl->setMinimumSize(p->size());
             delete p;
         }
 
         m_thumbLayout->addWidget(pl, row, rc, Qt::AlignTop | Qt::AlignCenter);
 
     }
+
+    QString s;
+    if (m_album->isUserOwned())
+        s = m_album->getUserInfo().getName() + "'s album: ";
+    else
+        s = m_album->getPageInfo().getName() + "'s album: ";
+
+    s.append(m_album->getAlbumName());
+    this->setWindowTitle(s);
+
+    QVBoxLayout *rightSideLayout = new QVBoxLayout();
+
+    QLabel *l = new QLabel("Created: " + UTIL::ageString(m_album->getCreatedTime()));
+    rightSideLayout->addWidget(l,0);
+
+    if (m_album->getLocation() != "")
+    {
+        l = new QLabel("Location: " + m_album->getLocation());
+        rightSideLayout->addWidget(l,0);
+    }
+
+    if (m_album->getDescription() != "")
+    {
+        l = new QLabel("Description: " + m_album->getDescription());
+        rightSideLayout->addWidget(l,0);
+    }
+
+    rightSideLayout->addSpacing(20);
+
+    bool isOwner = false;
+    UTIL::OurUserInfo *info = UTIL::OurUserInfo::getInstance();
+    if (info->getUID() == m_album->getOwnerID())
+        isOwner = true;
+
+
+    FbCommentManager *cm = new FbCommentManager(m_album->getObjectId(),
+                                                FbCommentManager::ObjectId,
+                                                isOwner);
+
+
+    rightSideLayout->addWidget(cm,0);
+    m_mainLayout->addLayout(rightSideLayout,2);
+
 
 
 }
@@ -261,6 +364,7 @@ void FbAlbumViewWidget::gotNetworkReply(QNetworkReply *reply) {
                                pl->getPhoto()->getSrc(), p);
 
         pl->setPixmap(p);
+        pl->setMinimumSize(p.size());
 
     }
     else
@@ -275,8 +379,87 @@ void FbAlbumViewWidget::userClickedPhoto(DATA::FbPhoto *photo) {
 
     qDebug() << "User clicked: " << photo->getPhotoId();
 
+
+    if (m_photoViewWidget != 0)
+        delete m_photoViewWidget;
+
+    m_photoViewWidget = new GUI::FbPhotoViewWidget(photo);
+    connect(m_photoViewWidget, SIGNAL(closed(GUI::FbPhotoViewWidget*)),
+            this, SLOT(userClosedPhotoViewer(GUI::FbPhotoViewWidget*)));
+    m_photoViewWidget->show();
+
+    // TODO: signal the open viewer to change photos
+
+
+
+
+
 }
 
+void FbAlbumViewWidget::userClickedNext() {
+
+    if (m_currentPage != m_pages.size() - 1)
+    {
+        m_pages.at(m_currentPage)->hide();
+        m_photoPaneLayout->removeWidget(m_pages.at(m_currentPage));
+        m_currentPage++;
+
+        m_photoPaneLayout->insertWidget(1,m_pages.at(m_currentPage));
+        m_pages.at(m_currentPage)->show();
+
+        if (m_currentPage == m_pages.size() - 1)
+            m_next->setEnabled(false);
+
+        m_prev->setEnabled(true);
+
+        QString text = QString::number((m_currentPage * 20) + 1) + " - ";
+
+        int lastPic = (m_currentPage * 20) + 20;
+        if (lastPic > m_album->getNumPhotos())
+            lastPic = m_album->getNumPhotos();
+
+        text.append(QString::number(lastPic) + " of " + QString::number(m_album->getNumPhotos()));
+
+        m_pageReadout->setText(text);
+
+    }
+
+}
+
+void FbAlbumViewWidget::userClickedPrev() {
+
+    if (m_currentPage != 0)
+    {
+        m_pages.at(m_currentPage)->hide();
+        m_photoPaneLayout->removeWidget(m_pages.at(m_currentPage));
+        m_currentPage--;
+        m_photoPaneLayout->insertWidget(1,m_pages.at(m_currentPage));
+        m_pages.at(m_currentPage)->show();
+
+        if (m_currentPage == 0)
+            m_prev->setEnabled(false);
+
+        m_next->setEnabled(true);
+
+        QString text = QString::number((m_currentPage * 20) + 1) + " - ";
+
+        int lastPic = (m_currentPage * 20) + 20;
+        if (lastPic > m_album->getNumPhotos())
+            lastPic = m_album->getNumPhotos();
+
+        text.append(QString::number(lastPic) + " of " + QString::number(m_album->getNumPhotos()));
+
+        m_pageReadout->setText(text);
+
+    }
+
+}
+
+
+void FbAlbumViewWidget::userClosedPhotoViewer(GUI::FbPhotoViewWidget *) {
+    //delete fv;
+
+}
 
 void FbAlbumViewWidget::closeEvent(QCloseEvent *event) {
     emit closed(this);

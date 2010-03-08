@@ -33,7 +33,11 @@ namespace UTIL {
 
                 if (time_t_createTime < oneWeekAgo.toTime_t())
                 {
-                    postedTime.append(createTime.toString("ddd MMMM d 'at' hh:mm:ss ap"));
+                    if (createTime.date().year() != now.date().year())
+                        postedTime.append(createTime.toString("ddd MMMM d yyyy 'at' hh:mm:ss ap"));
+                    else
+                        postedTime.append(createTime.toString("ddd MMMM d 'at' hh:mm:ss ap"));
+
                 }
                 else
                 {

@@ -138,6 +138,8 @@ void FbPhotoViewWidget::buildDisplay() {
         QLabel *l = new QLabel();
         if (p->height() > 604)
             *p = p->scaledToHeight(604);
+        else if (p->width() > 604)
+            *p = p->scaledToWidth(604);
         l->setPixmap(*p);
         l->setMinimumWidth(p->width());
         l->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -214,6 +216,8 @@ void FbPhotoViewWidget::gotNetworkReply(QNetworkReply *reply) {
         QLabel *l = new QLabel();
         if (p.height() > 604)
             p = p.scaledToHeight(604);
+        else if (p.width() > 604)
+            p = p.scaledToWidth(604);
 
         l->setPixmap(p);
         l->setMinimumWidth(p.width());
