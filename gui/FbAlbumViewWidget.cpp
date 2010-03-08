@@ -174,7 +174,7 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
 
     m_useSmallThumbs = false;
 
-    if (m_album->getNumPhotos() > 12)
+    if (m_album->getNumPhotos() > 15)
         m_useSmallThumbs = true;
 
     m_nam = new QNetworkAccessManager(this);
@@ -194,7 +194,8 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
 
     for (int i = 0, rc = 0; i < photoList->size(); i++,rc++)
     {
-        if (rc > 5)
+        if ( (m_useSmallThumbs && (rc > 4)) ||
+            (!m_useSmallThumbs && (rc > 3)) )
         {
             row++;
             rc = 0;
@@ -203,6 +204,7 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
         DATA::FbPhoto *photo = photoList->at(i);
 
         GUI::FbPhotoLabel *pl = new GUI::FbPhotoLabel(photo);
+
         connect(pl, SIGNAL(userClickedImage(DATA::FbPhoto*)),
                 this, SLOT(userClickedPhoto(DATA::FbPhoto*)));
 
