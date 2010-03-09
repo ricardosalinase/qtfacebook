@@ -36,7 +36,13 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
 
-    this->setStyleSheet("background : white;");
+    //this->setStyleSheet("background : white;");
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, Qt::white);
+    setPalette(palette);
+
+
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QFrame *f = new QFrame();
     f->setMinimumWidth(10);

@@ -19,7 +19,11 @@ FbAlbumViewWidget::FbAlbumViewWidget(const QString& albumId, QWidget *parent) :
 {
 
     resize(620,320);
-    setStyleSheet("background : white;");
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, Qt::white);
+    setPalette(palette);
+
     setWindowTitle("Loading Album ...");
 
     m_mainLayout = new QHBoxLayout();
@@ -62,7 +66,11 @@ FbAlbumViewWidget::FbAlbumViewWidget(DATA::FbAlbum *album, QWidget *parent) :
 {
 
     resize(620,320);
-    setStyleSheet("background : white;");
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, Qt::white);
+    setPalette(palette);
+
     setWindowTitle("Loading Album ...");
 
     m_mainLayout = new QHBoxLayout();

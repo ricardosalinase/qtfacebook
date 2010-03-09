@@ -16,6 +16,13 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
 
+    //this->setStyleSheet("background-color : #fff8da");
+    this->setAutoFillBackground(true);
+
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, QColor(255,255,244));
+    setPalette(palette);
+
 
     QHBoxLayout *hLayout;
     QVBoxLayout *vLayout;
@@ -96,7 +103,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
 
     // Now that our images are on their way, lets lay out the text
     vLayout = new QVBoxLayout();
-
+    QFont newFont;
     if (attachment->getName() != "")
     {
         // This is a horrible hack that I need to do because the URLs
@@ -115,8 +122,12 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
                 this, SIGNAL(userClickedUrl(QString)));
         name->setWordWrap(true);
         vLayout->addWidget(name,0,Qt::AlignTop);
-
+        newFont = name->font();
     }
+
+    // QFont newFont = font();
+    newFont.setPointSize(newFont.pointSize() -2);
+
 
     if (attachment->getCaption() != "")
     {
@@ -124,6 +135,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
         connect(caption, SIGNAL(linkActivated(QString)),
                 this, SIGNAL(userClickedUrl(QString)));
         caption->setWordWrap(true);
+        caption->setFont(newFont);
         vLayout->addWidget(caption);
     }
 
@@ -133,6 +145,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
         connect(description, SIGNAL(linkActivated(QString)),
                 this, SIGNAL(userClickedUrl(QString)));
         description->setWordWrap(true);
+        description->setFont(newFont);
         vLayout->addWidget(description,1);
     }
 
@@ -150,6 +163,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
             text.append("</a>");
 
         QLabel *property = new QLabel(text);
+        property->setFont(newFont);
         connect(property, SIGNAL(linkActivated(QString)),
                 this, SIGNAL(userClickedUrl(QString)));
         vLayout->addWidget(property);

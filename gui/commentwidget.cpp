@@ -22,7 +22,7 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
 
     QGridLayout *layout = new QGridLayout();
 
-    QString commentHtml = comment->getUserName() + ": " +
+    QString commentHtml = "<b>" + comment->getUserName() + ":</b> " +
                           comment->getText();
 
     QString commentTimeHtml = UTIL::ageString(comment->getTime());
@@ -38,7 +38,10 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
 
 
     QLabel *commentLabel = new QLabel();
+    QFont newFont = font();
+    newFont.setPointSize(newFont.pointSize() - 2);
     commentLabel->setText(commentHtml);
+    commentLabel->setFont(newFont);
     commentLabel->setWordWrap(true);
 
     QLabel *commentTimeLabel = new QLabel(commentTimeHtml);
