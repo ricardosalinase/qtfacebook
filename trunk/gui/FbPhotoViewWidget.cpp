@@ -21,7 +21,11 @@ FbPhotoViewWidget::FbPhotoViewWidget(const QString& photoId, QWidget *parent) :
     m_destroyPhoto = true;
 
     resize(620,320);
-    setStyleSheet("background : white;");
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, Qt::white);
+    setPalette(palette);
+
     setWindowTitle("Loading Photo ...");
 
     m_mainLayout = new QHBoxLayout();
@@ -59,7 +63,11 @@ FbPhotoViewWidget::FbPhotoViewWidget(DATA::FbPhoto *photo, QWidget *parent) :
 {
 
     resize(620,320);
-    this->setStyleSheet("background : white;");
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background, Qt::white);
+    setPalette(palette);
+
     setWindowTitle("Loading Photo ...");
     m_mainLayout = new QHBoxLayout();
     m_mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
