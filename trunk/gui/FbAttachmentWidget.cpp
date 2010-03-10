@@ -101,9 +101,8 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
                 m_webView = new QWebView();
                 m_webView->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
                 m_webView->setVisible(false);
-                m_webView->setMaximumWidth(400);
+                m_webView->setMaximumWidth(450);
                 m_webView->setMaximumHeight(300);
-                m_webView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
                 vLayout->addWidget(m_webView);
 
             }
