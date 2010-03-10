@@ -7,7 +7,9 @@ namespace FQL {
 
 GetStreamPosts::GetStreamPosts(QObject *parent) :
         Method(parent),
-        m_parseState(QUERY)
+        m_parseState(QUERY),
+        m_currentStreamMedia(0),
+        m_currentProperty(0)
 {
 
     m_streamPosts = new QList<DATA::StreamPost *>();
@@ -35,12 +37,12 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
         }
         else if (m_parseState == ATTACHMENT && qName == "stream_media")
         {
-            m_currentStreamMedia = new DATA::FbStreamMedia();
+            //m_currentStreamMedia = new DATA::FbStreamMedia();
             m_parseState = STREAMMEDIA;
         }
         else if (m_parseState == ATTACHMENT && qName == "stream_property")
         {
-            m_currentProperty = new DATA::FbStreamAttachmentProperty();
+            //m_currentProperty = new DATA::FbStreamAttachmentProperty();
             m_parseState = PROPERTY;
         }
         else if (m_parseState == STREAMMEDIA && qName == "photo")
@@ -225,10 +227,18 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentAttachment->setFbObjectId(m_currentText);
         break;
     case STREAMMEDIA:
+        // The <stream_media></stream_media> is always present, but does not
+        // always contain anything
+        if (qName != "stream_media" && m_currentStreamMedia == 0)
+            m_currentStreamMedia = new DATA::FbStreamMedia();
+
         if (qName == "stream_media")
         {
-            m_currentAttachment->addMedia(m_currentStreamMedia);
-            m_currentStreamMedia = 0;
+            if (m_currentStreamMedia != 0)
+            {
+                m_currentAttachment->addMedia(m_currentStreamMedia);
+                m_currentStreamMedia = 0;
+            }
             m_parseState = ATTACHMENT;
         }
         else if (qName == "href")
@@ -241,10 +251,16 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentStreamMedia->setType(m_currentText);
         break;
     case PROPERTY:
+        if (qName != "stream_property" && m_currentProperty == 0)
+            m_currentProperty = new DATA::FbStreamAttachmentProperty();
+
         if (qName == "stream_property")
         {
-            m_currentAttachment->addProperty(m_currentProperty);
-            m_currentProperty = 0;
+            if (m_currentProperty != 0)
+            {
+                m_currentAttachment->addProperty(m_currentProperty);
+                m_currentProperty = 0;
+            }
             m_parseState = ATTACHMENT;
         }
         else if (qName == "name")

@@ -24,7 +24,8 @@ namespace GUI {
 NotificationCenter::NotificationCenter(QWidget *parent) :
     QWidget(parent),
     m_showHiddenNotifications(false),
-    m_showHiddenStreamPosts(true)
+    m_showHiddenStreamPosts(true),
+    m_webView(0)
 {
     m_scrollArea = new QScrollArea();
     m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
@@ -503,6 +504,23 @@ void NotificationCenter::contentClicked(QString url) {
         connect(avw, SIGNAL(closed(GUI::FbAlbumViewWidget*)),
                 this, SLOT(albumViewClosed(GUI::FbAlbumViewWidget*)));
         avw->show();
+
+    }
+    else
+    {
+        if (m_webView != 0)
+            delete m_webView;
+
+        m_webView = new QWebView();
+        m_webView->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+        m_webView->page()->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+        m_webView->show();
+        QUrl encodedUrl;
+        encodedUrl.setEncodedUrl(url.toUtf8());
+        m_webView->load(encodedUrl);
+
+
+
 
     }
 

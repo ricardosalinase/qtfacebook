@@ -10,6 +10,7 @@
 #include <QEvent>
 #include <QPair>
 #include <QNetworkAccessManager>
+#include <QWebView>
 
 
 #include "api/factory.h"
@@ -86,6 +87,7 @@ private:
     QScrollArea *m_scrollArea;
     QWidget *m_nContainer;
     QMap<QString, GUI::NotificationCenterWidget *> m_notifications;
+    QWebView *m_webView;
 
 };
 
