@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QPair>
+#include <QWebView>
 
 #include "data/FbStreamAttachment.h"
 #include "gui/ImageLabel.h"
@@ -24,11 +25,15 @@ signals:
 public slots:
     void gotNetworkReply(QNetworkReply *);
 
+private slots:
+    void userClickedVideo(QString);
+
 private:
     enum RequestType { Photo, Other };
     QNetworkAccessManager *m_nam;
     QMap<QNetworkReply *, QPair<RequestType, GUI::ImageLabel *> > m_outstandingRequests;
-
+    QWebView *m_webView;
+    GUI::ImageLabel *m_videoLabel;
 };
 
 } // namespace GUI

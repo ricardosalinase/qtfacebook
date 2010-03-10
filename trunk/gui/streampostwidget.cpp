@@ -83,8 +83,15 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_ageLineLayout = new QHBoxLayout();
     m_ageLineLayout->insertWidget(1,age,1);
 
-    // Get the app icon, prefer the one in post if present
-    if (m_post->getAppInfo().getIconUrl() != "")
+    // Get the app icon, prefer the one in attachment if present
+    if (post->getAttachment()->getIcon().toString() != "")
+    {
+        QNetworkRequest nr;
+        nr.setUrl(post->getAttachment()->getIcon());
+        QNetworkReply *reply = m_nam->get(nr);
+        m_outstandingNetworkRequests.insert(reply, AppIcon);
+    }
+    else if (m_post->getAppInfo().getIconUrl() != "")
     {
         m_triedBothIcons = true;
         QNetworkRequest nr;
@@ -92,14 +99,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         QNetworkReply *reply = m_nam->get(nr);
         m_outstandingNetworkRequests.insert(reply, AppIcon);
     }
-    else if (post->getAttachment()->getIcon().toString() != "")
-    {
-        m_triedBothIcons = true;
-        QNetworkRequest nr;
-        nr.setUrl(post->getAttachment()->getIcon());
-        QNetworkReply *reply = m_nam->get(nr);
-        m_outstandingNetworkRequests.insert(reply, AppIcon);
-    }
+
 
 
     if (!post->getAttachment()->isEmpty())
@@ -197,11 +197,10 @@ void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {
         if (t == AppIcon && !m_triedBothIcons)
         {
             m_triedBothIcons = true;
-            if (m_post->hasAttachment() && !m_post->getAttachment()->isEmpty()
-                            && m_post->getAttachment()->getIcon().toString() != "")
+            if (m_post->getAppInfo().getIconUrl() != "")
             {
                 QNetworkRequest nr;
-                nr.setUrl(m_post->getAttachment()->getIcon());
+                nr.setUrl(QUrl(m_post->getAppInfo().getIconUrl()));
                 QNetworkReply *reply2 = m_nam->get(nr);
                 m_outstandingNetworkRequests.insert(reply2, AppIcon);
             }
