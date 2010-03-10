@@ -48,6 +48,10 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
             m_currentPhoto = new DATA::FbPhoto();
             m_parseState = PHOTO;
         }
+        else if (m_parseState == STREAMMEDIA && qName == "video")
+        {
+            m_parseState = MEDIADETAIL;
+        }
         else if (m_parseState == POSTER && qName == "user")
         {
             m_currentPoster = new DATA::FbUserInfo();
@@ -273,7 +277,14 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
         else if (qName == "owner")
             m_currentPhoto->setOwnerId(m_currentText);
         break;
-
+    case MEDIADETAIL:
+        if (qName == "video")
+        {
+            m_parseState = STREAMMEDIA;
+        }
+        else
+            m_currentStreamMedia->getMediaDetail().insert(qName, m_currentText);
+        break;
     }
 
     qDebug() << "End: " << qName << ": " << m_currentText;

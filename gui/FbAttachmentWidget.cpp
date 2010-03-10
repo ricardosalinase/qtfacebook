@@ -34,6 +34,8 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     // See hack description below where this is used.
     QString savedAlbumId = "";
 
+    vLayout = new QVBoxLayout();
+
     if (numMedia != 0)
     {
         hLayout = new QHBoxLayout();
@@ -83,6 +85,28 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
                 hLayout->addWidget(l,0,Qt::AlignTop);
             }
             // else if ... // need to add link, mp3, flash, etc handlers.
+            else if (sm->getType() == "video")
+            {
+                m_videoLabel = new GUI::ImageLabel(sm->getMediaDetail().value("source_url"));
+                connect(m_videoLabel, SIGNAL(userClickedImage(QString)),
+                        this, SLOT(userClickedVideo(QString)));
+                QUrl url(sm->getSrc());
+                QNetworkRequest nr;
+                nr.setUrl(url);
+                QNetworkReply *reply = m_nam->get(nr);
+                QPair<RequestType, GUI::ImageLabel *>  pair(Other, m_videoLabel);
+                m_outstandingRequests.insert(reply,pair);
+                hLayout->addWidget(m_videoLabel,0,Qt::AlignTop);
+
+                m_webView = new QWebView();
+                m_webView->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+                m_webView->setVisible(false);
+                m_webView->setMaximumWidth(400);
+                m_webView->setMaximumHeight(300);
+                m_webView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+                vLayout->addWidget(m_webView);
+
+            }
             else
             {
                 GUI::ImageLabel *l = new GUI::ImageLabel(sm->getHref().toString());
@@ -102,7 +126,7 @@ FbAttachmentWidget::FbAttachmentWidget(DATA::FbStreamAttachment *attachment, QWi
     }
 
     // Now that our images are on their way, lets lay out the text
-    vLayout = new QVBoxLayout();
+    //vLayout = new QVBoxLayout();
     QFont newFont;
     if (attachment->getName() != "")
     {
@@ -219,6 +243,14 @@ void FbAttachmentWidget::gotNetworkReply(QNetworkReply *reply) {
 
     reply->deleteLater();
 
+}
+
+void FbAttachmentWidget::userClickedVideo(QString url) {
+    qDebug() << "FbAttachmentWidget::userClickedVideo(); url: " << url;
+    m_videoLabel->hide();
+    m_webView->setVisible(true);
+    m_webView->load(QUrl(url));
+    m_webView->show();
 }
 
 QSize FbAttachmentWidget::minimumSizeHint () const {
