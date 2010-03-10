@@ -44,6 +44,7 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
     commentLabel->setFont(newFont);
     commentLabel->setWordWrap(true);
 
+
     QLabel *commentTimeLabel = new QLabel(commentTimeHtml);
     connect(commentTimeLabel,SIGNAL(linkActivated(QString)),
             this, SLOT(linkClicked(QString)));

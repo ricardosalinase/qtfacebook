@@ -18,7 +18,7 @@ QString& FbStreamAttachment::getName() {
 
 void FbStreamAttachment::setHref(QString &href) {
     m_href = QUrl(href);
-    m_attachmentIsEmpty = false;
+    //m_attachmentIsEmpty = false;
 }
 
 QUrl& FbStreamAttachment::getHref() {
@@ -55,7 +55,8 @@ QUrl& FbStreamAttachment::getIcon() {
 
 void FbStreamAttachment::setFbObjectType(QString &type) {
     m_objType = type;
-    m_attachmentIsEmpty = false;
+    if (type != "")
+        m_attachmentIsEmpty = false;
 }
 
 QString& FbStreamAttachment::getFbObjectType() {
@@ -64,6 +65,8 @@ QString& FbStreamAttachment::getFbObjectType() {
 
 void FbStreamAttachment::setFbObjectId(const QString &id) {
     m_objId = id;
+    if (id != "")
+        m_attachmentIsEmpty = false;
 }
 
 const QString& FbStreamAttachment::getFbObjectId() {

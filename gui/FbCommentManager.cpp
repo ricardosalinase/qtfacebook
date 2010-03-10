@@ -171,6 +171,7 @@ void FbCommentManager::gotComments(API::FQL::GetComments *method) {
         }
 
         CommentWidget *cw = new CommentWidget(c, canDelete);
+        //cw->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         m_commentLayout->addWidget(cw);
         connect(cw, SIGNAL(userClickedDelete(GUI::CommentWidget*)),
                 this, SLOT(userDeletedComment(GUI::CommentWidget*)));
