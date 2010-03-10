@@ -32,6 +32,8 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     m_triedBothIcons(false)
 {
 
+
+
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam,SIGNAL(finished(QNetworkReply*)),
             this, SLOT(gotNetworkReply(QNetworkReply*)));
@@ -48,9 +50,9 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     f->setMinimumWidth(10);
     f->setFrameShape(QFrame::VLine);
     mainLayout->insertWidget(1,f);
-    mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    mainLayout->setSizeConstraint(QLayout::SetMinimumSize);
     m_contentLayout = new QVBoxLayout();
-    m_contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    m_contentLayout->setSizeConstraint(QLayout::SetMinimumSize);
 
     if (post->isFromUser())
         this->setWindowTitle(post->getPoster().getName());
@@ -120,9 +122,11 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
     GUI::FbCommentManager *manager = new FbCommentManager(m_post->getPostId(),
                                                           FbCommentManager::PostId,
                                                           m_post->getCommentList()->canRemove());
+    manager->setMaximumHeight(400);
+
     m_contentLayout->addWidget(manager,2);
 
-
+    //manager->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     mainLayout->insertLayout(2,m_contentLayout,1);
     setLayout(mainLayout);
 
@@ -267,6 +271,7 @@ void StreamPostWidget::gotContentUpdate() {
 
     size().height() < sizeHint().height() ? h = sizeHint().height() : h = size().height();
     size().width() < sizeHint().width() ? w = sizeHint().width() : w = size().width();
+
 
     resize(w,h);
 
