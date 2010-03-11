@@ -6,9 +6,11 @@
 #include <QNetworkRequest>
 #include <QPixmap>
 #include <QDebug>
+#include <QDesktopServices>
 
 #include "util/agestring.h"
 #include "util/fbuserpiccache.h"
+#include "util/HyperLink.h"
 
 namespace GUI {
 
@@ -23,7 +25,7 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
     QGridLayout *layout = new QGridLayout();
 
     QString commentHtml = "<b>" + comment->getUserName() + ":</b> " +
-                          comment->getText();
+                          UTIL::hyperLink(comment->getText(), 50);
 
     QString commentTimeHtml = UTIL::ageString(comment->getTime());
     commentTimeHtml.prepend("<style type=\"text/css\">a { text-decoration: none; }</style>"
@@ -43,7 +45,8 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
     commentLabel->setText(commentHtml);
     commentLabel->setFont(newFont);
     commentLabel->setWordWrap(true);
-
+    connect(commentLabel, SIGNAL(linkActivated(QString)),
+            this, SLOT(linkClicked(QString)));
 
     QLabel *commentTimeLabel = new QLabel(commentTimeHtml);
     connect(commentTimeLabel,SIGNAL(linkActivated(QString)),
@@ -71,6 +74,12 @@ void CommentWidget::linkClicked(QString link) {
     if (link == "deleteMe")
     {
         emit userClickedDelete(this);
+    }
+    else
+    {
+        QUrl encodedUrl;
+        encodedUrl.setEncodedUrl(link.toUtf8());
+        QDesktopServices::openUrl(encodedUrl);
     }
 }
 

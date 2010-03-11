@@ -57,7 +57,8 @@ SOURCES += main.cpp \
     util/OurUserInfo.cpp \
     api/fql_GetAlbums.cpp \
     gui/FbAlbumViewWidget.cpp \
-    gui/ImageLabel.cpp
+    gui/ImageLabel.cpp \
+    util/HyperLink.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -116,7 +117,8 @@ HEADERS += fbconnectwizard.h \
     util/OurUserInfo.h \
     api/fql_GetAlbums.h \
     gui/FbAlbumViewWidget.h \
-    gui/ImageLabel.h
+    gui/ImageLabel.h \
+    util/HyperLink.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
