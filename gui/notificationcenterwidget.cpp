@@ -112,7 +112,7 @@ void NotificationCenterWidget::paintEvent(QPaintEvent *) {
     painter.setRenderHint(QPainter::Antialiasing);
 
 
-    if (timeLine->state() == QTimeLine::Running) {
+    if (timeLine->state() == QTimeLine::Running && this->isVisible()) {
         qreal frame = timeLine->currentFrame();
         if (frame <= 1000)
             painter.setOpacity(frame / 1000.);

@@ -28,17 +28,25 @@ NotificationCenter::NotificationCenter(QWidget *parent) :
     m_showHiddenStreamPosts(true),
     m_webView(0)
 {
+    this->setAutoFillBackground(true);
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Background,QColor(82,110,166));
+    setPalette(palette);
+
+
     m_scrollArea = new QScrollArea();
-    m_scrollArea->verticalScrollBar()->setStyleSheet("QScrollBar:vertical { width: 10px; }");
     m_scrollArea->setWidgetResizable(true);
+
     m_nContainer = new QWidget();
     m_nContainer->resize(200,600);
-    m_nContainer->setStyleSheet("background: white;");
+    palette = m_nContainer->palette();
+    palette.setColor(QPalette::Background,Qt::white);
+    m_nContainer->setPalette(palette);
+
     QVBoxLayout *vbl = new QVBoxLayout();
     m_nContainer->setLayout(vbl);
     m_scrollArea->setWidget(m_nContainer);
-    m_scrollArea->setStyleSheet("background: #e5e5e5");
-    m_scrollArea->setAutoFillBackground(true);
+
     QVBoxLayout *mainLayout = new QVBoxLayout();
     QVBoxLayout *bottomLayout = new QVBoxLayout();
     bottomLayout->addWidget(m_scrollArea);
@@ -46,7 +54,6 @@ NotificationCenter::NotificationCenter(QWidget *parent) :
 
     mainLayout->addLayout(bottomLayout);
     setLayout(mainLayout);
-    setStyleSheet("background: #526ea6");
 
     m_notificationList = new QList<DATA::Notification*>;
 
