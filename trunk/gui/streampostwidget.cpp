@@ -22,6 +22,7 @@
 #include "data/FbStreamAttachment.h"
 #include "gui/FbCommentManager.h"
 #include "gui/FbAttachmentWidget.h"
+#include "util/HyperLink.h"
 
 
 namespace GUI {
@@ -65,11 +66,13 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
         QString text = post->getMessage();
         if (post->getTargetId().compare("") != 0)
             text.prepend("-> " + post->getTarget().getName() + ": ");
-        message->setText(text);
+        message->setText(UTIL::hyperLink(text));
         message->setTextInteractionFlags(Qt::TextBrowserInteraction);
         message->setWordWrap(true);
         message->setMinimumWidth(450);
         message->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        connect(message, SIGNAL(linkActivated(QString)),
+                this, SIGNAL(contentClicked(QString)));
         m_contentLayout->addWidget(message,0,Qt::AlignTop);
     }
 

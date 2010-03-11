@@ -8,6 +8,7 @@
 #include <QDesktopWidget>
 #include <QObject>
 #include <QRegExp>
+#include <QDesktopServices>
 
 #include "api/factory.h"
 #include "notificationcenter.h"
@@ -508,6 +509,7 @@ void NotificationCenter::contentClicked(QString url) {
     }
     else
     {
+        /*
         if (m_webView != 0)
             delete m_webView;
 
@@ -518,6 +520,12 @@ void NotificationCenter::contentClicked(QString url) {
         QUrl encodedUrl;
         encodedUrl.setEncodedUrl(url.toUtf8());
         m_webView->load(encodedUrl);
+        */
+        QUrl encodedUrl;
+        encodedUrl.setEncodedUrl(url.toUtf8());
+        QDesktopServices::openUrl(encodedUrl);
+
+
 
 
 
