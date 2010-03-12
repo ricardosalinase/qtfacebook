@@ -313,10 +313,12 @@ bool GetStreamPosts::prepare() {
    QString fql("{\"posts\":\"SELECT post_id, source_id, app_id, "
                "target_id, actor_id, message, created_time, updated_time, "
                "attachment, likes, action_links, attribution "
-               "FROM stream WHERE filter_key = 'nf' ");
+               "FROM stream ");
 
     if (m_argMap.contains("post_id"))
-        fql.append("AND post_id = '" + m_argMap.take("post_id").toString() + "' ");
+        fql.append("WHERE post_id = '" + m_argMap.take("post_id").toString() + "' ");
+    else
+        fql.append("WHERE filter_key = 'nf' ");
 
     if (m_argMap.contains("get_hidden"))
     {
@@ -338,7 +340,7 @@ bool GetStreamPosts::prepare() {
               "\"app_icons\":\"SELECT app_id, icon_url FROM application "
               "WHERE app_id IN (SELECT app_id FROM #posts)\"}");
 
-    //qDebug() << "queries: " << fql;
+    qDebug() << "queries: " << fql;
     m_argMap.insert("queries", fql);
 
 
