@@ -28,14 +28,14 @@ QString hyperLink(const QString& plainText, int maxLength)
     {
         QString url = list.takeFirst();
         QString urlText = url;
-        if (maxLength)
+        if (maxLength && url.length() > maxLength)
         {
             int half = maxLength / 2;
             urlText = urlText.left(half) + "..." + urlText.right(half);
         }
-        linkedText.replace(url, "<a href=\"" + url + "\">" + urlText + "</a>");
+        linkedText.replace(url, " <a href=\"" + url + "\">" + urlText + "</a>");
     }
-
+    linkedText.replace("\n","<BR>");
     return linkedText;
 
 }
