@@ -23,8 +23,6 @@ SOURCES += main.cpp \
     gui/notificationcenterlabel.cpp \
     gui/notificationcenterwidget.cpp \
     util/cookiejar.cpp \
-    data/chatmessage.cpp \
-    data/buddy.cpp \
     api/fql_GetStreamPosts.cpp \
     util/workerthread.cpp \
     util/worker.cpp \
@@ -58,7 +56,11 @@ SOURCES += main.cpp \
     api/fql_GetAlbums.cpp \
     gui/FbAlbumViewWidget.cpp \
     gui/ImageLabel.cpp \
-    util/HyperLink.cpp
+    util/HyperLink.cpp \
+#    gui/BuddyListWidget.cpp \
+#    FbChatConnection.cpp \
+    data/FbBuddy.cpp \
+    gui/BuddyWidget.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -81,8 +83,6 @@ HEADERS += fbconnectwizard.h \
     gui/notificationcenterlabel.h \
     gui/notificationcenterwidget.h \
     util/cookiejar.h \
-    data/chatmessage.h \
-    data/buddy.h \
     api/fql_GetStreamPosts.h \
     data/fbuserinfo.h \
     gui/streampostwidget.h \
@@ -118,7 +118,11 @@ HEADERS += fbconnectwizard.h \
     api/fql_GetAlbums.h \
     gui/FbAlbumViewWidget.h \
     gui/ImageLabel.h \
-    util/HyperLink.h
+    util/HyperLink.h \
+#    gui/BuddyListWidget.h \
+#    FbChatConnection.h \
+    data/FbBuddy.h \
+    gui/BuddyWidget.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
