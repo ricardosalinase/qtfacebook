@@ -37,7 +37,7 @@ public:
     ~NotificationCenterWidget();
     QString getNotificationCenterId();
     void start();
-    void stopAfter(int loopCount);
+    void stop();
 
 signals:
     void linkActivated(QString url);
@@ -50,8 +50,7 @@ protected:
 private slots:
 
 private:
-    QTimeLine *timeLine;
-    bool isStopping;
+    bool isNew;
     NotificationCenterItem *m_item;
 };
 
