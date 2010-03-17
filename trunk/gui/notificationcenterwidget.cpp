@@ -36,7 +36,7 @@ void NCWLabel::createDisplayText() {
 
 NotificationCenterWidget::NotificationCenterWidget(GUI::NotificationCenterItem *i, QLabel *pmLabel, QWidget *parent) :
     QWidget(parent),
-    isStopping(false),
+    isNew(false),
     m_item(i)
 {
     setBackgroundRole(QPalette::Window);
@@ -55,12 +55,6 @@ NotificationCenterWidget::NotificationCenterWidget(GUI::NotificationCenterItem *
     connect(label, SIGNAL(linkActivated(QString)),
             this, SIGNAL(linkActivated(QString)));
 
-    timeLine = new QTimeLine(2000, this);
-    timeLine->setFrameRange(2000, 0);
-    timeLine->setCurveShape(QTimeLine::LinearCurve);
-    timeLine->setLoopCount(0);
-    connect(timeLine, SIGNAL(frameChanged(int)), this, SLOT(update()));
-
 }
 
 
@@ -70,33 +64,31 @@ NotificationCenterWidget::~NotificationCenterWidget() {
 
 void NotificationCenterWidget::start()
 {
-   timeLine->start();
-
+   isNew = true;
+   this->setAutoFillBackground(true);
+   QPalette palette = this->palette();
+   palette.setColor(QPalette::Background,QColor(250,250,255));
+   setPalette(palette);
 }
 
 void NotificationCenterWidget::enterEvent(QEvent *event) {
 
-    //qDebug() << "changeEvent()" << event->type();
-
-    // stop the pulsing widgets
     if (event->type() == QEvent::Enter) {
-        if (timeLine->state() == QTimeLine::Running && !isStopping) {
-            stopAfter(5);
+        if (isNew) {
+            stop();
+            isNew = false;
             emit acknowledged(m_item->getNotificationCenterItemType(),
                               m_item->getNotificationCenterId());
         }
     }
 }
 
-void NotificationCenterWidget::stopAfter(int lc) {
-    if (timeLine->state() == QTimeLine::Running && !isStopping) {
-        qDebug() << "Stopping...";
-        timeLine->stop();
+void NotificationCenterWidget::stop() {
 
-        timeLine->setLoopCount(lc);
-        timeLine->setDuration(500);
-        timeLine->start();
-        isStopping = true;
+    if (isNew) {
+        QPalette palette = this->palette();
+        palette.setColor(QPalette::Background,Qt::white);
+        setPalette(palette);
     }
 }
 
@@ -104,20 +96,13 @@ void NotificationCenterWidget::stopAfter(int lc) {
 
 void NotificationCenterWidget::paintEvent(QPaintEvent *) {
 
-    //qDebug() << timeLine->currentFrame();
-
     QPainter painter(this);
 
     painter.setWindow(QRect(0, 0, 10, 10));
     painter.setRenderHint(QPainter::Antialiasing);
 
 
-    if (timeLine->state() == QTimeLine::Running && this->isVisible()) {
-        qreal frame = timeLine->currentFrame();
-        if (frame <= 1000)
-            painter.setOpacity(frame / 1000.);
-        else
-            painter.setOpacity( (1000 - (frame - 1000)) / 1000);
+    if (isNew) {
         painter.setPen(Qt::blue);
         painter.drawRect(0, 0, 10, 10);
 

@@ -199,9 +199,9 @@ void QtFacebook::trayActivated(QSystemTrayIcon::ActivationReason reason) {
 
     qDebug() << "trayActivated()";
     if (reason == QSystemTrayIcon::Trigger ) {
-        if (m_notificationCenter->isVisible() && !m_notificationCenter->isMinimized())
-            m_notificationCenter->close();
-        else
+//        if (m_notificationCenter->isVisible() && !m_notificationCenter->isMinimized())
+//            m_notificationCenter->close();
+//        else
             m_notificationCenter->showYourself();
     }
 }
