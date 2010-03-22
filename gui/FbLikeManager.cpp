@@ -60,6 +60,7 @@ bool FbLikeManager::toggleUserLikes()
     m_userLikes ^= true;
     updateLikes();
     emit userChangedLike(m_userLikes);
+    return m_userLikes;
 }
 
 void FbLikeManager::updateLikes()
