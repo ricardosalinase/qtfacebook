@@ -12,7 +12,7 @@ AddComment::AddComment(QObject *parent) :
 }
 
 bool AddComment::startElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
-                  const QString &qName, const QXmlAttributes &/*attributes*/)
+                  const QString &/*qName*/, const QXmlAttributes &/*attributes*/)
 {
 
     m_currentText.clear();
@@ -20,7 +20,7 @@ bool AddComment::startElement(const QString &/*namespaceURI*/, const QString &/*
 }
 
 bool AddComment::endElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
-                const QString &qName)
+                const QString &/*qName*/)
 {
 
     return true;

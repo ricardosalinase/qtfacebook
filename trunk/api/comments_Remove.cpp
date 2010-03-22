@@ -12,7 +12,7 @@ Remove::Remove(QObject *parent) :
 }
 
 bool Remove::startElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
-                  const QString &qName, const QXmlAttributes &/*attributes*/)
+                  const QString &/*qName*/, const QXmlAttributes &/*attributes*/)
 {
 
     m_currentText.clear();
@@ -20,7 +20,7 @@ bool Remove::startElement(const QString &/*namespaceURI*/, const QString &/*loca
 }
 
 bool Remove::endElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
-                const QString &qName)
+                const QString &/*qName*/)
 {
 
     return true;
