@@ -58,7 +58,7 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
     // By setting this placeholder, it makes the parent widget size correctly
     // before we have the actual pic
     m_picLabel = new QLabel();
-    m_picLabel->setMinimumHeight(50);
+    m_picLabel->setMinimumSize(50,50);;
     layout->addWidget(m_picLabel,0,0,2,1,Qt::AlignTop);
     setLayout(layout);
 

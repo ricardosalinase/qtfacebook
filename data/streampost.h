@@ -35,6 +35,8 @@ public:
     QString getAttribution();
     void setAppId(QString appId);
     QString getAppId();
+    void userLikes(bool likes);
+    bool userLikes();
     void setAppInfo(AppInfo *);
     AppInfo& getAppInfo();
     void isHidden(bool hidden);
@@ -73,6 +75,7 @@ private:
     QString m_updatedTime;
     QString m_attribution;
     QString m_appId;
+    bool m_userLikes;
     AppInfo m_appInfo;
     bool m_isHidden;
     // StreamAttachment m_attachment;

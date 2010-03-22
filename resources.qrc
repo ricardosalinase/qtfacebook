@@ -4,5 +4,8 @@
         <file>uiImages/thumbsDown3.jpg</file>
         <file>uiImages/thumbsUp3.jpg</file>
         <file alias="facebookIcon">uiImages/facebook-small-logo-thumb-360x360-75537-thumb-300x300-78195.png</file>
+        <file>uiImages/addComment_50_50.jpg</file>
+        <file>uiImages/thumbDown_50_50.jpg</file>
+        <file>uiImages/thumbUp_50_50.jpg</file>
     </qresource>
 </RCC>

@@ -3,6 +3,7 @@
 namespace DATA {
 
 StreamPost::StreamPost() :
+    m_userLikes(false),
     m_isFromUser(true),
     m_hasAttachment(false),
     m_attachment(0)
@@ -117,6 +118,16 @@ void StreamPost::setAppId(QString appId) {
 
 QString StreamPost::getAppId() {
     return m_appId;
+}
+
+void StreamPost::userLikes(bool likes)
+{
+    m_userLikes = likes;
+}
+
+bool StreamPost::userLikes()
+{
+    return m_userLikes;
 }
 
 void StreamPost::setAppInfo(AppInfo *info) {

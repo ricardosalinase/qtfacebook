@@ -21,6 +21,7 @@
 #include "util/fbuserpiccache.h"
 #include "data/FbStreamAttachment.h"
 #include "gui/FbCommentManager.h"
+#include "gui/FbLikeManager.h"
 #include "gui/FbAttachmentWidget.h"
 #include "util/HyperLink.h"
 
@@ -127,6 +128,31 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
                                                           m_post->getCommentList()->canRemove());
     manager->setMaximumHeight(400);
 
+    QString fbObjectId = m_post->getPostId().right(m_post->getPostId().indexOf("_"));
+    GUI::FbLikeManager *likeManager = new FbLikeManager(fbObjectId, m_post->userLikes());
+    connect(likeManager, SIGNAL(userChangedLike(bool)),
+            this, SLOT(likeChanged(bool)));
+
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    m_showAddCommentButton = new QToolButton();
+    m_showAddCommentButton->setIcon(QIcon(":/uiImages/addComment_50_50.jpg"));
+    m_showAddCommentButton->setIconSize(QSize(40,40));
+    m_showAddCommentButton->setToolTip("Comment");
+    connect(m_showAddCommentButton, SIGNAL(clicked()),
+            manager, SLOT(showAddComment()));
+    hLayout->addWidget(m_showAddCommentButton,0);
+
+    m_likeButton = new QToolButton();
+    this->likeChanged(m_post->userLikes());
+    m_likeButton->setIconSize(QSize(40,40));
+
+    connect(m_likeButton, SIGNAL(clicked()),
+            likeManager, SLOT(toggleUserLikes()));
+    hLayout->addWidget(m_likeButton,0);
+    hLayout->addStretch(1);
+
+    m_contentLayout->addLayout(hLayout,0);
+    m_contentLayout->addWidget(likeManager,0);
     m_contentLayout->addWidget(manager,2);
 
     //manager->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
@@ -146,8 +172,6 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 StreamPostWidget::~StreamPostWidget() {
 
 }
-
-
 
 void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {
 
@@ -218,6 +242,21 @@ void StreamPostWidget::gotNetworkReply(QNetworkReply *reply) {
 
     reply->deleteLater();
 
+}
+
+void StreamPostWidget::likeChanged(bool likes)
+{
+    m_post->userLikes(likes);
+    if (m_post->userLikes())
+    {
+        m_likeButton->setIcon(QIcon(":/uiImages/thumbDown_50_50.jpg"));
+        m_likeButton->setToolTip("Stop Liking");
+    }
+    else
+    {
+        m_likeButton->setIcon(QIcon(":/uiImages/thumbUp_50_50.jpg"));
+        m_likeButton->setToolTip("Like");
+    }
 }
 
 void StreamPostWidget::getPosterPixmap() {

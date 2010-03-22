@@ -37,7 +37,7 @@ FbAlbumViewWidget::FbAlbumViewWidget(const QString& albumId, QWidget *parent) :
     m_factory = new API::Factory(this);
     connect(m_factory, SIGNAL(apiFqlGetAlbums(API::FQL::GetAlbums *)),
             this, SLOT(apiFqlGetAlbums(API::FQL::GetAlbums*)));
-    connect(m_factory, SIGNAL(apiFqlGetAlbumFailed(API::FQL::GetAlbums*)),
+    connect(m_factory, SIGNAL(apiFqlGetAlbumsFailed(API::FQL::GetAlbums*)),
             this, SLOT(getAlbumsFailed(API::FQL::GetAlbums*)));
     connect(m_factory, SIGNAL(apiFqlGetPhotos(API::FQL::GetPhotos *)),
             this, SLOT(apiFqlGetPhotos(API::FQL::GetPhotos*)));
@@ -347,7 +347,7 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
                                                 FbCommentManager::ObjectId,
                                                 isOwner);
 
-
+    cm->showAddComment();
     rightSideLayout->addWidget(cm,0);
     m_mainLayout->addLayout(rightSideLayout,2);
 

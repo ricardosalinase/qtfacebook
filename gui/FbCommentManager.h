@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QScrollArea>
 #include <QPushButton>
+#include <QToolButton>
 #include <QTextEdit>
 #include <QList>
 #include <QTimer>
@@ -26,7 +27,8 @@ public:
 signals:
     void updatedComments();
 public slots:
-
+    void showAddComment();
+    
 private slots:
     void commentButtonClicked();
     void apiStreamAddComment(API::Stream::AddComment *method);
@@ -56,6 +58,8 @@ private:
     QWidget *m_progressWidget;
     QTextEdit *m_commentEdit;
     QPushButton *m_addCommentButton;
+    QToolButton *m_likeButton;
+    QToolButton *m_showAddCommentButton;
 
 };
 

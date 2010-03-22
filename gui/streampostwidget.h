@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QToolButton>
 #include <QTimer>
 #include <QProgressBar>
 
@@ -41,7 +42,7 @@ protected:
 private slots:
     void gotNetworkReply(QNetworkReply *reply);
     void gotContentUpdate();
-
+    void likeChanged(bool likes);
 
 private:
     void getPosterPixmap();
@@ -56,6 +57,8 @@ private:
     QLabel *m_postLabel;
     bool m_triedBothIcons;
     QMap<QNetworkReply*, RequestType> m_outstandingNetworkRequests;
+    QToolButton *m_showAddCommentButton;
+    QToolButton *m_likeButton;
 };
 
 } // namespace GUI
