@@ -57,10 +57,12 @@ SOURCES += main.cpp \
     gui/FbAlbumViewWidget.cpp \
     gui/ImageLabel.cpp \
     util/HyperLink.cpp \
-#    gui/BuddyListWidget.cpp \
-#    FbChatConnection.cpp \
-    data/FbBuddy.cpp \
-    gui/BuddyWidget.cpp
+    gui/FbLikeManager.cpp
+
+# gui/BuddyListWidget.cpp \
+# FbChatConnection.cpp \
+# data/FbBuddy.cpp \
+# gui/BuddyWidget.cpp
 HEADERS += fbconnectwizard.h \
     webview.h \
     qtfacebook.h \
@@ -119,14 +121,19 @@ HEADERS += fbconnectwizard.h \
     gui/FbAlbumViewWidget.h \
     gui/ImageLabel.h \
     util/HyperLink.h \
-#    gui/BuddyListWidget.h \
-#    FbChatConnection.h \
-    data/FbBuddy.h \
-    gui/BuddyWidget.h
+    gui/FbLikeManager.h
+
+# gui/BuddyListWidget.h \
+# FbChatConnection.h \
+# data/FbBuddy.h \
+# gui/BuddyWidget.h
 OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/thumbsDown3.jpg \
     uiImages/signGuy.jpg \
     uiImages/facebook-small-logo-thumb-360x360-75537-thumb-300x300-78195.png \
-    Doxyfile
+    Doxyfile \
+    uiImages/thumbUp_50_50.jpg \
+    uiImages/thumbDown_50_50.jpg \
+    uiImages/addComment_50_50.jpg
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc

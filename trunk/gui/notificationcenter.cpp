@@ -435,20 +435,35 @@ void NotificationCenter::linkActivated(QString url) {
 
     QString postId = "";
     QString albumId;
+    QString photoId;
+    QString uid;
 
     QRegExp rx1("v=feed&story_fbid=(\\d+)&id=(\\d+)");
     QRegExp rx2("streamPost:(\\d+_\\d+)");
     QRegExp rx3("aid=(\\d+)&id=(\\d+)");
+    QRegExp rx4("pid=(\\d+)&id=(\\d+)");
 
     if (rx1.indexIn(url) != -1)
         postId = rx1.cap(2) + "_" + rx1.cap(1);
     else if (rx2.indexIn(url) != -1)
         postId = rx2.cap(1);
     else if (rx3.indexIn(url) != -1)
-        albumId = "aid:" + rx3.cap(2) + "_" + rx3.cap(1);
+    {
+        albumId = rx3.cap(1);
+        uid = rx3.cap(2);
+    }
+    else if (rx4.indexIn(url) != -1)
+    {
+        photoId = rx4.cap(1);
+        uid = rx4.cap(2);
+    }
+
 
     if (postId != "")
     {
+
+        qDebug() << postId;
+
         if (m_streamPosts.contains(postId))
         {
             StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId]);
@@ -472,10 +487,23 @@ void NotificationCenter::linkActivated(QString url) {
 
     if (albumId != "")
     {
-        contentClicked(albumId);
+        quint64 u = uid.toUInt();
+        quint64 a = albumId.toUInt();
+
+        quint64 aid = (u << 32) + (a & 0xFFFFFFFF);
+
+        contentClicked("aid:" + QString::number(aid));
+    }
+    else if (photoId != "")
+    {
+        quint64 u = uid.toUInt();
+        quint64 p = photoId.toUInt();
+
+        quint64 pid = (u << 32) + (p & 0xFFFFFFFF);
+
+        contentClicked("pid:" + QString::number(pid));
     }
 
-    qDebug() << postId;
 
 }
 
@@ -516,40 +544,25 @@ void NotificationCenter::contentClicked(QString url) {
     }
     else
     {
-        /*
-        if (m_webView != 0)
-            delete m_webView;
 
-        m_webView = new QWebView();
-        m_webView->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-        m_webView->page()->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-        m_webView->show();
-        QUrl encodedUrl;
-        encodedUrl.setEncodedUrl(url.toUtf8());
-        m_webView->load(encodedUrl);
-        */
         QUrl encodedUrl;
         encodedUrl.setEncodedUrl(url.toUtf8());
         QDesktopServices::openUrl(encodedUrl);
-
-
-
-
-
-
     }
 
 }
 
 
 void NotificationCenter::photoViewClosed(GUI::FbPhotoViewWidget *fvw) {
-    //DATA::FbPhoto *photo = m_openPhotos.take(fvw);
+
     delete fvw;
-    //delete photo;
+
 }
 
 void NotificationCenter::albumViewClosed(GUI::FbAlbumViewWidget *avw) {
+
     delete avw;
+
 }
 
 } // namespace GUI

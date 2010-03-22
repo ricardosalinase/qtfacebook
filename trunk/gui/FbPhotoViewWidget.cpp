@@ -167,6 +167,7 @@ void FbPhotoViewWidget::buildDisplay() {
     FbCommentManager *cm = new FbCommentManager(m_photo->getObjectId(),
                                                 FbCommentManager::ObjectId,
                                                 m_isOwner);
+    cm->showAddComment();
     m_rightSideLayout->addWidget(cm,1);
     m_mainLayout->addLayout(m_rightSideLayout,1);
 

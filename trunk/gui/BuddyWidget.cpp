@@ -5,7 +5,7 @@
 
 namespace GUI {
 
-BuddyWidget::BuddyWidget(DATA::FbBuddy *buddy, QWidget *parent) :
+BuddyWidget::BuddyWidget(DATA::FbBuddy *, QWidget *parent) :
     QWidget(parent),
     m_buddy(buddy)
 {

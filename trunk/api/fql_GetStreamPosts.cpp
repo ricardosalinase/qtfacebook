@@ -122,6 +122,8 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
             m_currentStreamPost->setAttribution(m_currentText);
         else if (qName == "app_id")
             m_currentStreamPost->setAppId(m_currentText);
+        else if (qName == "user_likes")
+            m_currentStreamPost->userLikes((m_currentText == "1" ? true : false));
         break;
     case COMMENTLIST:
         if (qName == "can_remove")

@@ -82,11 +82,12 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
 
 
     m_commentEdit = new QTextEdit();
-//    QPalette p = m_commentEdit->palette();
-//    p.setColor(QPalette::Base, QColor(240, 240, 255));
-//    m_commentEdit->setPalette(p);
-    m_commentEdit->setStyleSheet("background-color : #e4e8f8");
-    //m_commentEdit->setLineWidth(3);
+    m_commentEdit->setVisible(false);
+    m_commentEdit->setAutoFillBackground(true);
+    QPalette palette = m_commentEdit->palette();
+    palette.setColor(QPalette::Base,QColor(228, 232, 248));
+    m_commentEdit->setPalette(palette);
+    //m_commentEdit->setStyleSheet("background-color : #e4e8f8");
     m_commentEdit->setAcceptRichText(false);
     m_commentEdit->setFrameStyle(QFrame::Panel);
     m_commentEdit->setFrameShadow(QFrame::Sunken);
@@ -96,6 +97,7 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
     mainLayout->addWidget(m_commentEdit,0);
 
     m_addCommentButton = new QPushButton("Add Comment");
+    m_addCommentButton->setVisible(false);
     mainLayout->addWidget(m_addCommentButton, 0);
     connect(m_addCommentButton, SIGNAL(clicked()),
             this, SLOT(commentButtonClicked()));
@@ -206,6 +208,13 @@ void FbCommentManager::getCommentsFailed(API::FQL::GetComments *method) {
     //m_progressWidget->setVisible(false);
     delete method;
 }
+
+void FbCommentManager::showAddComment()
+{
+    m_commentEdit->setVisible(true);
+    m_addCommentButton->setVisible(true);
+}
+
 
 void FbCommentManager::commentButtonClicked() {
 

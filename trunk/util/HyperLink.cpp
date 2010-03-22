@@ -33,7 +33,8 @@ QString hyperLink(const QString& plainText, int maxLength)
             int half = maxLength / 2;
             urlText = urlText.left(half) + "..." + urlText.right(half);
         }
-        linkedText.replace(url, " <a href=\"" + url + "\">" + urlText + "</a>");
+        linkedText.replace(url, " <a href=\"" + url + "\" title=\"" + url + "\">"
+                           + urlText + "</a>");
     }
     linkedText.replace("\n","<BR>");
     return linkedText;

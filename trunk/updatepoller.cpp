@@ -80,7 +80,7 @@ void UpdatePoller::getNewStreamPosts() {
 
     API::Method *method = m_factory->createMethod("fql.multiquery.getStreamPosts");
     method->setArgument("start_time", m_lastStreamPostCheck);
-    method->setArgument("get_hidden",1);
+    //method->setArgument("get_hidden",1);
     bool rc = method->execute();
 
     if (!rc)
