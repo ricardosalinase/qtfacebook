@@ -82,6 +82,8 @@ private:
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
     QMap<QString, DATA::StreamPost *> m_streamPosts;
+    bool m_firstReception;
+
 
     // UI componenets
     QScrollArea *m_scrollArea;

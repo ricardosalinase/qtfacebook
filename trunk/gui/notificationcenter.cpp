@@ -26,6 +26,7 @@ NotificationCenter::NotificationCenter(QWidget *parent) :
     QWidget(parent),
     m_showHiddenNotifications(false),
     m_showHiddenStreamPosts(true),
+    m_firstReception(true),
     m_webView(0)
 {
     this->setAutoFillBackground(true);
@@ -255,7 +256,7 @@ void NotificationCenter::newStreamPosts(QList<DATA::StreamPost *> *pList) {
 
         if (sp->isHidden() && !m_showHiddenStreamPosts)
             nWidget->hide();
-        else
+        else if (!m_firstReception)
         {
             numNew++;
             nWidget->start();
@@ -268,7 +269,7 @@ void NotificationCenter::newStreamPosts(QList<DATA::StreamPost *> *pList) {
     if (numNew != 0)
         emit receivedNewStreamPosts(numNew);
 
-
+    m_firstReception = false;
 }
 
 
