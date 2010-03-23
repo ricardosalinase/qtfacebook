@@ -135,6 +135,10 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
 
     QHBoxLayout *hLayout = new QHBoxLayout();
     m_showAddCommentButton = new QToolButton();
+    m_showAddCommentButton->setAutoFillBackground(true);
+    palette = m_showAddCommentButton->palette();
+    palette.setColor(QPalette::Button,QColor(82,110,166));
+    m_showAddCommentButton->setPalette(palette);
     m_showAddCommentButton->setIcon(QIcon(":/uiImages/addComment_50_50.jpg"));
     m_showAddCommentButton->setIconSize(QSize(40,40));
     m_showAddCommentButton->setToolTip("Comment");

@@ -46,7 +46,7 @@ signals:
 protected:
     void paintEvent(QPaintEvent *event);
     void enterEvent(QEvent *event);
-
+    void mousePressEvent ( QMouseEvent * event );
 private slots:
 
 private:

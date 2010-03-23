@@ -70,17 +70,26 @@ void NotificationCenterWidget::start()
    palette.setColor(QPalette::Background,QColor(250,250,255));
    setPalette(palette);
 }
+void NotificationCenterWidget::mousePressEvent ( QMouseEvent * event )
+{
+    if (isNew) {
+        stop();
+        isNew = false;
+        emit acknowledged(m_item->getNotificationCenterItemType(),
+                          m_item->getNotificationCenterId());
+    }
+}
 
 void NotificationCenterWidget::enterEvent(QEvent *event) {
 
-    if (event->type() == QEvent::Enter) {
-        if (isNew) {
-            stop();
-            isNew = false;
-            emit acknowledged(m_item->getNotificationCenterItemType(),
-                              m_item->getNotificationCenterId());
-        }
-    }
+//    if (event->type() == QEvent::Enter) {
+//        if (isNew) {
+//            stop();
+//            isNew = false;
+//            emit acknowledged(m_item->getNotificationCenterItemType(),
+//                              m_item->getNotificationCenterId());
+//        }
+//    }
 }
 
 void NotificationCenterWidget::stop() {
