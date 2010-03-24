@@ -3,6 +3,10 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QTimer>
+
+#include "data/fbuserinfo.h"
+#include "api/factory.h"
 
 namespace GUI {
 
@@ -19,13 +23,19 @@ public slots:
     void userLikes();
     void userStoppedLiking();
     bool toggleUserLikes();
+    void apiFqlGetLikes(API::FQL::GetLikes *);
+    void apiFqlGetLikesFailed(API::FQL::GetLikes *);
+    void getLikes();
+
 
 private:
     QString m_objectId;
     bool m_userLikes;
     QLabel *m_label;
     void updateLikes();
-
+    QList<DATA::FbUserInfo *> m_likers;
+    API::Factory *m_factory;
+    QTimer *m_timer;
 };
 
 } // namespace GUI
