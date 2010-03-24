@@ -57,7 +57,8 @@ SOURCES += main.cpp \
     gui/FbAlbumViewWidget.cpp \
     gui/ImageLabel.cpp \
     util/HyperLink.cpp \
-    gui/FbLikeManager.cpp
+    gui/FbLikeManager.cpp \
+    api/fql_GetLikes.cpp
 
 # gui/BuddyListWidget.cpp \
 # FbChatConnection.cpp \
@@ -121,7 +122,8 @@ HEADERS += fbconnectwizard.h \
     gui/FbAlbumViewWidget.h \
     gui/ImageLabel.h \
     util/HyperLink.h \
-    gui/FbLikeManager.h
+    gui/FbLikeManager.h \
+    api/fql_GetLikes.h
 
 # gui/BuddyListWidget.h \
 # FbChatConnection.h \

@@ -48,6 +48,8 @@ Method * Factory::createMethod(QString method) {
         return prepareMethod(new API::Comments::Remove());
     else if (method.compare("fql.multiquery.getAlbums", Qt::CaseInsensitive) == 0)
          return prepareMethod(new API::FQL::GetAlbums());
+    else if (method.compare("fql.query.getLikes", Qt::CaseInsensitive) == 0)
+         return prepareMethod(new API::FQL::GetLikes());
     else
         return 0;
 }
@@ -95,6 +97,8 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiCommentsRemoveFailed((API::Comments::Remove *)method);
     else if (method->getMethodName().compare("fql.multiquery.getAlbums", Qt::CaseInsensitive) == 0)
         emit apiFqlGetAlbumsFailed((API::FQL::GetAlbums *)method);
+    else if (method->getMethodName().compare("fql.query.getLikes", Qt::CaseInsensitive) == 0)
+        emit apiFqlGetLikesFailed((API::FQL::GetLikes *)method);
 }
 
 void Factory::dispatch(API::Method *method) {
@@ -127,7 +131,8 @@ void Factory::dispatch(API::Method *method) {
             emit apiCommentsRemove((API::Comments::Remove *)method);
     else if (method->getMethodName().compare("fql.multiquery.getAlbums", Qt::CaseInsensitive) == 0)
             emit apiFqlGetAlbums((API::FQL::GetAlbums *)method);
-
+    else if (method->getMethodName().compare("fql.query.getLikes", Qt::CaseInsensitive) == 0)
+            emit apiFqlGetLikes((API::FQL::GetLikes *)method);
 }
 
 

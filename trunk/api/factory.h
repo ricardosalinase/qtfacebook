@@ -20,6 +20,7 @@
 #include "comments_Add.h"
 #include "comments_Remove.h"
 #include "api/fql_GetAlbums.h"
+#include "api/fql_GetLikes.h"
 
 
 // Simple factory
@@ -122,6 +123,11 @@ signals:
      */
     void apiFqlGetAlbums(API::FQL::GetAlbums *method);
     void apiFqlGetAlbumsFailed(API::FQL::GetAlbums *method);
+    /*!
+     * This signal is emitted whenever a API::FQL::GetLikes method has completed
+     */
+    void apiFqlGetLikes(API::FQL::GetLikes *method);
+    void apiFqlGetLikesFailed(API::FQL::GetLikes *method);
 
 public slots:
     void dispatch(API::Method *);

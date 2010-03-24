@@ -1,6 +1,7 @@
 #include "FbLikeManager.h"
 
 #include <QHBoxLayout>
+#include <QDebug>
 
 namespace GUI {
 
@@ -13,6 +14,16 @@ FbLikeManager::FbLikeManager(const QString& fbObjectId, bool userLikes, QWidget 
     QPalette palette = this->palette();
     palette.setColor(QPalette::Background, QColor(228, 232, 248));
     setPalette(palette);
+
+    m_timer = new QTimer(this);
+    connect(m_timer, SIGNAL(timeout()),
+            this, SLOT(getLikes()));
+
+    m_factory = new API::Factory(this);
+    connect(m_factory, SIGNAL(apiFqlGetLikes(API::FQL::GetLikes*)),
+            this, SLOT(apiFqlGetLikes(API::FQL::GetLikes*)));
+    connect(m_factory, SIGNAL(apiFqlGetLikesFailed(API::FQL::GetLikes*)),
+            this, SLOT(apiFqlGetLikesFailed(API::FQL::GetLikes*)));
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setMargin(3);
@@ -33,7 +44,44 @@ FbLikeManager::FbLikeManager(const QString& fbObjectId, bool userLikes, QWidget 
 
     setLayout(layout);
     this->setVisible(false);
+    getLikes();
+
+}
+
+void FbLikeManager::getLikes()
+{
+    API::Method *method = m_factory->createMethod("fql.query.getLikes");
+    method->setArgument("object_id",m_objectId);
+
+    bool rc = method->execute();
+    if (!rc)
+    {
+        qDebug() << "FbLikeManager::getLikes(); fwl.query.getLikes failed: " << method->getErrorStr();
+        delete method;
+    }
+
+
+}
+
+void FbLikeManager::apiFqlGetLikes(API::FQL::GetLikes *method)
+{
+    while (!m_likers.empty())
+        delete m_likers.takeFirst();
+
+    m_likers = method->getLikers();
+
+    delete method;
     updateLikes();
+    m_timer->start(60000);
+
+}
+
+void FbLikeManager::apiFqlGetLikesFailed(API::FQL::GetLikes *method)
+{
+    qDebug() << "API::FQL::GetLikes Failed. Retrying in 5 seconds";
+    m_timer->start(5000);
+    delete method;
+
 
 }
 
@@ -66,31 +114,52 @@ bool FbLikeManager::toggleUserLikes()
 void FbLikeManager::updateLikes()
 {
     QString likers;
-    int numLikers = 0;
+    QString lastLiker;
+
+    int numLikers = m_likers.size();
+
+    if (numLikers)
+    {
+        lastLiker = m_likers.last()->getName();
+
+        for (int i = 0; i < m_likers.size() - 1; i++)
+        {
+            likers.append("<b>" + m_likers.at(i)->getName() + "</b>, ");
+        }
+
+    }
 
     if (m_userLikes)
-        likers.append("You,");
-
-
-
-
-
-
-    if (likers != "")
     {
-        likers.chop(1);
-        likers.append(" like");
-        if (numLikers > 0)
-            likers.append("s");
-        likers.append(" this.");
-        m_label->setText(likers);
-        this->setVisible(true);
+        if (numLikers == 0)
+            likers = "<b>You</b> like this.";
+        else if (numLikers == 1)
+            likers = "<b>You</b> and <b>" + lastLiker + "</b> like this.";
+        else
+        {
+            likers.prepend("<b>You</b>, ");
+            likers.chop(2);
+            likers.append(" and <b>" + lastLiker + "</b> like this.");
+        }
     }
     else
     {
-        m_label->setText(likers);
-        this->setVisible(false);
+        if (numLikers == 1)
+            likers = "<b>" + lastLiker + "</b> likes this.";
+        else
+        {
+            likers.chop(2);
+            likers.append(" and <b>" + lastLiker + "</b> like this.");
+        }
     }
+
+    m_label->setText(likers);
+
+    if (m_userLikes || numLikers)
+        this->setVisible(true);
+    else
+        this->setVisible(false);
+
 
 }
 
