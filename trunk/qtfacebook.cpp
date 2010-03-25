@@ -34,15 +34,26 @@ QtFacebook::QtFacebook(QObject *parent) :
 {
 
     QApplication::setQuitOnLastWindowClosed(false);
+
+}
+
+void QtFacebook::start()
+{
     UTIL::OurUserInfo::getInstance()->setApiKey(API_KEY);
 
     // load session_key, uid, and secret
-    if (loadUserInfo()) {
+    if (loadUserInfo())
+    {
+        // Check to see if session is still valid via API
+        API::Factory *factory = new API::Factory(this);
+        connect(factory, SIGNAL(apiUsersGetLoggedInUser(API::Users::GetLoggedInUser*)),
+                this, SLOT(apiUsersGetLoggedInUser(API::Users::GetLoggedInUser*)));
+        connect(factory, SIGNAL(apiUsersGetLoggedInUserFailed(API::Users::GetLoggedInUser*)),
+                this, SLOT(apiUsersGetLoggedInUserFailed(API::Users::GetLoggedInUser*)));
+        API::Method *method = factory->createMethod("users.getLoggedInUser");
+        method->execute();
 
-        // TODO: Check to see if session is still valid via API
-
-        fbWizardComplete();
-     } else {
+    } else {
 
         m_wizard = new FBConnectWizard("qtFacebook");
 
@@ -57,8 +68,42 @@ QtFacebook::QtFacebook(QObject *parent) :
         m_wizard->show();
 
     }
+}
+
+void QtFacebook::apiUsersGetLoggedInUser(API::Users::GetLoggedInUser *method)
+{
+    if (method->getUID() != "")
+    {
+        delete method;
+        fbWizardComplete();
+    }
+    else
+    {
+        m_wizard = new FBConnectWizard("qtFacebook", false);
+
+        connect(m_wizard, SIGNAL(userHasAuthenticated()),
+                this, SLOT(saveUserInfo()));
+
+        connect(m_wizard, SIGNAL(accepted()),
+                this, SLOT(fbWizardComplete()));
+        connect(m_wizard, SIGNAL(rejected()),
+                this, SLOT(fbWizardCanceled()));
+
+        m_wizard->show();
+        delete method;
+    }
+
 
 }
+
+void QtFacebook::apiUsersGetLoggedInUserFailed(API::Users::GetLoggedInUser *method)
+{
+    qDebug() << "QtFacebook; users.getLoggedInUser failed: " << method->getErrorStr();
+    qDebug() << "Retrying in one second.";
+    delete method;
+    QTimer::singleShot(1000, this, SLOT(start()));
+}
+
 
 void QtFacebook::saveUserInfo() {
 
