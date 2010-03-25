@@ -7,9 +7,18 @@ namespace GUI {
 
 FbLikeManager::FbLikeManager(const QString& fbObjectId, bool userLikes, QWidget *parent) :
     QWidget(parent),
-    m_objectId(fbObjectId),
     m_userLikes(userLikes)
 {
+    // Deal with their screwed up API inconsistency
+    if (fbObjectId.contains("_"))
+    {
+        m_objectId = fbObjectId.split("_").at(1);
+        m_postId = fbObjectId;
+    }
+    else
+        m_objectId = fbObjectId;
+
+
     this->setAutoFillBackground(true);
     QPalette palette = this->palette();
     palette.setColor(QPalette::Background, QColor(228, 232, 248));
@@ -24,6 +33,15 @@ FbLikeManager::FbLikeManager(const QString& fbObjectId, bool userLikes, QWidget 
             this, SLOT(apiFqlGetLikes(API::FQL::GetLikes*)));
     connect(m_factory, SIGNAL(apiFqlGetLikesFailed(API::FQL::GetLikes*)),
             this, SLOT(apiFqlGetLikesFailed(API::FQL::GetLikes*)));
+    connect(m_factory, SIGNAL(apiStreamAddLike(API::Stream::AddLike*)),
+            this, SLOT(apiStreamAddLike(API::Stream::AddLike*)));
+    connect(m_factory, SIGNAL(apiStreamAddLikeFailed(API::Stream::AddLike*)),
+            this, SLOT(apiStreamAddLikeFailed(API::Stream::AddLike*)));
+    connect(m_factory, SIGNAL(apiStreamRemoveLike(API::Stream::RemoveLike*)),
+            this, SLOT(apiStreamRemoveLike(API::Stream::RemoveLike*)));
+    connect(m_factory, SIGNAL(apiStreamRemoveLikeFailed(API::Stream::RemoveLike*)),
+            this, SLOT(apiStreamRemoveLikeFailed(API::Stream::RemoveLike*)));
+
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setMargin(3);
@@ -87,27 +105,82 @@ void FbLikeManager::apiFqlGetLikesFailed(API::FQL::GetLikes *method)
 
 void FbLikeManager::userLikes()
 {
+
     m_userLikes = true;
+
     // do API call
+    API::Method *method = m_factory->createMethod("stream.addLike");
+    method->setArgument("post_id",m_postId);
+    bool rc = method->execute();
+
+    if (!rc)
+    {
+        qDebug() << "FbLikeManager::userLikes(); stream.addLike failed: " << method->getErrorStr();
+        delete method;
+    }
+
     emit userChangedLike(m_userLikes);
     // update our display
     updateLikes();
+}
+
+void FbLikeManager::apiStreamAddLike(API::Stream::AddLike *method)
+{
+    delete method;
+
+}
+
+void FbLikeManager::apiStreamAddLikeFailed(API::Stream::AddLike *method)
+{
+    qDebug() << "FbLikeManager::apiStreamAddLikeFailed(); retrying in 5 seconds";
+    QTimer::singleShot(5000, this, SLOT(userLikes()));
+    delete method;
 }
 
 void FbLikeManager::userStoppedLiking()
 {
     m_userLikes = false;
     // do API call
+    API::Method *method = m_factory->createMethod("stream.removeLike");
+    method->setArgument("post_id",m_postId);
+    bool rc = method->execute();
+
+    if (!rc)
+    {
+        qDebug() << "FbLikeManager::userStoppedLiking(); stream.removeLike failed: " << method->getErrorStr();
+        delete method;
+    }
+
+
     emit userChangedLike(m_userLikes);
     // update our display
     updateLikes();
 }
 
+void FbLikeManager::apiStreamRemoveLike(API::Stream::RemoveLike *method)
+{
+    delete method;
+
+}
+
+void FbLikeManager::apiStreamRemoveLikeFailed(API::Stream::RemoveLike *method)
+{
+    delete method;
+    qDebug() << "FbLikeManager::apiStreamRemoveLikeFailed(); retrying in 5 seconds";
+    QTimer::singleShot(5000, this, SLOT(userStoppedLiking()));
+}
+
+
+
 bool FbLikeManager::toggleUserLikes()
 {
     m_userLikes ^= true;
-    updateLikes();
-    emit userChangedLike(m_userLikes);
+
+    if (m_userLikes)
+        userLikes();
+    else
+        userStoppedLiking();
+
     return m_userLikes;
 }
 
@@ -118,13 +191,40 @@ void FbLikeManager::updateLikes()
 
     int numLikers = m_likers.size();
 
+
+    // There's some hacking around with this logic to deal with the fact that
+    // you may or may not appear in the list of likers. Their API is
+    // horribly broken regarding likes.
+
+    QString myUID = UTIL::OurUserInfo::getInstance()->getUID();
+
+
     if (numLikers)
     {
-        lastLiker = m_likers.last()->getName();
+        for (int i =  m_likers.size() - 1; i != -1; i--)
+        {
+            if (m_likers.at(i)->getUID() == myUID)
+            {
+                continue;
+            }
+            else
+            {
+                lastLiker = m_likers.at(i)->getName();
+                break;
+            }
+        }
 
         for (int i = 0; i < m_likers.size() - 1; i++)
         {
-            likers.append("<b>" + m_likers.at(i)->getName() + "</b>, ");
+            if (m_likers.at(i)->getUID() == myUID)
+            {
+                m_userLikes = true;
+                numLikers--;
+            }
+            else if (m_likers.at(i)->getName() == lastLiker)
+                continue;
+            else
+                likers.append("<b>" + m_likers.at(i)->getName() + "</b>, ");
         }
 
     }

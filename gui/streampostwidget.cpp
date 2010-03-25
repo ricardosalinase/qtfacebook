@@ -128,7 +128,7 @@ StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
                                                           m_post->getCommentList()->canRemove());
     manager->setMaximumHeight(400);
 
-    QString fbObjectId = m_post->getPostId().split("_").at(1);
+    QString fbObjectId = m_post->getPostId();
     GUI::FbLikeManager *likeManager = new FbLikeManager(fbObjectId, m_post->userLikes());
     connect(likeManager, SIGNAL(userChangedLike(bool)),
             this, SLOT(likeChanged(bool)));

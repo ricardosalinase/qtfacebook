@@ -58,7 +58,9 @@ SOURCES += main.cpp \
     gui/ImageLabel.cpp \
     util/HyperLink.cpp \
     gui/FbLikeManager.cpp \
-    api/fql_GetLikes.cpp
+    api/fql_GetLikes.cpp \
+    api/stream_AddLike.cpp \
+    api/stream_RemoveLike.cpp
 
 # gui/BuddyListWidget.cpp \
 # FbChatConnection.cpp \
@@ -123,7 +125,9 @@ HEADERS += fbconnectwizard.h \
     gui/ImageLabel.h \
     util/HyperLink.h \
     gui/FbLikeManager.h \
-    api/fql_GetLikes.h
+    api/fql_GetLikes.h \
+    api/stream_AddLike.h \
+    api/stream_RemoveLike.h
 
 # gui/BuddyListWidget.h \
 # FbChatConnection.h \

@@ -50,6 +50,10 @@ Method * Factory::createMethod(QString method) {
          return prepareMethod(new API::FQL::GetAlbums());
     else if (method.compare("fql.query.getLikes", Qt::CaseInsensitive) == 0)
          return prepareMethod(new API::FQL::GetLikes());
+    else if (method.compare("stream.addLike", Qt::CaseInsensitive) == 0)
+         return prepareMethod(new API::Stream::AddLike());
+    else if (method.compare("stream.removeLike", Qt::CaseInsensitive) == 0)
+         return prepareMethod(new API::Stream::RemoveLike());
     else
         return 0;
 }
@@ -99,6 +103,11 @@ void Factory::dispatchFailed(API::Method *method) {
         emit apiFqlGetAlbumsFailed((API::FQL::GetAlbums *)method);
     else if (method->getMethodName().compare("fql.query.getLikes", Qt::CaseInsensitive) == 0)
         emit apiFqlGetLikesFailed((API::FQL::GetLikes *)method);
+    else if (method->getMethodName().compare("stream.addLike", Qt::CaseInsensitive) == 0)
+        emit apiStreamAddLikeFailed((API::Stream::AddLike *)method);
+    else if (method->getMethodName().compare("stream.removeLike", Qt::CaseInsensitive) == 0)
+        emit apiStreamRemoveLikeFailed((API::Stream::RemoveLike *)method);
+
 }
 
 void Factory::dispatch(API::Method *method) {
@@ -133,6 +142,11 @@ void Factory::dispatch(API::Method *method) {
             emit apiFqlGetAlbums((API::FQL::GetAlbums *)method);
     else if (method->getMethodName().compare("fql.query.getLikes", Qt::CaseInsensitive) == 0)
             emit apiFqlGetLikes((API::FQL::GetLikes *)method);
+    else if (method->getMethodName().compare("stream.addLike", Qt::CaseInsensitive) == 0)
+            emit apiStreamAddLike((API::Stream::AddLike *)method);
+    else if (method->getMethodName().compare("stream.removeLike", Qt::CaseInsensitive) == 0)
+            emit apiStreamRemoveLike((API::Stream::RemoveLike *)method);
+
 }
 
 

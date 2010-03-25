@@ -26,10 +26,16 @@ public slots:
     void apiFqlGetLikes(API::FQL::GetLikes *);
     void apiFqlGetLikesFailed(API::FQL::GetLikes *);
     void getLikes();
-
+    
+private slots:
+    void apiStreamAddLike(API::Stream::AddLike *);
+    void apiStreamAddLikeFailed(API::Stream::AddLike *);
+    void apiStreamRemoveLike(API::Stream::RemoveLike *);
+    void apiStreamRemoveLikeFailed(API::Stream::RemoveLike *);
 
 private:
     QString m_objectId;
+    QString m_postId;
     bool m_userLikes;
     QLabel *m_label;
     void updateLikes();
