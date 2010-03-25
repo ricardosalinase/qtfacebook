@@ -14,7 +14,7 @@
 #include "gui/notificationcenteritem.h"
 #include "util/workerthread.h"
 #include "updatepoller.h"
-
+#include "api/factory.h"
 
 class QtFacebook : public QObject
 {
@@ -25,6 +25,7 @@ public:
 signals:
 
 public slots:
+    void start();
     void fbWizardComplete();
     void saveUserInfo();
     void fbWizardCanceled();
@@ -41,6 +42,8 @@ private slots:
     void receivedNewNotifications(int numNew);
     void receivedNewStreamPosts(int numNew);
     void acknowledgedNotification(GUI::NotificationCenterItem::ItemType type, QString nid);
+    void apiUsersGetLoggedInUser(API::Users::GetLoggedInUser *);
+    void apiUsersGetLoggedInUserFailed(API::Users::GetLoggedInUser *);
 
 private:
     void viewNotifications(GUI::Notifications::ListView::mode m);

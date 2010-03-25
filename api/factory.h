@@ -8,7 +8,7 @@
 #include "apimethod.h"
 #include "friends_get.h"
 #include "notifications_getlist.h"
-#include "users_getloggedinuser.h"
+#include "users_GetLoggedInUser.h"
 #include "notifications_MarkRead.h"
 #include "fql_GetNewNotifications.h"
 #include "fql_GetAppInfo.h"

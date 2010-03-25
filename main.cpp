@@ -12,8 +12,8 @@
 int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
-    (new QtFacebook());
-
+    QtFacebook *fb = new QtFacebook();
+    fb->start();
 
     return app.exec();
 
