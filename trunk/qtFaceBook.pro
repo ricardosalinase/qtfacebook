@@ -10,7 +10,6 @@ SOURCES += main.cpp \
     api/factory.cpp \
     api/friends_get.cpp \
     api/notifications_getlist.cpp \
-    api/users_getloggedinuser.cpp \
     gui/notifications_listview.cpp \
     gui/notifications_widget.cpp \
     data/notification.cpp \
@@ -76,7 +75,6 @@ HEADERS += fbconnectwizard.h \
     api/friends_get.h \
     api/apimethod.h \
     api/notifications_getlist.h \
-    api/users_getloggedinuser.h \
     gui/notifications_listview.h \
     gui/notifications_widget.h \
     data/notification.h \
