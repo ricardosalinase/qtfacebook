@@ -21,6 +21,8 @@
 #include "comments_Remove.h"
 #include "api/fql_GetAlbums.h"
 #include "api/fql_GetLikes.h"
+#include "api/stream_AddLike.h"
+#include "api/stream_RemoveLike.h"
 
 
 // Simple factory
@@ -128,6 +130,16 @@ signals:
      */
     void apiFqlGetLikes(API::FQL::GetLikes *method);
     void apiFqlGetLikesFailed(API::FQL::GetLikes *method);
+    /*!
+     * This signal is emitted whenever a API::Stream::AddLike method has completed
+     */
+    void apiStreamAddLike(API::Stream::AddLike *method);
+    void apiStreamAddLikeFailed(API::Stream::AddLike *method);
+    /*!
+     * This signal is emitted whenever a API::Stream::RemoveLike method has completed
+     */
+    void apiStreamRemoveLike(API::Stream::RemoveLike *method);
+    void apiStreamRemoveLikeFailed(API::Stream::RemoveLike *method);
 
 public slots:
     void dispatch(API::Method *);
