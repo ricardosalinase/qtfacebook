@@ -214,7 +214,7 @@ void FbLikeManager::updateLikes()
             }
         }
 
-        for (int i = 0; i < m_likers.size() - 1; i++)
+        for (int i = 0; i < m_likers.size(); i++)
         {
             if (m_likers.at(i)->getUID() == myUID)
             {
