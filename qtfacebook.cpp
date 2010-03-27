@@ -199,6 +199,7 @@ void QtFacebook::fbWizardComplete() {
     m_trayIcon->show();
 
     m_notificationCenter = new GUI::NotificationCenter();
+
     connect(ncr, SIGNAL(triggered()),
             m_notificationCenter, SLOT(showYourself()));
     connect(m_notificationCenter, SIGNAL(receivedNewNotifications(int)),

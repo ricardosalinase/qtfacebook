@@ -32,7 +32,7 @@ public:
     ~StreamPostWidget();
 
 signals:
-    void closed(GUI::StreamPostWidget*);
+    void closed(GUI::StreamPostWidget*, QString);
     void contentClicked(QString url);
 public slots:
 

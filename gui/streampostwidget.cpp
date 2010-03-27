@@ -304,7 +304,7 @@ void StreamPostWidget::getPosterPixmap() {
 
 
 void StreamPostWidget::closeEvent(QCloseEvent *event) {
-    emit closed(this);
+    emit closed(this, m_post->getPostId());
     event->accept();
 }
 

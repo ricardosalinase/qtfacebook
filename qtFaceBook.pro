@@ -1,6 +1,26 @@
+message($$CONFIG)
+defineTest(hasAspell) {
+    libdirs = /usr/local/lib /usr/lib
+    for(libdir, libdirs) {
+        exists($${libdir}/libaspell.so) {
+            return(true)
+        }
+    }
+    return(false)
+}
 QT += webkit \
     network \
     xml
+hasAspell() {
+    SOURCES += SpellTextEdit/SpellTextEdit.cpp \
+        SpellTextEdit/SpellSyntaxHighlighter.cpp \
+        SpellTextEdit/ASpellConfig.cpp
+    HEADERS += SpellTextEdit/SpellTextEdit.h \
+        SpellTextEdit/SpellSyntaxHighlighter.h \
+        SpellTextEdit/ASpellConfig.h
+    LIBS += -laspell
+    DEFINES += WITH_ASPELL
+}
 SOURCES += main.cpp \
     fbconnectwizard.cpp \
     webview.cpp \
@@ -143,3 +163,4 @@ OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/addComment_50_50.jpg
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
+

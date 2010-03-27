@@ -60,13 +60,14 @@ private slots:
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
     void newStreamPosts(QList<DATA::StreamPost *> *pList);
-    void streamPostClosed(GUI::StreamPostWidget *);
+    void streamPostClosed(GUI::StreamPostWidget *, QString);
     void contentClicked(QString url);
     void photoViewClosed(GUI::FbPhotoViewWidget *);
     void albumViewClosed(GUI::FbAlbumViewWidget *);
 
 protected:
     void closeEvent ( QCloseEvent * event );
+
 
 private:
     void restoreWindow();
@@ -82,6 +83,7 @@ private:
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
     QMap<QString, DATA::StreamPost *> m_streamPosts;
+    QMap<QString, GUI::StreamPostWidget *> m_openPosts;
     bool m_firstReception;
 
 

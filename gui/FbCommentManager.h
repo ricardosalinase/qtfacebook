@@ -13,6 +13,13 @@
 #include "api/factory.h"
 #include "gui/commentwidget.h"
 
+#ifdef WITH_ASPELL
+#include "SpellTextEdit/SpellTextEdit.h"
+#else
+#include <QTextEdit>
+#endif
+
+
 
 namespace GUI {
 
@@ -56,7 +63,12 @@ private:
     QWidget *m_commentContainer;
     QVBoxLayout *m_commentLayout;
     QWidget *m_progressWidget;
+
+#ifdef WITH_ASPELL
+    SpellTextEdit *m_commentEdit;
+#else
     QTextEdit *m_commentEdit;
+#endif
     QPushButton *m_addCommentButton;
     QToolButton *m_likeButton;
     QToolButton *m_showAddCommentButton;
