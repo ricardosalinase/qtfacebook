@@ -80,15 +80,18 @@ FbCommentManager::FbCommentManager(const QString& id, FbType type, bool isOwner,
     hbl2->addWidget(m_progressWidget);
     mainLayout->addLayout(hbl2);
 
-
+#ifdef WITH_ASPELL
+    m_commentEdit = new SpellTextEdit();
+#else
     m_commentEdit = new QTextEdit();
+#endif
     m_commentEdit->setVisible(false);
     m_commentEdit->setAutoFillBackground(true);
     QPalette palette = m_commentEdit->palette();
     palette.setColor(QPalette::Base,QColor(228, 232, 248));
     m_commentEdit->setPalette(palette);
     //m_commentEdit->setStyleSheet("background-color : #e4e8f8");
-    m_commentEdit->setAcceptRichText(false);
+    //m_commentEdit->setAcceptRichText(false);
     m_commentEdit->setFrameStyle(QFrame::Panel);
     m_commentEdit->setFrameShadow(QFrame::Sunken);
     m_commentEdit->setMaximumHeight(75);

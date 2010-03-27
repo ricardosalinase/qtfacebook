@@ -182,6 +182,7 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
                 this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
         connect(spw, SIGNAL(contentClicked(QString)),
                 this, SLOT(contentClicked(QString)));
+        m_openPosts.insert(sp->getPostId(), spw);
         spw->show();
 
     }
@@ -467,13 +468,21 @@ void NotificationCenter::linkActivated(QString url) {
 
         if (m_streamPosts.contains(postId))
         {
-            StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId]);
-            connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
-                    this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
-            connect(spw, SIGNAL(contentClicked(QString)),
-                    this, SLOT(contentClicked(QString)));
-            spw->show();
-
+            if (m_openPosts.contains(postId))
+            {
+                m_openPosts.value(postId)->activateWindow();
+                m_openPosts.value(postId)->raise();
+            }
+            else
+            {
+                StreamPostWidget *spw = new StreamPostWidget(m_streamPosts[postId]);
+                connect(spw, SIGNAL(closed(GUI::StreamPostWidget*, QString)),
+                        this, SLOT(streamPostClosed(GUI::StreamPostWidget*, QString)));
+                connect(spw, SIGNAL(contentClicked(QString)),
+                        this, SLOT(contentClicked(QString)));
+                m_openPosts.insert(postId, spw);
+                spw->show();
+            }
         }
         else
         {
@@ -508,7 +517,9 @@ void NotificationCenter::linkActivated(QString url) {
 
 }
 
-void NotificationCenter::streamPostClosed(GUI::StreamPostWidget *spw) {
+void NotificationCenter::streamPostClosed(GUI::StreamPostWidget *spw, QString postId)
+{
+    m_openPosts.take(postId);
     delete spw;
 }
 
