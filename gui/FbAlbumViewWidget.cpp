@@ -8,6 +8,7 @@
 #include "util/FbPhotoCache.h"
 #include "util/agestring.h"
 #include "gui/FbCommentManager.h"
+#include "gui/FbLikeManager.h"
 
 namespace GUI {
 
@@ -342,6 +343,10 @@ void FbAlbumViewWidget::buildDisplay(QList<DATA::FbPhoto *> *photoList) {
     if (info->getUID() == m_album->getOwnerID())
         isOwner = true;
 
+
+    FbLikeManager *lm = new FbLikeManager(m_album->getObjectId());
+
+    rightSideLayout->addWidget(lm,0);
 
     FbCommentManager *cm = new FbCommentManager(m_album->getObjectId(),
                                                 FbCommentManager::ObjectId,

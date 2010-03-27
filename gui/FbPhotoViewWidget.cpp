@@ -7,6 +7,7 @@
 #include "util/FbPhotoCache.h"
 #include "util/OurUserInfo.h"
 #include "util/agestring.h"
+#include "FbLikeManager.h"
 
 namespace GUI {
 
@@ -163,6 +164,10 @@ void FbPhotoViewWidget::buildDisplay() {
     }
 
     m_rightSideLayout->addSpacing(20);
+
+    FbLikeManager *lm = new FbLikeManager(m_photo->getObjectId());
+
+    m_rightSideLayout->addWidget(lm,0);
 
     FbCommentManager *cm = new FbCommentManager(m_photo->getObjectId(),
                                                 FbCommentManager::ObjectId,
