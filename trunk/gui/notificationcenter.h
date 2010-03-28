@@ -59,7 +59,7 @@ private slots:
     void getStreamPostsFailed(API::FQL::GetStreamPosts*);
     void notificationsMarkedAsRead(API::Notifications::MarkRead*);
     void notificationsMarkedAsReadFailed(API::Notifications::MarkRead*);
-    void newStreamPosts(QList<DATA::StreamPost *> *pList);
+    void newStreamPosts(QList<DATA::FbStreamPost *> *pList);
     void streamPostClosed(GUI::StreamPostWidget *, QString);
     void contentClicked(QString url);
     void photoViewClosed(GUI::FbPhotoViewWidget *);
@@ -82,7 +82,7 @@ private:
     bool m_showHiddenStreamPosts;
     API::Factory *m_factory;
     QList<DATA::Notification*> *m_notificationList;
-    QMap<QString, DATA::StreamPost *> m_streamPosts;
+    QMap<QString, DATA::FbStreamPost *> m_streamPosts;
     QMap<QString, GUI::StreamPostWidget *> m_openPosts;
     bool m_firstReception;
 

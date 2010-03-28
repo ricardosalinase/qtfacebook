@@ -163,7 +163,7 @@ void FbCommentManager::gotComments(API::FQL::GetComments *method) {
     m_commentContainer = new QWidget();
     m_commentLayout = new QVBoxLayout();
 
-    CommentWidget *last = 0;
+    FbCommentWidget *last = 0;
     while(!cList.empty())
     {
         DATA::StreamComment *c = cList.takeFirst();
@@ -175,11 +175,11 @@ void FbCommentManager::gotComments(API::FQL::GetComments *method) {
             canDelete = true;
         }
 
-        CommentWidget *cw = new CommentWidget(c, canDelete);
+        FbCommentWidget *cw = new FbCommentWidget(c, canDelete);
         //cw->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         m_commentLayout->addWidget(cw);
-        connect(cw, SIGNAL(userClickedDelete(GUI::CommentWidget*)),
-                this, SLOT(userDeletedComment(GUI::CommentWidget*)));
+        connect(cw, SIGNAL(userClickedDelete(GUI::FbCommentWidget*)),
+                this, SLOT(userDeletedComment(GUI::FbCommentWidget*)));
         last = cw;
     }
     m_commentLayout->addStretch();
@@ -258,7 +258,7 @@ void FbCommentManager::commentButtonClicked() {
     }
 }
 
-void FbCommentManager::userDeletedComment(GUI::CommentWidget *commentWidget) {
+void FbCommentManager::userDeletedComment(GUI::FbCommentWidget *commentWidget) {
 
     qDebug() << "Delete comment: " << commentWidget->getComment()->getCommentId();
 

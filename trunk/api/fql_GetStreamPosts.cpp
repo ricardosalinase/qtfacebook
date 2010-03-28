@@ -12,7 +12,7 @@ GetStreamPosts::GetStreamPosts(QObject *parent) :
         m_currentProperty(0)
 {
 
-    m_streamPosts = new QList<DATA::StreamPost *>();
+    m_streamPosts = new QList<DATA::FbStreamPost *>();
     requires("queries");
 }
 
@@ -24,7 +24,7 @@ bool GetStreamPosts::startElement(const QString &/*namespaceURI*/, const QString
     {
         if (qName == "stream_post")
         {
-            m_currentStreamPost = new DATA::StreamPost();
+            m_currentStreamPost = new DATA::FbStreamPost();
         }
         else if (m_parseState == POSTS && qName == "comments")
         {
@@ -136,7 +136,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
     case POSTER:
         if (qName == "user")
         {
-            QList<DATA::StreamPost *> pList = m_postMap.values(m_currentPoster->getUID());
+            QList<DATA::FbStreamPost *> pList = m_postMap.values(m_currentPoster->getUID());
             for (int i = 0; i < pList.size(); i++)
             {
                 pList.at(i)->setPoster(m_currentPoster);
@@ -167,7 +167,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
     case PAGE:
         if (qName == "page")
         {
-            QList<DATA::StreamPost *> pList = m_postMap.values(m_currentPage->getPageId());
+            QList<DATA::FbStreamPost *> pList = m_postMap.values(m_currentPage->getPageId());
             for (int i = 0; i < pList.size(); i++)
             {
                 pList.at(i)->setPage(m_currentPage);
@@ -191,7 +191,7 @@ bool GetStreamPosts::endElement(const QString &/*namespaceURI*/, const QString &
     case APPINFO:
         if (qName == "app_info")
         {
-            QList<DATA::StreamPost *> pList = m_appToPostMap.values(m_currentAppInfo->getAppId());
+            QList<DATA::FbStreamPost *> pList = m_appToPostMap.values(m_currentAppInfo->getAppId());
             for (int i = 0; i < pList.size(); i++)
             {
                 pList.at(i)->setAppInfo(m_currentAppInfo);
@@ -365,7 +365,7 @@ void GetStreamPosts::fixHtml(QString *html) {
 
 }
 
-QList<DATA::StreamPost *> * GetStreamPosts::getStreamPosts() {
+QList<DATA::FbStreamPost *> * GetStreamPosts::getStreamPosts() {
     return m_streamPosts;
 }
 

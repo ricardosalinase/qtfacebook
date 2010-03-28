@@ -17,7 +17,6 @@
 #include <QApplication>
 
 #include "util/agestring.h"
-#include "commentwidget.h"
 #include "util/fbuserpiccache.h"
 #include "data/FbStreamAttachment.h"
 #include "gui/FbCommentManager.h"
@@ -28,7 +27,7 @@
 
 namespace GUI {
 
-StreamPostWidget::StreamPostWidget(DATA::StreamPost *post, QWidget *parent) :
+StreamPostWidget::StreamPostWidget(DATA::FbStreamPost *post, QWidget *parent) :
     QWidget(parent),
     m_post(post),
     m_triedBothIcons(false)

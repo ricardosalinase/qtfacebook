@@ -1,5 +1,5 @@
-#ifndef STREAMPOST_H
-#define STREAMPOST_H
+#ifndef FBSTREAMPOST_H
+#define FBSTREAMPOST_H
 
 #include <QString>
 
@@ -12,10 +12,10 @@
 
 namespace DATA {
 
-    class StreamPost : public GUI::NotificationCenterItem
+    class FbStreamPost : public GUI::NotificationCenterItem
 {
 public:
-    explicit StreamPost();
+    explicit FbStreamPost();
 
     void setPostId(QString id);
     QString getPostId();
@@ -92,4 +92,4 @@ private:
 
 } // namespace DATA
 
-#endif // STREAMPOST_H
+#endif // FBSTREAMPOST_H

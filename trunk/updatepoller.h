@@ -7,7 +7,7 @@
 #include "util/worker.h"
 #include "api/factory.h"
 #include "data/notification.h"
-#include "data/streampost.h"
+#include "data/FbStreamPost.h"
 
 /// The UpdatePoller class is a UTIL::Worker that continuously polls the various tables at Facebook
 /// looking for new things. It produces the objects and sends them out via signals
@@ -22,7 +22,7 @@ public:
 
 signals:
     void apiFqlGetNewNotifications(QList<DATA::Notification*> *);
-    void apiFqlGetStreamPosts(QList<DATA::StreamPost*> *);
+    void apiFqlGetStreamPosts(QList<DATA::FbStreamPost*> *);
 
 public slots:
 
