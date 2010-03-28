@@ -29,7 +29,6 @@ SOURCES += main.cpp \
     api/notifications_getlist.cpp \
     data/notification.cpp \
     data/appinfo.cpp \
-    gui/appinfolabel.cpp \
     gui/notificationcenter.cpp \
     api/fql_GetNewNotifications.cpp \
     api/fql_GetAppInfo.cpp \
@@ -40,11 +39,9 @@ SOURCES += main.cpp \
     util/workerthread.cpp \
     util/worker.cpp \
     updatepoller.cpp \
-    data/streampost.cpp \
     data/streamcommentlist.cpp \
     gui/streampostwidget.cpp \
     data/fbuserinfo.cpp \
-    gui/commentwidget.cpp \
     util/fbuserpiccache.cpp \
     data/FbPageInfo.cpp \
     data/FbPhoto.cpp \
@@ -74,7 +71,9 @@ SOURCES += main.cpp \
     api/fql_GetLikes.cpp \
     api/stream_AddLike.cpp \
     api/stream_RemoveLike.cpp \
-    api/users_GetLoggedInUser.cpp
+    api/users_GetLoggedInUser.cpp \
+    gui/FbCommentWidget.cpp \
+    data/FbStreamPost.cpp
 
 # gui/BuddyListWidget.cpp \
 # FbChatConnection.cpp \
@@ -91,7 +90,6 @@ HEADERS += fbconnectwizard.h \
     api/notifications_getlist.h \
     data/notification.h \
     data/appinfo.h \
-    gui/appinfolabel.h \
     gui/notificationcenter.h \
     api/fql_GetNewNotifications.h \
     api/fql_GetAppInfo.h \
@@ -101,13 +99,11 @@ HEADERS += fbconnectwizard.h \
     api/fql_GetStreamPosts.h \
     data/fbuserinfo.h \
     gui/streampostwidget.h \
-    data/streampost.h \
     data/streamcommentlist.h \
     updatepoller.h \
     util/workerthread.h \
     util/worker.h \
     util/agestring.h \
-    gui/commentwidget.h \
     gui/notificationcenteritem.h \
     util/fbuserpiccache.h \
     data/FbPageInfo.h \
@@ -138,7 +134,9 @@ HEADERS += fbconnectwizard.h \
     api/fql_GetLikes.h \
     api/stream_AddLike.h \
     api/stream_RemoveLike.h \
-    api/users_GetLoggedInUser.h
+    api/users_GetLoggedInUser.h \
+    gui/FbCommentWidget.h \
+    data/FbStreamPost.h
 
 # gui/BuddyListWidget.h \
 # FbChatConnection.h \

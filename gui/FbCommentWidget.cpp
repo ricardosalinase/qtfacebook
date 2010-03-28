@@ -1,4 +1,4 @@
-#include "commentwidget.h"
+#include "FbCommentWidget.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -14,7 +14,7 @@
 
 namespace GUI {
 
-CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidget *parent) :
+FbCommentWidget::FbCommentWidget(DATA::StreamComment *comment, bool canDelete, QWidget *parent) :
     QWidget(parent),
     m_comment(comment)
 {
@@ -65,11 +65,11 @@ CommentWidget::CommentWidget(DATA::StreamComment *comment, bool canDelete, QWidg
     getCommentPic();
 }
 
-CommentWidget::~CommentWidget() {
+FbCommentWidget::~FbCommentWidget() {
     //delete m_comment;
 }
 
-void CommentWidget::linkClicked(QString link) {
+void FbCommentWidget::linkClicked(QString link) {
 
     if (link == "deleteMe")
     {
@@ -83,11 +83,11 @@ void CommentWidget::linkClicked(QString link) {
     }
 }
 
-DATA::StreamComment * CommentWidget::getComment() {
+DATA::StreamComment * FbCommentWidget::getComment() {
     return m_comment;
 }
 
-void CommentWidget::getCommentPic() {
+void FbCommentWidget::getCommentPic() {
 
 
     UTIL::FbUserPicCache *cache = UTIL::FbUserPicCache::getInstance();
@@ -108,7 +108,7 @@ void CommentWidget::getCommentPic() {
     }
 }
 
-void CommentWidget::gotUserPicSquare(QNetworkReply *reply) {
+void FbCommentWidget::gotUserPicSquare(QNetworkReply *reply) {
 
     if (reply->error() == QNetworkReply::NoError)
     {

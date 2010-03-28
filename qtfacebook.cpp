@@ -199,8 +199,8 @@ void QtFacebook::fbWizardComplete() {
     connect(m_updatePoller, SIGNAL(apiFqlGetNewNotifications(QList<DATA::Notification*>*)),
             m_notificationCenter, SLOT(newNotifications(QList<DATA::Notification*>*)),
             Qt::QueuedConnection);
-    connect(m_updatePoller, SIGNAL(apiFqlGetStreamPosts(QList<DATA::StreamPost*>*)),
-            m_notificationCenter, SLOT(newStreamPosts(QList<DATA::StreamPost*>*)),
+    connect(m_updatePoller, SIGNAL(apiFqlGetStreamPosts(QList<DATA::FbStreamPost*>*)),
+            m_notificationCenter, SLOT(newStreamPosts(QList<DATA::FbStreamPost*>*)),
             Qt::QueuedConnection);
 
     m_updateThread = new UTIL::WorkerThread(m_updatePoller);

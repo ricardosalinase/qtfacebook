@@ -15,9 +15,9 @@
 #include <QTimer>
 #include <QProgressBar>
 
-#include "data/streampost.h"
+#include "data/FbStreamPost.h"
 #include "api/factory.h"
-#include "gui/commentwidget.h"
+
 
 
 
@@ -28,7 +28,7 @@ class StreamPostWidget : public QWidget
 Q_OBJECT
 public:
     enum RequestType { PosterPixmap, AppIcon };
-    explicit StreamPostWidget(DATA::StreamPost *post, QWidget *parent = 0);
+    explicit StreamPostWidget(DATA::FbStreamPost *post, QWidget *parent = 0);
     ~StreamPostWidget();
 
 signals:
@@ -52,7 +52,7 @@ private:
     QHBoxLayout *m_ageLineLayout;
     QHBoxLayout *m_linkLayout;
     QNetworkAccessManager *m_nam;
-    DATA::StreamPost *m_post;
+    DATA::FbStreamPost *m_post;
     QLabel *m_userPicLabel;
     QLabel *m_postLabel;
     bool m_triedBothIcons;

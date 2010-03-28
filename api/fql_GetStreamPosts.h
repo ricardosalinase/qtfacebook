@@ -2,7 +2,7 @@
 #define FQL_GETFEEDPOSTS_H
 
 #include "apimethod.h"
-#include "data/streampost.h"
+#include "data/FbStreamPost.h"
 #include "data/fbuserinfo.h"
 #include "data/FbPageInfo.h"
 #include "data/FbStreamAttachment.h"
@@ -22,7 +22,7 @@ public:
     bool endElement(const QString &namespaceURI, const QString &localName,
                     const QString &qName);
     QString getMethodName();
-    QList<DATA::StreamPost *> * getStreamPosts();
+    QList<DATA::FbStreamPost *> * getStreamPosts();
 
 
 
@@ -33,12 +33,12 @@ private:
                         APPINFO, MEDIADETAIL };
     ParseState m_parseState;
     bool prepare();
-    QMap<QString, DATA::StreamPost* > m_postMap;
-    QMap<QString, DATA::StreamPost* > m_appToPostMap;
+    QMap<QString, DATA::FbStreamPost* > m_postMap;
+    QMap<QString, DATA::FbStreamPost* > m_appToPostMap;
     QMap<QString, DATA::StreamComment* > m_commentMap;
-    QMap<QString, DATA::StreamPost* > m_targetToPostMap;
-    QList<DATA::StreamPost *> *m_streamPosts;
-    DATA::StreamPost *m_currentStreamPost;
+    QMap<QString, DATA::FbStreamPost* > m_targetToPostMap;
+    QList<DATA::FbStreamPost *> *m_streamPosts;
+    DATA::FbStreamPost *m_currentStreamPost;
     DATA::StreamComment *m_currentStreamComment;
     DATA::FbUserInfo *m_currentCommentor;
     void fixHtml(QString *html);

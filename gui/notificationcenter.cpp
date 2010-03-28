@@ -12,7 +12,6 @@
 
 #include "api/factory.h"
 #include "notificationcenter.h"
-#include "appinfolabel.h"
 #include "notificationcenterwidget.h"
 #include "streampostwidget.h"
 #include "gui/FbPhotoViewWidget.h"
@@ -170,11 +169,11 @@ void NotificationCenter::restoreWindow() {
 
 void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) {
 
-    QList<DATA::StreamPost *> *list = method->getStreamPosts();
+    QList<DATA::FbStreamPost *> *list = method->getStreamPosts();
 
     if (list->size())
     {
-        DATA::StreamPost *sp = list->takeAt(0);
+        DATA::FbStreamPost *sp = list->takeAt(0);
         m_streamPosts.insert(sp->getPostId(), sp);
         StreamPostWidget *spw = new StreamPostWidget(sp);
         connect(spw, SIGNAL(closed(GUI::StreamPostWidget*,QString)),
@@ -229,7 +228,7 @@ void NotificationCenter::notificationsMarkedAsReadFailed(API::Notifications::Mar
     notificationAcknowledged(NotificationCenterItem::Notification, nId);
 }
 
-void NotificationCenter::newStreamPosts(QList<DATA::StreamPost *> *pList) {
+void NotificationCenter::newStreamPosts(QList<DATA::FbStreamPost *> *pList) {
 
     qDebug() << "NotificationCenter::newStreamPosts(); pList: " << pList->size();
 
@@ -237,7 +236,7 @@ void NotificationCenter::newStreamPosts(QList<DATA::StreamPost *> *pList) {
 
     while (!pList->empty())
     {
-        DATA::StreamPost *sp = pList->takeLast();
+        DATA::FbStreamPost *sp = pList->takeLast();
 
         GUI::NotificationCenterWidget *nWidget;
         QLabel *ul = new QLabel();

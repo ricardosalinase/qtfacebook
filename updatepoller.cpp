@@ -93,7 +93,7 @@ void UpdatePoller::getNewStreamPosts() {
 
 void UpdatePoller::gotNewStreamPosts(API::FQL::GetStreamPosts *method) {
 
-    QList<DATA::StreamPost *> *pList = method->getStreamPosts();
+    QList<DATA::FbStreamPost *> *pList = method->getStreamPosts();
     qDebug() << "UpdatePoller::gotNewStreamPosts(); pList:" << pList->size();
 
     if (pList->size())

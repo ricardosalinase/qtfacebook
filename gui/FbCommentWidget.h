@@ -1,5 +1,5 @@
-#ifndef COMMENTWIDGET_H
-#define COMMENTWIDGET_H
+#ifndef FBCOMMENTWIDGET_H
+#define FBCOMMENTWIDGET_H
 
 #include <QWidget>
 #include <QNetworkAccessManager>
@@ -11,15 +11,15 @@
 
 namespace GUI {
 
-class CommentWidget : public QWidget
+class FbCommentWidget : public QWidget
 {
 Q_OBJECT
 public:
-    explicit CommentWidget(DATA::StreamComment *, bool canDelete = false, QWidget *parent = 0);
-    ~CommentWidget();
+    explicit FbCommentWidget(DATA::StreamComment *, bool canDelete = false, QWidget *parent = 0);
+    ~FbCommentWidget();
     DATA::StreamComment * getComment();
 signals:
-    void userClickedDelete(GUI::CommentWidget *comment);
+    void userClickedDelete(GUI::FbCommentWidget *comment);
 public slots:
 
 private slots:
@@ -37,4 +37,4 @@ private:
 
 } // namespace GUI
 
-#endif // COMMENTWIDGET_H
+#endif // FBCOMMENTWIDGET_H

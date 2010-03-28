@@ -11,7 +11,7 @@
 #include <QVBoxLayout>
 
 #include "api/factory.h"
-#include "gui/commentwidget.h"
+#include "gui/FbCommentWidget.h"
 
 #ifdef WITH_ASPELL
 #include "SpellTextEdit/SpellTextEdit.h"
@@ -43,7 +43,7 @@ private slots:
     void gotComments(API::FQL::GetComments *method);
     void getCommentsFailed(API::FQL::GetComments *method);
     void getComments();
-    void userDeletedComment(GUI::CommentWidget *commentWidget);
+    void userDeletedComment(GUI::FbCommentWidget *commentWidget);
     void apiStreamRemoveComment(API::Stream::RemoveComment *method);
     void apiStreamRemoveCommentFailed(API::Stream::RemoveComment *method);
     void apiCommentsAdd(API::Comments::Add *method);
