@@ -9,7 +9,6 @@
 #include "fbconnectwizard.h"
 #include "testqueryconsole.h"
 #include "api/notifications_MarkRead.h"
-#include "gui/notifications_listview.h"
 #include "gui/notificationcenter.h"
 #include "gui/notificationcenteritem.h"
 #include "util/workerthread.h"
@@ -34,9 +33,6 @@ public slots:
 private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void nextTrayIcon();
-    void viewAllNotifications();
-    void viewRecentNotifications();
-    void viewNewNotifications();
     void exitMenuAction();
     void testQueryConsole();
     void receivedNewNotifications(int numNew);
@@ -46,7 +42,6 @@ private slots:
     void apiUsersGetLoggedInUserFailed(API::Users::GetLoggedInUser *);
 
 private:
-    void viewNotifications(GUI::Notifications::ListView::mode m);
     void showNotifications(bool showBalloonMessage);
     bool loadUserInfo();
     FBConnectWizard *m_wizard;
@@ -54,7 +49,6 @@ private:
     GUI::NotificationCenter *m_notificationCenter;
     UpdatePoller *m_updatePoller;
     QSystemTrayIcon *m_trayIcon;
-    GUI::Notifications::ListView *m_notificationListView;
     QList<DATA::Notification *> *m_notificationList;
     QIcon *m_trayIcons[4];
     bool m_traySingleClicked;
@@ -62,8 +56,6 @@ private:
     int m_trayIconIndex;
     bool m_animatingTrayIcon;
     QTimer *m_trayAnimationTimer;
-    QAction *m_notificationCountMenuAction;
-    QAction *m_viewAllNotificationsMenuAction;
     QByteArray m_geometry;
     int m_totalNotifications;
     int m_standardNotifications;
