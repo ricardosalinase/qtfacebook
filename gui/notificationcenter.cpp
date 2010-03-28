@@ -13,7 +13,6 @@
 #include "api/factory.h"
 #include "notificationcenter.h"
 #include "appinfolabel.h"
-#include "notificationlabel.h"
 #include "notificationcenterwidget.h"
 #include "streampostwidget.h"
 #include "gui/FbPhotoViewWidget.h"
