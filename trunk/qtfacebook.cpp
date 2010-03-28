@@ -22,7 +22,6 @@ QtFacebook::QtFacebook(QObject *parent) :
     QObject(parent),
     m_wizard(0),
     m_testConsole(0),
-    m_notificationListView(0),
     m_notificationList(0),
     m_traySingleClicked(false),
     m_balloonMessageClicked(false),
@@ -174,12 +173,6 @@ void QtFacebook::fbWizardComplete() {
     menu->addSeparator();
     QAction *ncr = menu->addAction("Notification Center");
     menu->addSeparator();
-    m_notificationCountMenuAction = menu->addAction("You have 0 new notifications");
-    m_notificationCountMenuAction->setDisabled(true);
-
-    QAction *act = menu->addAction("View Recent");
-    m_viewAllNotificationsMenuAction = menu->addAction("View all");
-    menu->addSeparator();
     QAction *exit = menu->addAction("Exit");
 
     connect(tqc, SIGNAL(triggered()),
@@ -187,13 +180,6 @@ void QtFacebook::fbWizardComplete() {
 
     connect(exit, SIGNAL(triggered()),
             this, SLOT(exitMenuAction()));
-
-    connect(m_viewAllNotificationsMenuAction, SIGNAL(triggered()),
-            this, SLOT(viewAllNotifications()));
-    connect(act, SIGNAL(triggered()),
-            this, SLOT(viewRecentNotifications()));
-
-
 
     m_trayIcon->setContextMenu(menu);
     m_trayIcon->show();
@@ -272,7 +258,6 @@ void QtFacebook::showNotifications(bool showBalloonMessage)
         s.append(QString::number(m_streamPostNotifications) + " new stream posts.");
     }
 
-    m_notificationCountMenuAction->setText(s);
 
     if (m_streamPostNotifications || m_standardNotifications)
         m_trayIcon->setToolTip(s);
@@ -282,19 +267,14 @@ void QtFacebook::showNotifications(bool showBalloonMessage)
     if (showBalloonMessage)
         m_trayIcon->showMessage("New Notifications", s,QSystemTrayIcon::Information, 15000);
 
-    m_notificationCountMenuAction->setText("View "
-                                           + QString::number(m_standardNotifications)
-                                           + " new notifications");
     if (m_totalNotifications == 0) {
         m_trayAnimationTimer->stop();
         m_trayIcon->setIcon(*m_trayIcons[0]);
-        m_notificationCountMenuAction->setEnabled(false);
     }
     else
     {
         if (!m_trayAnimationTimer->isActive())
             m_trayAnimationTimer->start(250);
-        m_notificationCountMenuAction->setEnabled(true);
     }
 }
 
@@ -370,33 +350,33 @@ void QtFacebook::acknowledgedNotification(GUI::NotificationCenterItem::ItemType 
 }
 
 
-void QtFacebook::viewNewNotifications() {
-    viewNotifications(GUI::Notifications::ListView::NEW);
-}
-
-void QtFacebook::viewAllNotifications() {
-    viewNotifications(GUI::Notifications::ListView::ALL);
-}
-
-void QtFacebook::viewRecentNotifications() {
-    viewNotifications(GUI::Notifications::ListView::RECENT);
-}
-
-void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
-    if (m_notificationListView == 0) {
-        m_notificationListView = new GUI::Notifications::ListView();
-    } else if (m_notificationListView != 0 && m_notificationListView->isMinimized()) {
-        m_notificationListView->showNormal();
-        m_notificationListView->restoreWindow();
-    }  else {
-        //m_notificationListView->restoreWindow();
-        m_notificationListView->activateWindow();
-    }
-
-    m_notificationListView->reload(m);
-
-    m_notificationListView->show();
-    m_notificationListView->raise();
-}
+//void QtFacebook::viewNewNotifications() {
+//    viewNotifications(GUI::Notifications::ListView::NEW);
+//}
+//
+//void QtFacebook::viewAllNotifications() {
+//    viewNotifications(GUI::Notifications::ListView::ALL);
+//}
+//
+//void QtFacebook::viewRecentNotifications() {
+//    viewNotifications(GUI::Notifications::ListView::RECENT);
+//}
+//
+//void QtFacebook::viewNotifications(GUI::Notifications::ListView::mode m) {
+//    if (m_notificationListView == 0) {
+//        m_notificationListView = new GUI::Notifications::ListView();
+//    } else if (m_notificationListView != 0 && m_notificationListView->isMinimized()) {
+//        m_notificationListView->showNormal();
+//        m_notificationListView->restoreWindow();
+//    }  else {
+//        //m_notificationListView->restoreWindow();
+//        m_notificationListView->activateWindow();
+//    }
+//
+//    m_notificationListView->reload(m);
+//
+//    m_notificationListView->show();
+//    m_notificationListView->raise();
+//}
 
 

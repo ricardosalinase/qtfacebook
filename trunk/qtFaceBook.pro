@@ -1,17 +1,14 @@
 message($$CONFIG)
-defineTest(hasAspell) {
-    libdirs = /usr/local/lib /usr/lib
-    for(libdir, libdirs) {
-        exists($${libdir}/libaspell.so) {
-            return(true)
-        }
-    }
+defineTest(hasAspell) { 
+    libdirs = /usr/local/lib \
+        /usr/lib
+    for(libdir, libdirs):exists($${libdir}/libaspell.so):return(true)
     return(false)
 }
 QT += webkit \
     network \
     xml
-hasAspell() {
+hasAspell() { 
     SOURCES += SpellTextEdit/SpellTextEdit.cpp \
         SpellTextEdit/SpellSyntaxHighlighter.cpp \
         SpellTextEdit/ASpellConfig.cpp
@@ -30,7 +27,6 @@ SOURCES += main.cpp \
     api/factory.cpp \
     api/friends_get.cpp \
     api/notifications_getlist.cpp \
-    gui/notifications_listview.cpp \
     gui/notifications_widget.cpp \
     data/notification.cpp \
     data/appinfo.cpp \
@@ -95,7 +91,6 @@ HEADERS += fbconnectwizard.h \
     api/friends_get.h \
     api/apimethod.h \
     api/notifications_getlist.h \
-    gui/notifications_listview.h \
     gui/notifications_widget.h \
     data/notification.h \
     data/appinfo.h \
@@ -163,4 +158,3 @@ OTHER_FILES += uiImages/thumbsUp3.jpg \
     uiImages/addComment_50_50.jpg
 FORMS += testqueryconsole.ui
 RESOURCES += resources.qrc
-
