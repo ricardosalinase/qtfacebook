@@ -27,10 +27,8 @@ SOURCES += main.cpp \
     api/factory.cpp \
     api/friends_get.cpp \
     api/notifications_getlist.cpp \
-    gui/notifications_widget.cpp \
     data/notification.cpp \
     data/appinfo.cpp \
-    gui/notificationlabel.cpp \
     gui/appinfolabel.cpp \
     gui/notificationcenter.cpp \
     api/fql_GetNewNotifications.cpp \
@@ -91,10 +89,8 @@ HEADERS += fbconnectwizard.h \
     api/friends_get.h \
     api/apimethod.h \
     api/notifications_getlist.h \
-    gui/notifications_widget.h \
     data/notification.h \
     data/appinfo.h \
-    gui/notificationlabel.h \
     gui/appinfolabel.h \
     gui/notificationcenter.h \
     api/fql_GetNewNotifications.h \
