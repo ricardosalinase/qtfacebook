@@ -178,8 +178,8 @@ void NotificationCenter::apiFqlGetStreamPosts(API::FQL::GetStreamPosts *method) 
         DATA::StreamPost *sp = list->takeAt(0);
         m_streamPosts.insert(sp->getPostId(), sp);
         StreamPostWidget *spw = new StreamPostWidget(sp);
-        connect(spw, SIGNAL(closed(GUI::StreamPostWidget*)),
-                this, SLOT(streamPostClosed(GUI::StreamPostWidget*)));
+        connect(spw, SIGNAL(closed(GUI::StreamPostWidget*,QString)),
+                this, SLOT(streamPostClosed(GUI::StreamPostWidget*,QString)));
         connect(spw, SIGNAL(contentClicked(QString)),
                 this, SLOT(contentClicked(QString)));
         m_openPosts.insert(sp->getPostId(), spw);
