@@ -1,0 +1,1 @@
+Desktop application for accessing facebook written in C++ using Qt.
